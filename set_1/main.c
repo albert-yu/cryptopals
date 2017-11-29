@@ -1,15 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "hex_to_base64.h"
+#include "fixed_xor.h"
 
 int main()
 {
-    //printf("Hello World!");
-    char* input = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d";
-    char* result = hex_to_base64(input);
-    // should produce:
-    // SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t
+    char *input1 = "1c0111001f010100061a024b53535009181c";
+    char *input2 = "686974207468652062756c6c277320657965";
+    char *result = fixed_xor(input1, input2);
     printf("%s", result);
-    free(result);
     return 0;
 }
