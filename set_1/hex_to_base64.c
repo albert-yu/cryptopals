@@ -30,12 +30,25 @@ static inline int hex_val(char c)
 
 
 /*
- * No idea what this does yet.
+ * Converts two hexadecimal characters to their int value.
+ *
+ * Assumes the first two characters of *hex are non-NULL
+ * Takes the first character, returns the int value of it, 
+ * left shifts by 4 bits.
+ * Then, bitwise OR with the int value of the second character.
+ * e.g.
+ * *hex => '1f'
+ * hex_val('1') => 1.
+ * 1 << 4 => 10000  <-- left side of bitwise OR
+ * 
+ * hex_val('f') => 15 => 1111
+ * 10000 | 1111 => 11111 => 31
  */
 static inline int hex_byte(const char *hex)
 {
     return (hex_val(hex[0]) << 4) | hex_val(hex[1]);
 }
+
 
 
 void get_b64_quads(const char *hex, char *b64quads, int pad)
