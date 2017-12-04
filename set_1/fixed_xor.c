@@ -4,6 +4,10 @@
 #include "fixed_xor.h"
 #include "hex_to_base64.h"
 
+
+/*
+ * Byte-by-byte XOR on two string inputs of same finite length 
+ */
 char* fixed_xor(char *input1, char *input2)
 {
     int length1 = strlen(input1);

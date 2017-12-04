@@ -9,5 +9,6 @@ int main()
     char *input2 = "686974207468652062756c6c277320657965";
     char *result = fixed_xor(input1, input2);
     printf("%s", result);
+    printf("\n");
     return 0;
 }
