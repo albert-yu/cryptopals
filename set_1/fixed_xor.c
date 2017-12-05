@@ -26,3 +26,23 @@ char* fixed_xor(char *input1, char *input2)
 
     return ret_val;
 }
+
+
+void fixed_xor_test()
+{
+    char *input1 = "1c0111001f010100061a024b53535009181c";
+    char *input2 = "686974207468652062756c6c277320657965";
+    char *expected = "746865206b696420646f6e277420706c6179";
+    char *result = fixed_xor(input1, input2);
+
+    if (strcmp(expected, result) == 0)
+    {        
+        printf("Fixed XOR test passed.\n");
+    }
+    else
+    {
+        printf("Fixed XOR test failed.\n");
+        printf("Expected: \t[%s]\n", expected);
+        printf("Actual: \t[%s]\n", result);
+    }
+}

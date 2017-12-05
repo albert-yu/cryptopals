@@ -1,13 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-#include "xor_cipher.h"
+#include "fixed_xor.h"
+// #include "xor_cipher.h"
 
 int main()
 {
-    // char *input1 = "1c0111001f010100061a024b53535009181c";
-    // char *input2 = "686974207468652062756c6c277320657965";
-    xor_cipher_caller();
+
+    char *input1 = "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO";
+    char *input2 = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
+    char *result = fixed_xor(input1, input2);
+    printf("%s", result);
+    // xor_cipher_caller();
     printf("\n");
+    fixed_xor_test();
     return 0;
 }

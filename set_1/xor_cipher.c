@@ -16,10 +16,10 @@ char* decode_with_key(char *message, int msg_length, char key)
     {
         key_string[i] = key;
     }
-    // printf(key_string);
-    // printf("\n");
+    printf("key: %s\n", key_string);
     // now xor the two   
     char *decoded = fixed_xor(message, key_string); 
+    printf("decoded: %s\n", decoded);
     free(key_string);
     return decoded;
 }
@@ -29,7 +29,7 @@ char* decode_with_key(char *message, int msg_length, char key)
  * Calculates number of times a character appears
  * in a give string.
  */
-int eval_frequency(char* input, int length)
+int eval_frequency(char *input, int length)
 { 
     int freq = 0;
     for (int i = 0; i < length; i++)
@@ -61,6 +61,7 @@ char* unscramble(char *scrambled)
     int msg_length = strlen(scrambled);
     char *candidate_ptr = malloc(msg_length * sizeof(*candidate_ptr)); 
     int max_freq = 0;
+    // avoid the null terminator (c = 0)
     for (char c = 1; c <= SCHAR_MAX; c++)
     {
         if (c < 0)
@@ -69,7 +70,7 @@ char* unscramble(char *scrambled)
         }
         printf("%d\n", c);
         char *decoded = decode_with_key(scrambled, msg_length, c);
-        printf("%s\n", decoded);
+        // printf("%s\n", decoded);
         int freq = eval_frequency(decoded, msg_length);
         // printf("freq: %d\n", freq);
         if (freq > max_freq)
