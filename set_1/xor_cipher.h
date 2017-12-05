@@ -1,4 +1,4 @@
 #ifndef XOR_CIPHER_H
 #define XOR_CIPHER_H
-void decode();
+void xor_cipher_caller();
 #endif
