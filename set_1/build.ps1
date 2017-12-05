@@ -1,3 +1,6 @@
+# make directory
+md -Force build
+
 gcc -c hex_to_base64.c -o hex.o
 gcc -c fixed_xor.c -o fixed_xor.o
 gcc -c xor_cipher.c -o cipher.o

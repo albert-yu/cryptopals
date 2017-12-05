@@ -19,6 +19,7 @@ char* decode_with_key(char* message, int msg_length, char key)
 
     // now xor the two   
     char* decoded = fixed_xor(message, key_string); 
+    free(key_string);
     return decoded;
 }
 
@@ -54,7 +55,9 @@ char* aggregate_and_choose(char* scrambled)
     int max_freq = 0;
     for (char c = 0; c <= SCHAR_MAX; c++)
     {
-    	printf("%c\n", c);
+    	if (c < 0)
+    		break; // reached overflow
+    	printf("%d\n", c);
     	char* decoded = decode_with_key(scrambled, msg_length, c);
     	printf("%s\n", decoded);
     	int freq = eval_frequency(decoded, msg_length, MOST_FREQ_LETTER);
@@ -63,11 +66,13 @@ char* aggregate_and_choose(char* scrambled)
     	{
     		max_freq = freq;
     		candidate_ptr = decoded;
-    		printf(candidate_ptr);
-    		printf("\n");
+    		// printf(candidate_ptr);
+    		// printf("\n");
     	}
     	// strcpy(all_decoded[c], decoded);
     }
+
+    // handle case c == SCHAR_MAX
 
     // choose the one with the most e's
     return candidate_ptr;
