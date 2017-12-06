@@ -46,6 +46,13 @@ static inline int hex_byte(const char *hex)
     return (hex_val(hex[0]) << 4) | hex_val(hex[1]);
 }
 
+
+static inline int hex_to_int(char hex0, char hex1)
+{
+    return (hex_val(hex0) << 4) | hex_val(hex1);
+}
+
+
 char* hex_to_base64(char*);
 
 #endif

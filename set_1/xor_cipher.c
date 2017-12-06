@@ -2,9 +2,36 @@
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <ctype.h>
 
 #include "xor_cipher.h"
 #include "fixed_xor.h"
+#include "hex_to_base64.h"
+
+
+char* hex_to_ascii(char *hex_string)
+{
+    int hex_length = strlen(hex_string);
+    if ((hex_length % 2) != 0)
+    {
+        return "";
+    }
+
+    int ascii_length = hex_length / 2 + 1;
+    char *ascii_string = malloc(ascii_length * sizeof(*ascii_string));
+    int i = 0;
+    int j = 0;
+    while (i < hex_length)
+    {
+        int char_val = hex_to_int(hex_string[i], hex_string[i + 1]);
+        printf("char_val: %d\tchar: %c\n", char_val, char_val);
+        ascii_string[j] = (char)char_val;
+        j += 1;
+        i += 2;
+    }
+    printf("ascii: %s\n", ascii_string);
+    return ascii_string;
+}
 
 
 char* decode_with_key(char *message, int msg_length, char key)
@@ -16,42 +43,44 @@ char* decode_with_key(char *message, int msg_length, char key)
     {
         key_string[i] = key;
     }
-    printf("key: %s\n", key_string);
+    // printf("key:    \t%s\n", key_string);
     // now xor the two   
     char *decoded = fixed_xor(message, key_string); 
-    printf("decoded: %s\n", decoded);
+    char *to_ascii = hex_to_ascii(decoded);
+    // printf("decoded:\t%s\n\n", decoded);
     free(key_string);
-    return decoded;
+    free(decoded);
+    return to_ascii;
 }
 
 
 /*
  * Calculates number of times a character appears
- * in a give string.
+ * in a given string.
  */
 int eval_frequency(char *input, int length)
 { 
     int freq = 0;
-    for (int i = 0; i < length; i++)
-    {
-        // check for common characters
-        if (input[i] == 'e' ||
-            input[i] == 't' ||
-            input[i] == 'a' ||
-            input[i] == 'o' ||
-            input[i] == 'i' ||
-            input[i] == 'n' ||
-            input[i] == 's' ||
-            input[i] == 'h' ||
-            input[i] == 'r' ||
-            input[i] == 'd' ||
-            input[i] == 'l' ||
-            input[i] == 'u'
-            )
-        {
-            freq++;
-        }
-    }
+    // for (int i = 0; i < length; i++)
+    // {
+    //     // check for common characters
+    //     if (input[i] == 'e' ||
+    //         input[i] == 't' ||
+    //         input[i] == 'a' ||
+    //         input[i] == 'o' ||
+    //         input[i] == 'i' ||
+    //         input[i] == 'n' ||
+    //         input[i] == 's' ||
+    //         input[i] == 'h' ||
+    //         input[i] == 'r' ||
+    //         input[i] == 'd' ||
+    //         input[i] == 'l' ||
+    //         input[i] == 'u'
+    //         )
+    //     {
+    //         freq++;
+    //     }
+    // }
     return freq;
 }
 
@@ -59,7 +88,7 @@ int eval_frequency(char *input, int length)
 char* unscramble(char *scrambled)
 {   
     int msg_length = strlen(scrambled);
-    char *candidate_ptr = malloc(msg_length * sizeof(*candidate_ptr)); 
+    char *candidate_ptr; 
     int max_freq = 0;
     // avoid the null terminator (c = 0)
     for (char c = 1; c <= SCHAR_MAX; c++)
@@ -68,7 +97,7 @@ char* unscramble(char *scrambled)
         {          
             break; // reached overflow
         }
-        printf("%d\n", c);
+        printf("Char: %d\n", c);
         char *decoded = decode_with_key(scrambled, msg_length, c);
         // printf("%s\n", decoded);
         int freq = eval_frequency(decoded, msg_length);
@@ -76,12 +105,16 @@ char* unscramble(char *scrambled)
         if (freq > max_freq)
         {
             max_freq = freq;
-            strcpy(candidate_ptr, decoded);
+            candidate_ptr = decoded;
             // printf(candidate_ptr);
             // printf("\n");
         }
         // causes crash on c = 0
-        free(decoded);
+        else
+        {
+            free(decoded);
+        }
+        printf("\n");
     }
 
     // choose the one with the highest frequency score

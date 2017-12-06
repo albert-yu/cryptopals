@@ -14,16 +14,18 @@ char* fixed_xor(char *input1, char *input2)
     int length2 = strlen(input2);
     if (length1 != length2)
     {
-        return "0";
+        return "";
     }
-
-    char *ret_val = calloc(length1, sizeof(char));
+    char *ret_val = calloc(length1, sizeof(*ret_val));
     for (int i = 0; i < length1; i++)
     {
         int val = hex_val(input1[i]) ^ hex_val(input2[i]);
+        // int val2 = input1[i] ^ input2[i];
+        // printf("val:  %d\n", val);
+        // printf("val2: %d\n\n", val2);
+        // printf("hex_val: %c\n", digit_to_hex(val));
         ret_val[i] = digit_to_hex(val);
     }
-
     return ret_val;
 }
 
