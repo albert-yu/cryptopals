@@ -53,6 +53,18 @@ def prob_2_test():
         print("Actual:   " + actual.decode("utf-8"))
 
 
+def xor(byte_arr_1, byte_arr_2):
+    length_1 = len(byte_arr_1)
+    length_2 = len(byte_arr_2)
+    retval = bytearray(length_1)
+    if (length_1 != length_2):
+        retval = b""
+    else:
+        for i in range(length_1):
+            retval[i] = byte_arr_1[i] ^ byte_arr_2[i]
+    return retval
+
+
 def score(text):
     freq = {}
     freq[' '] = 700000000
@@ -83,20 +95,24 @@ def score(text):
     freq['q'] = 3649838
     freq['z'] = 2456495
     score = 0
-    for c in s.lower():
+    for c in text.lower():
         if c in freq:
             score += freq[c]
     return score
 
 
 def unscramble(cipher):
-    max_score = None
+    max_score = -1
     best_plaintext = None
     key = None
-    for i in range(256):
-        key_byte_array = bytes([i]) * len(cipher)
-        xor_d = hex_xor(key_byte_array, cipher)
+    for i in range(0, 256):
+        print(chr(i))
+        key_repeated = (chr(i) * len(cipher)).encode("utf-8")
+        key_byte_array = bytearray(key_repeated)
+        xor_d = xor(key_byte_array, cipher)
         plaintext = bytes(xor_d)
+        plaintext = plaintext.decode("utf-8")
+        print(plaintext)
         curr_score = score(plaintext)
         if curr_score > max_score or not max_score:
             max_score = curr_score

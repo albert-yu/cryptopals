@@ -47,7 +47,7 @@ char* decode_with_key(char *message, int msg_length, char key)
 
     // convert to ascii
     char *as_ascii = hex_to_ascii(decoded);
-    
+
     // garbage collection
     free(key_string);
     free(decoded);
@@ -95,10 +95,10 @@ char* unscramble(char *scrambled)
     // avoid the null terminator (c = 0)
     for (char c = 1; c != 0; c++)
     {
-        if (c < 0)
-        {          
-            break; // reached overflow
-        }
+        // if (c < 0)
+        // {          
+        //     break; // reached overflow
+        // }
         printf("Char: %d\n", c);
         char *decoded = decode_with_key(scrambled, msg_length, c);
         printf("%s\n", decoded);
@@ -124,7 +124,7 @@ char* unscramble(char *scrambled)
 }
 
 
-void xor_cipher_caller()
+void prob3_test()
 {
     char *scrambled = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
     char *unscrambled = unscramble(scrambled);

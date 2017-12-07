@@ -12,7 +12,7 @@ int main()
     // char *result = fixed_xor(input1, input2);
     // printf("%s", result);
 
-    // xor_cipher_caller();
+    prob3_test();
     // char a = '1';
     // char c = 'J';
     // char result = a ^ c;
