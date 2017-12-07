@@ -29,7 +29,6 @@ char* hex_to_ascii(char *hex_string)
         j += 1;
         i += 2;
     }
-    printf("ascii: %s\n", ascii_string);
     return ascii_string;
 }
 

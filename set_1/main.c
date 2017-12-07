@@ -12,11 +12,15 @@ int main()
     // char *result = fixed_xor(input1, input2);
     // printf("%s", result);
 
-    xor_cipher_caller();
+    // xor_cipher_caller();
     // char a = '1';
     // char c = 'J';
     // char result = a ^ c;
     // printf("%c\n", result);
+
+    char *input = "746865206b696420646f6e277420706c6179";
+    char *ascii = hex_to_ascii(input);
+    printf("%s\n", ascii);  // the kid don't play
 
     return 0;
 }
