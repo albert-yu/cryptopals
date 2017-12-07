@@ -24,7 +24,6 @@ char* hex_to_ascii(char *hex_string)
     while (i < hex_length)
     {
         int char_val = hex_to_int(hex_string[i], hex_string[i + 1]);
-        //printf("char_val: %d\tchar: %c\n", char_val, char_val);
         ascii_string[j] = (char)char_val;
         j += 1;
         i += 2;
@@ -45,10 +44,14 @@ char* decode_with_key(char *message, int msg_length, char key)
     // printf("key:    \t%s\n", key_string);
     // now xor the two   
     char *decoded = fixed_xor(message, key_string); 
-    // printf("decoded:\t%s\n\n", decoded);
-    free(key_string);
 
-    return decoded;
+    // convert to ascii
+    char *as_ascii = hex_to_ascii(decoded);
+    
+    // garbage collection
+    free(key_string);
+    free(decoded);
+    return as_ascii;
 }
 
 
@@ -59,26 +62,27 @@ char* decode_with_key(char *message, int msg_length, char key)
 int eval_frequency(char *input, int length)
 { 
     int freq = 0;
-    // for (int i = 0; i < length; i++)
-    // {
-    //     // check for common characters
-    //     if (input[i] == 'e' ||
-    //         input[i] == 't' ||
-    //         input[i] == 'a' ||
-    //         input[i] == 'o' ||
-    //         input[i] == 'i' ||
-    //         input[i] == 'n' ||
-    //         input[i] == 's' ||
-    //         input[i] == 'h' ||
-    //         input[i] == 'r' ||
-    //         input[i] == 'd' ||
-    //         input[i] == 'l' ||
-    //         input[i] == 'u'
-    //         )
-    //     {
-    //         freq++;
-    //     }
-    // }
+    for (int i = 0; i < length; i++)
+    {
+        // check for common characters
+        if (input[i] == 'e' ||
+            input[i] == 't' ||
+            input[i] == 'a' ||
+            input[i] == 'o' ||
+            input[i] == 'i' ||
+            input[i] == 'n' ||
+            input[i] == 's' ||
+            input[i] == 'h' ||
+            input[i] == 'r' ||
+            input[i] == 'd' ||
+            input[i] == 'l' ||
+            input[i] == 'u' ||
+            input[i] == ' '
+            )
+        {
+            freq++;
+        }
+    }
     return freq;
 }
 
