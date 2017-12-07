@@ -24,7 +24,7 @@ char* hex_to_ascii(char *hex_string)
     while (i < hex_length)
     {
         int char_val = hex_to_int(hex_string[i], hex_string[i + 1]);
-        printf("char_val: %d\tchar: %c\n", char_val, char_val);
+        //printf("char_val: %d\tchar: %c\n", char_val, char_val);
         ascii_string[j] = (char)char_val;
         j += 1;
         i += 2;
@@ -46,11 +46,10 @@ char* decode_with_key(char *message, int msg_length, char key)
     // printf("key:    \t%s\n", key_string);
     // now xor the two   
     char *decoded = fixed_xor(message, key_string); 
-    char *to_ascii = hex_to_ascii(decoded);
     // printf("decoded:\t%s\n\n", decoded);
     free(key_string);
-    free(decoded);
-    return to_ascii;
+
+    return decoded;
 }
 
 
@@ -91,7 +90,7 @@ char* unscramble(char *scrambled)
     char *candidate_ptr; 
     int max_freq = 0;
     // avoid the null terminator (c = 0)
-    for (char c = 1; c <= SCHAR_MAX; c++)
+    for (char c = 1; c != 0; c++)
     {
         if (c < 0)
         {          
@@ -99,7 +98,7 @@ char* unscramble(char *scrambled)
         }
         printf("Char: %d\n", c);
         char *decoded = decode_with_key(scrambled, msg_length, c);
-        // printf("%s\n", decoded);
+        printf("%s\n", decoded);
         int freq = eval_frequency(decoded, msg_length);
         // printf("freq: %d\n", freq);
         if (freq > max_freq)
