@@ -21,6 +21,7 @@ def prob_1_test():
         print("Expected: " + expected)
         print("Actual:   " + base64_str.decode("utf-8"))
 
+#----------------------------------------------------------
 
 def hex_xor(hex_1, hex_2):
     """
@@ -52,6 +53,7 @@ def prob_2_test():
         print("Expected: " + expected.decode("utf-8"))
         print("Actual:   " + actual.decode("utf-8"))
 
+#----------------------------------------------------------
 
 def xor(byte_arr_1, byte_arr_2):
     length_1 = len(byte_arr_1)
@@ -106,13 +108,11 @@ def unscramble(cipher):
     best_plaintext = None
     key = None
     for i in range(0, 256):
-        print(chr(i))
         key_repeated = (chr(i) * len(cipher)).encode("utf-8")
         key_byte_array = bytearray(key_repeated)
         xor_d = xor(key_byte_array, cipher)
         plaintext = bytes(xor_d)
         plaintext = plaintext.decode("utf-8")
-        print(plaintext)
         curr_score = score(plaintext)
         if curr_score > max_score or not max_score:
             max_score = curr_score
@@ -127,6 +127,11 @@ def prob_3_test():
     (key, unscrambled) = unscramble(scrambled_bytes)
     print("Key: " + key)
     print("Unscrambled: " + unscrambled)
+    expected = "Cooking MC's like a pound of bacon"
+    if (unscrambled == expected):
+        print("Problem 3 test passed.")
+
+#----------------------------------------------------------
 
 
 def main():

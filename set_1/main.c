@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <string.h>
 // #include "fixed_xor.h"
 #include "xor_cipher.h"
 
@@ -19,8 +20,9 @@ int main()
     // printf("%c\n", result);
 
     char *input = "746865206b696420646f6e277420706c6179";
-    char *ascii = hex_to_ascii(input);
-    printf("%s\n", ascii);  // the kid don't play
+    char *ascii = hex_to_bytes(input);
+    printf("%s\n", ascii);  // the kid don't play (length = 18)
+    printf("%d\n", strlen(ascii));
 
     return 0;
 }
