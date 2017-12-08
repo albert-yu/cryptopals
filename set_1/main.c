@@ -19,10 +19,10 @@ int main()
     // char result = a ^ c;
     // printf("%c\n", result);
 
-    char *input = "746865206b696420646f6e277420706c6179";
-    char *ascii = hex_to_bytes(input);
-    printf("%s\n", ascii);  // the kid don't play (length = 18)
-    printf("%d\n", strlen(ascii));
+    // char *input = "746865206b696420646f6e277420706c6179";
+    // char *ascii = hex_to_bytes(input);
+    // printf("%s\n", ascii);  // the kid don't play (length = 18)
+    // printf("%d\n", strlen(ascii));
 
     return 0;
 }
