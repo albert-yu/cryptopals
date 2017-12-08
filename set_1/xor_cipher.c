@@ -9,6 +9,9 @@
 #include "hex_to_base64.h"
 
 
+/*
+ * Converts an even-lengthed hex string to raw byte array
+ */
 char* hex_to_bytes(char *hex_string)
 {
     int hex_length = strlen(hex_string);
@@ -55,6 +58,10 @@ char* byte_xor(char* string_1, char* string_2)
 }
 
 
+
+/* 
+ * Decodes a byte array with a given key with XOR
+ */
 char* decode_with_key(char *message, int msg_length, char key)
 {   
     // first create string with char repeatedly concatenated
@@ -76,8 +83,8 @@ char* decode_with_key(char *message, int msg_length, char key)
 
 
 /*
- * Calculates number of times a character appears
- * in a given string.
+ * Scores a piece of text for the likelihood that it's English
+ * TODO: move table generation to outside
  */
 long long eval_frequency(char *input, int length)
 { 
@@ -123,11 +130,18 @@ long long eval_frequency(char *input, int length)
             freq += freq_val;
         }
     }
+
+    free(freq_table);
     printf("%lli\n", freq);
     return freq;
 }
 
 
+/*
+ * Unscrambles the hex string by first converting it to a byte
+ * array and XOR'ing it against all possible keys, choosing
+ * the one with the highest frequency score
+ */
 char* unscramble(char *scrambled)
 {   
     char *scrambled_bytes = hex_to_bytes(scrambled);
@@ -138,10 +152,6 @@ char* unscramble(char *scrambled)
     // avoid the null terminator (c = 0)
     for (char c = 1; c != 0; c++)
     {
-        // if (c < 0)
-        // {          
-        //     break; // reached overflow
-        // }
         printf("Char: %c\n", c);
         char *decoded = decode_with_key(scrambled_bytes, msg_length, c);
         printf("%s\n", decoded);
@@ -151,12 +161,9 @@ char* unscramble(char *scrambled)
         {
             max_freq = freq;
             candidate_ptr = decoded;
-            // printf(candidate_ptr);
-            // printf("\n");
         }
         else
         {
-            // printf("Executing free\n");
             // causes crash on c = 0
             free(decoded);
         }
