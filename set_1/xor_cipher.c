@@ -82,14 +82,9 @@ char* decode_with_key(char *message, int msg_length, char key)
 }
 
 
-/*
- * Scores a piece of text for the likelihood that it's English
- * TODO: move table generation to outside
- */
-long long eval_frequency(char *input, int length)
-{ 
-    long long freq = 0;
 
+long long* get_frequency_table()
+{
     long long *freq_table = malloc(128 * sizeof(*freq_table));
 
     freq_table[' '] = 700000000;
@@ -119,19 +114,42 @@ long long eval_frequency(char *input, int length)
     freq_table['j'] = 4507165;
     freq_table['q'] = 3649838;
     freq_table['z'] = 2456495;
+
+    return freq_table;
+}
+
+
+/*
+ * Converts upper-case ASCII char to lower case
+ * or leaves it alone if it's already lower case
+ */
+char lower_ascii(char c)
+{
+    return (c <= 'Z' && c >= 'A' ? c + 32: c);
+}
+
+
+/*
+ * Scores a piece of text for the likelihood that it's English
+ */
+long long eval_frequency(long long *freq_table, char *input, int length)
+{ 
+    long long freq = 0;
+
     for (int i = 0; i < length; i++)
     {
         // check for common characters
         char c = input[i];
+        // to lower case
+        c = lower_ascii(c);
         // make sure it is available in the table
-        if ((c < 128 && c > 0) || c == ' ')
+        if (isalpha(c) || c == ' ')
         {
             long long freq_val = freq_table[c];           
             freq += freq_val;
         }
     }
 
-    free(freq_table);
     printf("%lli\n", freq);
     return freq;
 }
@@ -149,13 +167,14 @@ char* unscramble(char *scrambled)
     // printf("message length: %d\n", msg_length);
     char *candidate_ptr; 
     long long max_freq = 0;
+    long long *freq_table = get_frequency_table();
     // avoid the null terminator (c = 0)
     for (char c = 1; c != 0; c++)
     {
         printf("Char: %c\n", c);
         char *decoded = decode_with_key(scrambled_bytes, msg_length, c);
         printf("%s\n", decoded);
-        long long freq = eval_frequency(decoded, msg_length);
+        long long freq = eval_frequency(freq_table, decoded, msg_length);
         // printf("freq: %d\n", freq);
         if (freq > max_freq)
         {
@@ -170,6 +189,7 @@ char* unscramble(char *scrambled)
         printf("\n");
     }
 
+    free(freq_table);
     // choose the one with the highest frequency score
     return candidate_ptr;
 }
