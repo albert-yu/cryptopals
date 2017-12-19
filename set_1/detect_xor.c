@@ -7,10 +7,10 @@ void read_and_print()
 {
 
     // relative file path
-    const char *filename = "data/4.txt";
+    // const char *filename = "testfile.txt";
     // open file in read-only mode
-    const char* mode = "r";
-    FILE *file = fopen(filename, mode);
+    char *mode = "r";
+    FILE *file = fopen("testfile.txt", mode);
     printf("Executing method.\n");
     if (file)
     {
