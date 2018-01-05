@@ -9,9 +9,6 @@
 #include "hex_to_base64.h"
 
 
-/*
- * Converts an even-lengthed hex string to raw byte array
- */
 char* hex_to_bytes(char *hex_string)
 {
     int hex_length = strlen(hex_string);
@@ -82,10 +79,21 @@ char* decode_with_key(char *message, int msg_length, char key)
 }
 
 
-
+/*
+ * Stores the frequency table as an array of long longs.
+ * Since characters behave like integers, we can use them as
+ * the array indices.
+ */
 long long* get_frequency_table()
 {
-    long long *freq_table = malloc(128 * sizeof(*freq_table));
+    const int NUM_CHARS = 128;
+    long long *freq_table = malloc(NUM_CHARS * sizeof(*freq_table));
+
+    // initialize everything to 0
+    for (int i = 0; i < NUM_CHARS; i++)
+    {
+        freq_table[i] = 0;
+    }
 
     freq_table[' '] = 700000000;
     freq_table['e'] = 390395169;

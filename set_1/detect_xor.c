@@ -6,16 +6,13 @@
 
 void read_and_print()
 {
-
-    // relative file path
-    // const char *filename = "testfile.txt";
-    // open file in read-only mode
     char ch, file_name[25];
     FILE *fp;
- 
+    
+    // executable is located in a folder, so
+    // need to navigate up a directory
     strcpy(file_name, "../data/4.txt");
-    printf("filename: %s\n", file_name);
-    fp = fopen(file_name,"r"); // read mode
+    fp = fopen(file_name, "r"); // read mode
  
     if (fp == NULL)
     {
@@ -31,4 +28,10 @@ void read_and_print()
     }
  
     fclose(fp);
+}
+
+
+void gather_and_unscramble()
+{
+    
 }

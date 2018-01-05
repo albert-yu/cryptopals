@@ -14,7 +14,7 @@ int main()
     // char *result = fixed_xor(input1, input2);
     // printf("%s", result);
 
-    // prob3_test();
+    prob3_test();
     // char a = '1';
     // char c = 'J';
     // char result = a ^ c;
@@ -25,7 +25,7 @@ int main()
     // printf("%s\n", ascii);  // the kid don't play (length = 18)
     // printf("%d\n", strlen(ascii));
 
-    read_and_print();
+    // read_and_print();
 
 
     return 0;

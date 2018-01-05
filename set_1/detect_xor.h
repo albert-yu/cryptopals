@@ -2,10 +2,10 @@
 // Find it.
 // (Your code from #3 should help.)
 
-
 #ifndef DETECT_XOR_H
 #define DETECT_XOR_H
 
+#include "xor_cipher.h"
 void read_and_print();
 
 #endif
