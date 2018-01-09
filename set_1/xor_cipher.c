@@ -179,9 +179,9 @@ char* unscramble(char *scrambled)
     // avoid the null terminator (c = 0)
     for (char c = 1; c != 0; c++)
     {
-        printf("Char: %c\n", c);
+        // printf("Char: %c\n", c);
         char *decoded = decode_with_key(scrambled_bytes, msg_length, c);
-        printf("%s\n", decoded);
+        // printf("%s\n", decoded);
         long long freq = eval_frequency(freq_table, decoded, msg_length);
         // printf("freq: %d\n", freq);
         if (freq > max_freq)

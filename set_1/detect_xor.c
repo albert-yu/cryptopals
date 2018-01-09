@@ -58,7 +58,7 @@ int getline(char **lineptr, size_t *n, FILE *stream)
         return -1;
     }
 
-    if (ferror (stream))
+    if (ferror(stream))
         return -1;
 
     if (feof(stream))
@@ -88,6 +88,7 @@ int getline(char **lineptr, size_t *n, FILE *stream)
 
 void gather_and_unscramble()
 {
+    // open the file
     char file_name[25];
     FILE *fp;
     fp = fopen("../data/4.txt", "r");
@@ -98,13 +99,44 @@ void gather_and_unscramble()
         exit(EXIT_FAILURE);
     }
 
+    // allocate memory for array of strings
+    // const int NUM_STRINGS = 1000;
+    const int STRING_LEN = 60;
+    // char **unscrambled = malloc(NUM_STRINGS * STRING_LEN * sizeof(char));
+    // if (!unscrambled)
+    // {
+    //     perror("Failed to malloc for string array.\n");
+    //     exit(EXIT_FAILURE);
+    // }
+
+    // keep track of most likely candidates
+    long long max_score = 0; // keep track of max score
+    char *candidate = NULL;
+    char the_key = '\0';  // the XOR cipher never tests 0, so 
+                          // we can return this if no suitable
+                          // key is found
+
+    // get frequency table used to evaluate 
+    // if text is English
+    long long *freq_table = get_frequency_table();
+
+    // read the file
     size_t len = 0;
     ssize_t read;
     char *line = NULL;
     while ((read = getline(&line, &len, fp)) != -1)
     {
-        printf("Retrieved line of length %d :\n", read);
-        printf("%s\n", line);
+        char *curr_str = unscramble(line);
+        long long curr_score = eval_frequency(freq_table, curr_str, STRING_LEN);
+        if (curr_score > max_score)
+        {
+            max_score = curr_score;
+            candidate = curr_str;
+        }
+        else
+        {
+            free(curr_str);
+        }
     }
 
     fclose(fp);
