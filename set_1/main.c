@@ -9,7 +9,7 @@ int main()
 {
     prob3_test();
 
-    read_and_print();
+    gather_and_unscramble();
 
     return 0;
 }
