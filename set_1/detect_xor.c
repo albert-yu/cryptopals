@@ -111,7 +111,7 @@ void gather_and_unscramble()
 
     // keep track of most likely candidates
     long long max_score = 0; // keep track of max score
-    char *candidate = NULL;
+    char *candidate;
     char the_key = '\0';  // the XOR cipher never tests 0, so 
                           // we can return this if no suitable
                           // key is found
@@ -128,6 +128,7 @@ void gather_and_unscramble()
     {
         char *temp_key = &the_key;  // initializes to \0
         char *curr_str = unscramble(line, temp_key);
+        printf("curr_str: %s\n", curr_str);
         long long curr_score = eval_frequency(freq_table, curr_str, STRING_LEN);
         if (curr_score > max_score)
         {
@@ -143,12 +144,12 @@ void gather_and_unscramble()
 
     fclose(fp);
     free(line);
-
+    free(freq_table);
     // print out results
     if (the_key != '\0')
     {
-        printf("The key is: %c", the_key);
-        printf("Unscrambled: %s", candidate);
+        printf("The key is: %c\n", the_key);
+        printf("Unscrambled: %s\n", candidate);
     }
     else
     {

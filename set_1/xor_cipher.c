@@ -158,7 +158,7 @@ long long eval_frequency(long long *freq_table, char *input, int length)
         }
     }
 
-    printf("%lli\n", freq);
+    // printf("%lli\n", freq);
     return freq;
 }
 
@@ -198,7 +198,7 @@ char* unscramble(char *scrambled, char *the_key)
             // causes crash on c = 0
             free(decoded);
         }
-        printf("\n");
+        // printf("\n");
     }
 
     free(freq_table);
