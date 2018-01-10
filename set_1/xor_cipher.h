@@ -11,9 +11,10 @@ void prob3_test();
 char* hex_to_bytes(char *hex_string);
 
 /*
- * Unscrambles single XOR-encrypted string
+ * Unscrambles single XOR-encrypted string.
+ * Returns the unscrambled string as well as the key
  */
-char* unscramble(char *scrambled);
+char* unscramble(char *scrambled, char *the_key);
 
 /*
  * Maps characters to their frequency in the English language

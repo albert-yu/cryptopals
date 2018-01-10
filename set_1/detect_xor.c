@@ -126,12 +126,14 @@ void gather_and_unscramble()
     char *line = NULL;
     while ((read = getline(&line, &len, fp)) != -1)
     {
-        char *curr_str = unscramble(line);
+        char *temp_key = &the_key;  // initializes to \0
+        char *curr_str = unscramble(line, temp_key);
         long long curr_score = eval_frequency(freq_table, curr_str, STRING_LEN);
         if (curr_score > max_score)
         {
             max_score = curr_score;
             candidate = curr_str;
+            the_key = *temp_key;
         }
         else
         {
@@ -141,4 +143,15 @@ void gather_and_unscramble()
 
     fclose(fp);
     free(line);
+
+    // print out results
+    if (the_key != '\0')
+    {
+        printf("The key is: %c", the_key);
+        printf("Unscrambled: %s", candidate);
+    }
+    else
+    {
+        printf("Error: unable to unscramble");
+    }
 }

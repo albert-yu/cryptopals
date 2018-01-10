@@ -166,9 +166,11 @@ long long eval_frequency(long long *freq_table, char *input, int length)
 /*
  * Unscrambles the hex string by first converting it to a byte
  * array and XOR'ing it against all possible keys, choosing
- * the one with the highest frequency score
+ * the one with the highest frequency score.
+ * Returns the unscrambled string and stores the key in 
+ * char pointer.
  */
-char* unscramble(char *scrambled)
+char* unscramble(char *scrambled, char *the_key)
 {   
     char *scrambled_bytes = hex_to_bytes(scrambled);
     int msg_length = strlen(scrambled_bytes);
@@ -188,6 +190,8 @@ char* unscramble(char *scrambled)
         {
             max_freq = freq;
             candidate_ptr = decoded;
+            // set key to the_key
+            *the_key = c;
         }
         else
         {
@@ -205,9 +209,15 @@ char* unscramble(char *scrambled)
 
 void prob3_test()
 {
+    char null_term = '\0';
+    char *the_key = &null_term;
     char *scrambled = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
-    char *unscrambled = unscramble(scrambled);
-    printf(unscrambled);
+    char *unscrambled = unscramble(scrambled, the_key);
+    if (*the_key != null_term)
+    {
+        printf("Key: %c\n", *the_key);
+        printf("Unscrambled: %s\n", unscrambled);
+    }
     printf("\n");
     free(unscrambled);
 }
