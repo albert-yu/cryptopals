@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "detect_xor.h"
+// #include "xor_cipher.h"
 
 // not sure if this means anything in a non-Unix 
 // or non-Linux environment
@@ -27,12 +28,17 @@ void read_and_print()
     }
  
     printf("The contents of %s file are :\n", file_name);
- 
+    int line_count = 0;
     while ((ch = fgetc(fp)) != EOF )
     {
-        printf("%c",ch);
+        printf("%c", ch);
+        if (ch == '\n')
+        {
+            line_count++;
+        }
     }
  
+    printf("\nLine count: %d", line_count); 
     fclose(fp);
 }
 

@@ -3,6 +3,8 @@
 #ifndef FIXED_XOR_H
 #define FIXED_XOR_H
 
+#include "hex_to_base64.h"
+
 /*
  * Converts an integer 0-15 to its corresponding hex char.
  * If input is out of this range, we take modulo 16 

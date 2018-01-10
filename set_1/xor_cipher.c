@@ -5,8 +5,7 @@
 #include <ctype.h>
 
 #include "xor_cipher.h"
-#include "fixed_xor.h"
-#include "hex_to_base64.h"
+
 
 
 char* hex_to_bytes(char *hex_string)
@@ -209,14 +208,19 @@ char* unscramble(char *scrambled, char *the_key)
 
 void prob3_test()
 {
+    printf("Running prob3_test...\n");
     char null_term = '\0';
     char *the_key = &null_term;
     char *scrambled = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
     char *unscrambled = unscramble(scrambled, the_key);
-    if (*the_key != null_term)
+    if (*the_key != '\0')
     {
         printf("Key: %c\n", *the_key);
         printf("Unscrambled: %s\n", unscrambled);
+    }
+    else
+    {
+        printf("Key not found!\n");
     }
     printf("\n");
     free(unscrambled);
