@@ -19,6 +19,6 @@ static inline char digit_to_hex(int hex_val)
 
 char* fixed_xor(char*, char*);
 
-void fixed_xor_test();
+void prob2_test();
 
 #endif

@@ -48,3 +48,10 @@ void fixed_xor_test()
         printf("Actual: \t[%s]\n", result);
     }
 }
+
+void prob2_test()
+{
+    printf("Running test for problem 2...\n");
+    fixed_xor_test();
+    printf("\n");
+}

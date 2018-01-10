@@ -208,7 +208,7 @@ char* unscramble(char *scrambled, char *the_key)
 
 void prob3_test()
 {
-    printf("Running prob3_test...\n");
+    printf("Running test for problem 3...\n");
     char null_term = '\0';
     char *the_key = &null_term;
     char *scrambled = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";

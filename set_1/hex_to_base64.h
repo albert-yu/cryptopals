@@ -55,4 +55,6 @@ static inline int hex_to_int(char hex0, char hex1)
 
 char* hex_to_base64(char*);
 
+void prob1_test();
+
 #endif

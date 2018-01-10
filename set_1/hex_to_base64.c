@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+
 #include "hex_to_base64.h"
 
 
@@ -93,3 +94,21 @@ char* hex_to_base64(char *hex)
     return base64;
 }
 
+void prob1_test()
+{
+    printf("Running test for problem 1...\n");
+    char *input = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d";
+    char *expected = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t";
+    char *actual = hex_to_base64(input);
+    if (strcmp(expected, actual) == 0)
+    {
+        printf("Hex to Base64 test passed.\n");
+    }
+    else
+    {
+        printf("Hex to Base64 test failed.\n");
+        printf("Expected: \t[%s]\n", expected);
+        printf("Actual: \t[%s]\n", actual);
+    }
+    printf("\n");
+}

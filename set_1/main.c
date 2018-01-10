@@ -8,6 +8,9 @@
 
 int main()
 {
+    // Set 1
+    prob1_test();
+    prob2_test();
     prob3_test();
 
     // gather_and_unscramble();
