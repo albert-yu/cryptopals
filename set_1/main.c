@@ -12,6 +12,6 @@ int main()
     prob1_test();
     prob2_test();
     prob3_test();
-    // prob4_test();
+    prob4_test();
     return 0;
 }
