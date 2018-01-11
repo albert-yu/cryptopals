@@ -138,27 +138,6 @@ def prob_3_test():
 
 #----------------------------------------------------------
 
-# def unscramble_with_iso(cipher):
-#     """
-#     encode string in ISO-8859-1 instead of UTF-8
-#     """
-#     max_score = -1
-#     best_plaintext = None
-#     key = None
-#     for i in range(0, 256):
-#         key_repeated = (chr(i) * len(cipher)).encode("ISO-8859-1")
-#         key_byte_array = bytearray(key_repeated)
-#         xor_d = xor(key_byte_array, cipher)
-#         plaintext = bytes(xor_d)
-#         plaintext = plaintext.decode("ISO-8859-1")
-#         curr_score = score(plaintext)
-#         if curr_score > max_score or not max_score:
-#             max_score = curr_score
-#             best_plaintext = plaintext
-#             key = chr(i)
-#     return (key, best_plaintext)
-
-
 def unscramble_all(filename):
     # store best candidates
     best_plaintext = None

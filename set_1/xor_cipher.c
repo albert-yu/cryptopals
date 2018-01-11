@@ -86,7 +86,7 @@ char* decode_with_key(char *message, int msg_length, char key)
 long long* get_frequency_table()
 {
     const int NUM_CHARS = 128;
-    long long *freq_table = malloc(NUM_CHARS * sizeof(*freq_table));
+    long long *freq_table = (long long*)malloc(NUM_CHARS * sizeof(*freq_table));
 
     // initialize everything to 0
     for (int i = 0; i < NUM_CHARS; i++)
@@ -177,7 +177,7 @@ char* unscramble(char *scrambled, char *the_key)
     long long max_freq = 0;
     long long *freq_table = get_frequency_table();
     // avoid the null terminator (c = 0)
-    for (char c = 1; c != 0; c++)
+    for (char c = 1; c > 0; c++)
     {
         // printf("Char: %c\n", c);
         char *decoded = decode_with_key(scrambled_bytes, msg_length, c);
@@ -186,7 +186,7 @@ char* unscramble(char *scrambled, char *the_key)
         // printf("freq: %d\n", freq);
         if (freq > max_freq)
         {
-            printf("not calling free\n");
+            // printf("not calling free\n");
             max_freq = freq;
             candidate_ptr = decoded;
             // set key to the_key
@@ -194,12 +194,12 @@ char* unscramble(char *scrambled, char *the_key)
         }
         else
         {
-            printf("c: %c\n", c);
+            // printf("c: %c\n", c);
             // causing crash
-            printf("decoded: %s\n", decoded);
-            printf("calling free\n");
+            // printf("decoded: %s\n", decoded);
+            // printf("calling free\n");
             free(decoded);
-            printf("freed\n");
+            // printf("freed\n");
         }
         // printf("\n");
     }

@@ -92,7 +92,7 @@ int getline(char **lineptr, size_t *n, FILE *stream)
 }
 
 
-void gather_and_unscramble()
+void unscramble_all()
 {
     // open the file
     char file_name[25];
@@ -139,6 +139,10 @@ void gather_and_unscramble()
         char null_byte = '\0';
         char *temp_key = &null_byte;  // holds the "best" key for this line
 
+        if (line_len != 60)
+        {
+            continue;
+        }
         // copy the line to a temporary buffer
         // to avoid side effects
         char *temp_str = malloc(line_len * sizeof(*temp_str));
@@ -191,6 +195,6 @@ void gather_and_unscramble()
 void prob4_test()
 {
     printf("Running test for problem 4...\n");
-    gather_and_unscramble();
+    unscramble_all();
     printf("\n");
 }
