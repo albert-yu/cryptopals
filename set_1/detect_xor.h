@@ -6,8 +6,9 @@
 #define DETECT_XOR_H
 
 #include "xor_cipher.h"
+
 void read_and_print();
 
-void gather_and_unscramble();
+void prob4_test();
 
 #endif

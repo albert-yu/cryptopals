@@ -162,3 +162,11 @@ void gather_and_unscramble()
         printf("Error: unable to unscramble");
     }
 }
+
+
+void prob4_test()
+{
+    printf("Running test for problem 4...\n");
+    gather_and_unscramble();
+    printf("\n");
+}
