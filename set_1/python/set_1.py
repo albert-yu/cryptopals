@@ -103,16 +103,16 @@ def score(text):
     return score
 
 
-def unscramble(cipher):
+def unscramble(cipher, encoding):
     max_score = -1
     best_plaintext = None
     key = None
     for i in range(0, 256):
-        key_repeated = (chr(i) * len(cipher)).encode("utf-8")
+        key_repeated = (chr(i) * len(cipher)).encode(encoding)
         key_byte_array = bytearray(key_repeated)
         xor_d = xor(key_byte_array, cipher)
         plaintext = bytes(xor_d)
-        plaintext = plaintext.decode("utf-8")
+        plaintext = plaintext.decode(encoding)
         curr_score = score(plaintext)
         if curr_score > max_score or not max_score:
             max_score = curr_score
@@ -124,7 +124,8 @@ def unscramble(cipher):
 def prob_3_test():
     scrambled = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
     scrambled_bytes = bytearray.fromhex(scrambled)
-    (key, unscrambled) = unscramble(scrambled_bytes)
+    encoding = "utf-8"
+    (key, unscrambled) = unscramble(scrambled_bytes, encoding)
     print("Key: " + key)
     print("Unscrambled: " + unscrambled)
     expected = "Cooking MC's like a pound of bacon"
@@ -137,25 +138,25 @@ def prob_3_test():
 
 #----------------------------------------------------------
 
-def unscramble_with_iso(cipher):
-    """
-    encode string in ISO-8859-1 instead of UTF-8
-    """
-    max_score = -1
-    best_plaintext = None
-    key = None
-    for i in range(0, 256):
-        key_repeated = (chr(i) * len(cipher)).encode("ISO-8859-1")
-        key_byte_array = bytearray(key_repeated)
-        xor_d = xor(key_byte_array, cipher)
-        plaintext = bytes(xor_d)
-        plaintext = plaintext.decode("ISO-8859-1")
-        curr_score = score(plaintext)
-        if curr_score > max_score or not max_score:
-            max_score = curr_score
-            best_plaintext = plaintext
-            key = chr(i)
-    return (key, best_plaintext)
+# def unscramble_with_iso(cipher):
+#     """
+#     encode string in ISO-8859-1 instead of UTF-8
+#     """
+#     max_score = -1
+#     best_plaintext = None
+#     key = None
+#     for i in range(0, 256):
+#         key_repeated = (chr(i) * len(cipher)).encode("ISO-8859-1")
+#         key_byte_array = bytearray(key_repeated)
+#         xor_d = xor(key_byte_array, cipher)
+#         plaintext = bytes(xor_d)
+#         plaintext = plaintext.decode("ISO-8859-1")
+#         curr_score = score(plaintext)
+#         if curr_score > max_score or not max_score:
+#             max_score = curr_score
+#             best_plaintext = plaintext
+#             key = chr(i)
+#     return (key, best_plaintext)
 
 
 def unscramble_all(filename):
@@ -174,12 +175,14 @@ def unscramble_all(filename):
         temp_str = None
         # need to operate on byte array
         as_bytes = bytearray.fromhex(line)
-        (temp_key, temp_str) = unscramble_with_iso(as_bytes)
+        (temp_key, temp_str) = unscramble(as_bytes, "ISO-8859-1")
         curr_score = score(temp_str)
         if (curr_score > max_score):
             max_score = curr_score
             best_plaintext = temp_str
             key = temp_key
+
+    f.close()
 
     return (key, best_plaintext)
 
