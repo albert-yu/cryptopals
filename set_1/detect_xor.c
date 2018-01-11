@@ -134,7 +134,8 @@ void gather_and_unscramble()
     // line count for debugging
     int line_count = 0;
     while ((line_len = getline(&line, &len, fp)) != -1)
-    {
+    {       
+        printf("Line #: %d\n", line_count);
         char null_byte = '\0';
         char *temp_key = &null_byte;  // holds the "best" key for this line
 
@@ -142,12 +143,13 @@ void gather_and_unscramble()
         // to avoid side effects
         char *temp_str = malloc(line_len * sizeof(*temp_str));
         if (temp_str)
-        {
+        {         
             strcpy(temp_str, line);
             // unscramble and store key in temp_key
-            char *curr_str = unscramble(temp_str, temp_key);
-            printf("curr_str: %s\n", curr_str);
+            char *curr_str = unscramble(temp_str, temp_key);           
+            printf("line: %s\n", temp_str);
             long long curr_score = eval_frequency(freq_table, curr_str, line_len);
+            // long long curr_score = 1;
             if (curr_score > max_score)
             {
                 max_score = curr_score;
@@ -159,6 +161,11 @@ void gather_and_unscramble()
                 free(curr_str);
                 free(temp_str);
             }
+        }
+
+        else
+        {
+            printf("malloc failed! \n");
         }
 
         line_count++;

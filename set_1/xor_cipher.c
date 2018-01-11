@@ -142,7 +142,6 @@ char lower_ascii(char c)
 long long eval_frequency(long long *freq_table, char *input, int length)
 { 
     long long freq = 0;
-
     for (int i = 0; i < length; i++)
     {
         // check for common characters
@@ -187,6 +186,7 @@ char* unscramble(char *scrambled, char *the_key)
         // printf("freq: %d\n", freq);
         if (freq > max_freq)
         {
+            printf("not calling free\n");
             max_freq = freq;
             candidate_ptr = decoded;
             // set key to the_key
@@ -194,8 +194,12 @@ char* unscramble(char *scrambled, char *the_key)
         }
         else
         {
-            // causes crash on c = 0
+            printf("c: %c\n", c);
+            // causing crash
+            printf("decoded: %s\n", decoded);
+            printf("calling free\n");
             free(decoded);
+            printf("freed\n");
         }
         // printf("\n");
     }
