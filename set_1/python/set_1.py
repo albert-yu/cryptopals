@@ -130,9 +130,74 @@ def prob_3_test():
     expected = "Cooking MC's like a pound of bacon"
     if (unscrambled == expected):
         print("Problem 3 test passed.")
+    else:
+        print("Problem 3 test failed!")
+        print("Expected: " + expected)
+        print("Actual:   " + unscrambled)
 
 #----------------------------------------------------------
 
+def unscramble_with_iso(cipher):
+    """
+    encode string in ISO-8859-1 instead of UTF-8
+    """
+    max_score = -1
+    best_plaintext = None
+    key = None
+    for i in range(0, 256):
+        key_repeated = (chr(i) * len(cipher)).encode("ISO-8859-1")
+        key_byte_array = bytearray(key_repeated)
+        xor_d = xor(key_byte_array, cipher)
+        plaintext = bytes(xor_d)
+        plaintext = plaintext.decode("ISO-8859-1")
+        curr_score = score(plaintext)
+        if curr_score > max_score or not max_score:
+            max_score = curr_score
+            best_plaintext = plaintext
+            key = chr(i)
+    return (key, best_plaintext)
+
+
+def unscramble_all(filename):
+    # store best candidates
+    best_plaintext = None
+    key = None
+    max_score = -1
+
+    f = open(filename, "r")
+    for line in f.readlines():
+        # remove newline chars
+        line = line.replace('\n', '')
+        if (len(line) != 60):
+            continue
+        temp_key = None
+        temp_str = None
+        # need to operate on byte array
+        as_bytes = bytearray.fromhex(line)
+        (temp_key, temp_str) = unscramble_with_iso(as_bytes)
+        curr_score = score(temp_str)
+        if (curr_score > max_score):
+            max_score = curr_score
+            best_plaintext = temp_str
+            key = temp_key
+
+    return (key, best_plaintext)
+
+
+def prob_4_test():
+    filename = "../data/4.txt"
+    (key, unscrambled) = unscramble_all(filename)
+    print("Key: " + key)
+    print("Unscrambled: " + unscrambled)  # newline at end!
+    expected = "Now that the party is jumping\n"
+    if (unscrambled == expected):
+        print("Problem 4 test passed.")
+    else:
+        print("Problem 4 test failed!")
+        print("Expected: " + expected)
+        print("Actual:   " + unscrambled)
+
+#----------------------------------------------------------
 
 def main():
     prob_1_test()
@@ -140,6 +205,8 @@ def main():
     prob_2_test()
     print("-------------")
     prob_3_test()
+    print("-------------")
+    prob_4_test()
 
 
 if __name__ == "__main__":
