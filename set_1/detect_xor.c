@@ -128,26 +128,43 @@ void gather_and_unscramble()
 
     // read the file
     size_t len = 0;
-    ssize_t read;
+    ssize_t line_len;
     char *line = NULL;
-    while ((read = getline(&line, &len, fp)) != -1)
+
+    // line count for debugging
+    int line_count = 0;
+    while ((line_len = getline(&line, &len, fp)) != -1)
     {
-        char *temp_key = &the_key;  // initializes to \0
-        char *curr_str = unscramble(line, temp_key);
-        printf("curr_str: %s\n", curr_str);
-        long long curr_score = eval_frequency(freq_table, curr_str, STRING_LEN);
-        if (curr_score > max_score)
+        char null_byte = '\0';
+        char *temp_key = &null_byte;  // holds the "best" key for this line
+
+        // copy the line to a temporary buffer
+        // to avoid side effects
+        char *temp_str = malloc(line_len * sizeof(*temp_str));
+        if (temp_str)
         {
-            max_score = curr_score;
-            candidate = curr_str;
-            the_key = *temp_key;
+            strcpy(temp_str, line);
+            // unscramble and store key in temp_key
+            char *curr_str = unscramble(temp_str, temp_key);
+            printf("curr_str: %s\n", curr_str);
+            long long curr_score = eval_frequency(freq_table, curr_str, line_len);
+            if (curr_score > max_score)
+            {
+                max_score = curr_score;
+                candidate = curr_str;
+                the_key = *temp_key;
+            }
+            else
+            {
+                free(curr_str);
+                free(temp_str);
+            }
         }
-        else
-        {
-            free(curr_str);
-        }
+
+        line_count++;
     }
 
+    printf("Line count: %d\n", line_count);
     fclose(fp);
     free(line);
     free(freq_table);
