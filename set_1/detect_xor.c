@@ -297,11 +297,9 @@ char* unscramble_all(char **hex_strings,
         char null_byte = '\0';
         // will point to current key
         char *curr_key = &null_byte;
-        char *unscrambled = unscramble(hex_str, curr_key);
-        
-        // score it
-        long long score = 
-            eval_frequency(freq_table, unscrambled, EXPECTED_LEN);
+        char *unscrambled = (char*) malloc(256 * sizeof(*unscrambled));
+        long long score = unscramble(hex_str, unscrambled, curr_key);
+
         printf("Success so far. i = %d\n", i);
         if (score > max_score && curr_key)
         {

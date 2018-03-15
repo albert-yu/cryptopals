@@ -16,9 +16,9 @@ char* hex_to_bytes(char *hex_string);
 
 /*
  * Unscrambles single XOR-encrypted string.
- * Returns the unscrambled string as well as the key
+ * Returns the score of the unscrambled string
  */
-char* unscramble(char *scrambled, char *the_key);
+long long unscramble(char *scrambled, char *unscrambled, char *the_key);
 
 /*
  * Maps characters to their frequency in the English language
