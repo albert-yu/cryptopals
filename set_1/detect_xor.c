@@ -18,7 +18,6 @@ void copy_over_strings(char **destination, char **source, unsigned int num_strin
 
         // copy string
         strcpy(destination[i], source[i]);
-        // printf("%s\n", destination[i]);
     }
 }
 
