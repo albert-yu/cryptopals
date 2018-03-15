@@ -47,11 +47,13 @@ char* byte_xor(char* string_1, char* string_2)
         return "";
     }
     // needs to be freed
-    char *retval = malloc(len_1 * sizeof(*retval));
+    char *retval = malloc((len_1 + 1) * sizeof(*retval));
     for (int i = 0; i < len_1; i++)
     {
         retval[i] = string_1[i] ^ string_2[i];
     }
+
+    retval[len_1] = '\0';
 
     return retval;
 }
@@ -65,11 +67,12 @@ char* decode_with_key(char *message, int msg_length, char key)
 {   
     // first create string with char repeatedly concatenated
     // with itself   
-    char *key_string = malloc(msg_length * sizeof(char));
+    char *key_string = malloc((msg_length + 1) * sizeof(char));
     for (int i = 0; i < msg_length; i++)
     {
         key_string[i] = key;
     }
+    key_string[msg_length] = '\0';
     // printf("key:    \t%s\n", key_string);
     // now xor the two   
     char *decoded = byte_xor(message, key_string); 
@@ -88,14 +91,14 @@ char* decode_with_key(char *message, int msg_length, char key)
  */
 long long* get_frequency_table()
 {
-    const int NUM_CHARS = 128;
-    long long *freq_table = (long long*)malloc(NUM_CHARS * sizeof(*freq_table));
+    const int NUM_CHARS = 256;
+    long long *freq_table = (long long*)calloc(NUM_CHARS, sizeof(*freq_table));
 
-    // initialize everything to 0
-    for (int i = 0; i < NUM_CHARS; i++)
-    {
-        freq_table[i] = 0;
-    }
+    // // initialize everything to 0
+    // for (int i = 0; i < NUM_CHARS; i++)
+    // {
+    //     freq_table[i] = 0;
+    // }
 
     freq_table[' '] = 700000000;
     freq_table['e'] = 390395169;
@@ -145,18 +148,34 @@ char lower_ascii(char c)
 long long eval_frequency(long long *freq_table, char *input, int length)
 { 
     long long freq = 0;
-    for (int i = 0; i < length; i++)
+    // for (int i = 0; i < length; i++)
+    // {
+    //     // check for common characters
+    //     char c = input[i];
+    //     // to lower case
+    //     c = lower_ascii(c);
+    //     // make sure it is available in the table
+    //     if (isalpha(c) || c == ' ')
+    //     {
+    //         long long freq_val = freq_table[c];           
+    //         freq += freq_val;
+    //     }
+    // }
+
+    while (*input)
     {
-        // check for common characters
-        char c = input[i];
-        // to lower case
+        char c = *input;
         c = lower_ascii(c);
-        // make sure it is available in the table
+
         if (isalpha(c) || c == ' ')
         {
-            long long freq_val = freq_table[c];           
+
+            long long freq_val = freq_table[c];
+
             freq += freq_val;
         }
+
+        input++;
     }
 
     // printf("%lli\n", freq);

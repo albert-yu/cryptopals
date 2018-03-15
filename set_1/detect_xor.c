@@ -57,7 +57,7 @@ void read_and_print()
 
     // allocate memory for array of strings
     // const int NUM_STRINGS = 1000;
-    const int STRING_LEN = 60;
+    const int EXPECTED_LEN = 60;
 
     // read the file
     size_t len = 0;
@@ -72,7 +72,7 @@ void read_and_print()
         char null_byte = '\0';
         char *temp_key = &null_byte;  // holds the "best" key for this line
 
-        if (line_len != STRING_LEN)
+        if (line_len != EXPECTED_LEN)
         {
             goto next_iter;
         }
@@ -198,9 +198,9 @@ char** read_file(char *filename, unsigned long *num_lines)
     }
 
     // file opened successfully, so dynamically allocate memory for it
-    const int LINE_BUF_SIZE = 64;  // line_length should be no more than 60
-    unsigned long block_size = 256;        // for the array of pointers
-    unsigned long curr_position = 0;          // actual no. of lines in block
+    const int LINE_BUF_SIZE = 64;    // line_length should be no more than 60
+    unsigned long block_size = 256;  // for the array of pointers
+    unsigned long curr_position = 0; // actual no. of lines in block
     char **all_lines = (char **) malloc(block_size * sizeof(char*));
 
     all_lines[curr_position] = 
@@ -261,27 +261,60 @@ char** read_file(char *filename, unsigned long *num_lines)
 
 
 /*
- * Unscrambles an array of strings, choosing the one with the highest score
+ * Unscrambles an array of strings, choosing the one with 
+ * the highest score. Returns the key as well.
  */
-void unscramble_all(char **hex_strings, unsigned long num_strings)
+char* unscramble_all(char **hex_strings, 
+                     unsigned long num_strings, 
+                     char *the_key)
 {
     // expected string length
-    const int STRING_LEN = 60; 
+    const int EXPECTED_LEN = 60; 
 
     // keep track of max score
     long long max_score = 0; 
 
     // keep track of most likely candidate
-    char *candidate = (char*)malloc((STRING_LEN + 1) * sizeof(*candidate));
-
-    char the_key = '\0';  // the XOR cipher never tests 0, so 
-                          // we can return this if no suitable
-                          // key is found
+    char *candidate = 
+        (char*)malloc((EXPECTED_LEN + 1) * sizeof(*candidate));
 
     // get frequency table used to evaluate 
     // if text is English
     long long *freq_table = get_frequency_table();
+    
+    // iterate through the strings and calculate the_key
+    // likelihood that it's an English sentence
+    unsigned int i = 0;
+    for (i = 0; i < num_strings; i++)
+    {
+        char* hex_str = hex_strings[i];
+        if (strlen(hex_str) != EXPECTED_LEN)
+        {
+            // length must be 60
+            continue;
+        }
 
+        char null_byte = '\0';
+        // will point to current key
+        char *curr_key = &null_byte;
+        char *unscrambled = unscramble(hex_str, curr_key);
+        
+        // score it
+        long long score = 
+            eval_frequency(freq_table, unscrambled, EXPECTED_LEN);
+        printf("Success so far. i = %d\n", i);
+        if (score > max_score && curr_key)
+        {
+            strcpy(candidate, unscrambled);
+            *the_key = *curr_key;
+        }
+        if (unscrambled)
+        {
+            free(unscrambled);
+        }
+    }
+
+    return candidate;
 }
 
 
@@ -293,13 +326,34 @@ void prob4_test()
     unsigned long zero = 0;
     unsigned long *num_lines = &zero;  // store number of lines here
     char **lines = read_file(filename, num_lines);
-    printf("Number of lines: %d\n", *num_lines);
-    // print out the lines
-    unsigned long i;
-    for (i = 0; i < *num_lines; i++)
-    {
-        printf("%s\n", lines[i]);
-    }
+    // printf("Number of lines: %d\n", *num_lines);
+    // // print out the lines
+    // unsigned long i;
+    // for (i = 0; i < *num_lines; i++)
+    // {
+    //     printf("%s\n", lines[i]);
+    // }
     
+    char null_byte = '\0'; // the XOR cipher never tests 0, so 
+                           // we can return this if no suitable
+                           // key is found
+    char *key = &null_byte;
+    char *unscrambled_string = unscramble_all(lines, *num_lines, key);
+
+
+    if (key)
+    {
+        printf("Key: %c\n", *key);
+    }
+
+    if (unscrambled_string)
+    {
+        printf("Unscrambled: %s\n", unscrambled_string);
+    }
+    else
+    {
+        printf("Unable to unscramble with XOR cipher!\n");
+    }
+
     printf("\n");
 }

@@ -7,8 +7,6 @@
 
 #include "xor_cipher.h"
 
-void read_and_print();
-
 void prob4_test();
 
 #endif
