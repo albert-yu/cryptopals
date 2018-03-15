@@ -145,22 +145,9 @@ char lower_ascii(char c)
 /*
  * Scores a piece of text for the likelihood that it's English
  */
-long long eval_frequency(long long *freq_table, char *input, int length)
+long long eval_frequency(long long *freq_table, char *input)
 { 
     long long freq = 0;
-    // for (int i = 0; i < length; i++)
-    // {
-    //     // check for common characters
-    //     char c = input[i];
-    //     // to lower case
-    //     c = lower_ascii(c);
-    //     // make sure it is available in the table
-    //     if (isalpha(c) || c == ' ')
-    //     {
-    //         long long freq_val = freq_table[c];           
-    //         freq += freq_val;
-    //     }
-    // }
 
     while (*input)
     {
@@ -203,7 +190,7 @@ long long unscramble(char *scrambled, char *unscrambled, char *the_key)
         // printf("Char: %c\n", c);
         char *decoded = decode_with_key(scrambled_bytes, msg_length, c);
         // printf("%s\n", decoded);
-        long long freq = eval_frequency(freq_table, decoded, msg_length);
+        long long freq = eval_frequency(freq_table, decoded);
         if (freq > max_freq)
         {           
             max_freq = freq;

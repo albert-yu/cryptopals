@@ -134,10 +134,6 @@ char* unscramble_all(char **hex_strings,
     // keep track of most likely candidate
     char *candidate = 
         (char*)malloc((EXPECTED_LEN + 1) * sizeof(*candidate));
-
-    // get frequency table used to evaluate 
-    // if text is English
-    long long *freq_table = get_frequency_table();
     
     // iterate through the strings and calculate the
     // likelihood that it's an English sentence
@@ -184,13 +180,6 @@ void prob4_test()
     unsigned long zero = 0;
     unsigned long *num_lines = &zero;  // store number of lines here
     char **lines = read_file(filename, num_lines);
-    // printf("Number of lines: %d\n", *num_lines);
-    // // print out the lines
-    // unsigned long i;
-    // for (i = 0; i < *num_lines; i++)
-    // {
-    //     printf("%s\n", lines[i]);
-    // }
     
     char null_byte = '\0'; // the XOR cipher never tests 0, so 
                            // we can return this if no suitable

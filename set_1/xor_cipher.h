@@ -20,14 +20,5 @@ char* hex_to_bytes(char *hex_string);
  */
 long long unscramble(char *scrambled, char *unscrambled, char *the_key);
 
-/*
- * Maps characters to their frequency in the English language
- */
-long long* get_frequency_table();
-
-/*
- * Scores a piece of text for the likelihood that it's English
- */
-long long eval_frequency(long long *freq_table, char *input, int length);
 
 #endif
