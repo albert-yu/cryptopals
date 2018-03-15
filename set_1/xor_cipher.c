@@ -229,7 +229,6 @@ long long unscramble(char *scrambled, char *unscrambled, char *the_key)
 
     // choose the one with the highest frequency score
     strcpy(unscrambled, candidate_str);
-    printf("success\n");
     return max_freq;
 }
 
