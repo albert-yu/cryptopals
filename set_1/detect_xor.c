@@ -11,35 +11,91 @@
 #define EINVAL 22  /* Invalid argument */
 #endif
 
+int getline(char **lineptr, size_t *n, FILE *stream);
+
 void read_and_print()
 {
-    char ch, file_name[25];
-    FILE *fp;
+    // char ch, file_name[25];
+    // FILE *fp;
     
-    // executable is located in a folder, so
-    // need to navigate up a directory
-    strcpy(file_name, "../data/4.txt");
-    fp = fopen(file_name, "r"); // read mode
+    // // executable is located in a folder, so
+    // // need to navigate up a directory
+    // strcpy(file_name, "../data/4.txt");
+    // fp = fopen(file_name, "r"); // read mode
  
+    // if (fp == NULL)
+    // {
+    //     perror("Error while opening the file.\n");
+    //     exit(EXIT_FAILURE);
+    // }
+ 
+    // printf("The contents of %s file are :\n", file_name);
+    // int line_count = 0;
+    // while ((ch = fgetc(fp)) != EOF )
+    // {
+    //     printf("%c", ch);
+    //     if (ch == '\n')
+    //     {
+    //         line_count++;
+    //     }
+    // }
+ 
+    // printf("\nLine count: %d", line_count); 
+    // fclose(fp);
+
+    //--------------------------------------------------------
+
+    char file_name[25];
+    FILE *fp;
+    fp = fopen("S:/Projects/cryptopals/set_1/data/4.txt", "r");
+
     if (fp == NULL)
     {
         perror("Error while opening the file.\n");
         exit(EXIT_FAILURE);
     }
- 
-    printf("The contents of %s file are :\n", file_name);
+
+    // allocate memory for array of strings
+    // const int NUM_STRINGS = 1000;
+    const int STRING_LEN = 60;
+
+    // read the file
+    size_t len = 0;
+    ssize_t line_len;
+    char *line = NULL;
+
+    // line count for debugging
     int line_count = 0;
-    while ((ch = fgetc(fp)) != EOF )
-    {
-        printf("%c", ch);
-        if (ch == '\n')
+    while ((line_len = getline(&line, &len, fp)) != -1)
+    {       
+        printf("Line #: %d\n", line_count);
+        char null_byte = '\0';
+        char *temp_key = &null_byte;  // holds the "best" key for this line
+
+        if (line_len != STRING_LEN)
         {
-            line_count++;
+            goto next_iter;
         }
+        // copy the line to a temporary buffer
+        // to avoid side effects
+        char *temp_str = malloc(line_len * sizeof(*temp_str));
+        if (temp_str)
+        { 
+            strcpy(temp_str, line);            
+            printf("line: %s\n", temp_str);
+            free(temp_str);
+        }
+        else
+        {
+            printf("malloc failed! \n");
+            break;
+        }
+
+        next_iter:
+            line_count++;
     }
- 
+
     printf("\nLine count: %d", line_count); 
-    fclose(fp);
 }
 
 
@@ -97,7 +153,7 @@ void unscramble_all()
     // open the file
     char file_name[25];
     FILE *fp;
-    fp = fopen("../data/4.txt", "r");
+    fp = fopen("S:/Projects/cryptopals/set_1/data/4.txt", "r");
 
     if (fp == NULL)
     {
@@ -105,19 +161,11 @@ void unscramble_all()
         exit(EXIT_FAILURE);
     }
 
-    // allocate memory for array of strings
-    // const int NUM_STRINGS = 1000;
-    const int STRING_LEN = 60;
-    // char **unscrambled = malloc(NUM_STRINGS * STRING_LEN * sizeof(char));
-    // if (!unscrambled)
-    // {
-    //     perror("Failed to malloc for string array.\n");
-    //     exit(EXIT_FAILURE);
-    // }
+    const int STRING_LEN = 61;  // 60 + null term
 
     // keep track of most likely candidates
     long long max_score = 0; // keep track of max score
-    char *candidate;
+    char *candidate = (char*)malloc(STRING_LEN * sizeof(*candidate));
     char the_key = '\0';  // the XOR cipher never tests 0, so 
                           // we can return this if no suitable
                           // key is found
@@ -139,9 +187,9 @@ void unscramble_all()
         char null_byte = '\0';
         char *temp_key = &null_byte;  // holds the "best" key for this line
 
-        if (line_len != 60)
+        if (line_len != STRING_LEN)
         {
-            continue;
+            goto next_iter;
         }
         // copy the line to a temporary buffer
         // to avoid side effects
@@ -149,30 +197,39 @@ void unscramble_all()
         if (temp_str)
         {         
             strcpy(temp_str, line);
+            printf("line: %s\n", temp_str);
             // unscramble and store key in temp_key
             char *curr_str = unscramble(temp_str, temp_key);           
-            printf("line: %s\n", temp_str);
             long long curr_score = eval_frequency(freq_table, curr_str, line_len);
+            
             // long long curr_score = 1;
             if (curr_score > max_score)
             {
                 max_score = curr_score;
-                candidate = curr_str;
+                // copy current string to candidate string
+                // candidate = curr_str;
+                strcpy(candidate, curr_str);
                 the_key = *temp_key;
             }
-            else
-            {
+            // else
+            // {
+            //     free(curr_str);
+            // }
+            printf("cleanup\n");
+            if (curr_str)
                 free(curr_str);
-                free(temp_str);
-            }
-        }
+
+            free(temp_str);
+        }        
 
         else
         {
             printf("malloc failed! \n");
+            break;
         }
 
-        line_count++;
+        next_iter:
+            line_count++;
     }
 
     printf("Line count: %d\n", line_count);
@@ -196,5 +253,6 @@ void prob4_test()
 {
     printf("Running test for problem 4...\n");
     unscramble_all();
+    // read_and_print();
     printf("\n");
 }

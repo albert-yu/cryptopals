@@ -7,7 +7,10 @@
 #include "xor_cipher.h"
 
 
-
+/*
+ * Convert hex string to bytes by parsing two chars at a time
+ * Need to free resulting pointer's memory
+ */
 char* hex_to_bytes(char *hex_string)
 {
     int hex_length = strlen(hex_string);
@@ -176,17 +179,15 @@ char* unscramble(char *scrambled, char *the_key)
     char *candidate_ptr; 
     long long max_freq = 0;
     long long *freq_table = get_frequency_table();
-    // avoid the null terminator (c = 0)
+    // avoid the null byte
     for (char c = 1; c > 0; c++)
-    {
+    {        
         // printf("Char: %c\n", c);
         char *decoded = decode_with_key(scrambled_bytes, msg_length, c);
         // printf("%s\n", decoded);
         long long freq = eval_frequency(freq_table, decoded, msg_length);
-        // printf("freq: %d\n", freq);
         if (freq > max_freq)
-        {
-            // printf("not calling free\n");
+        {           
             max_freq = freq;
             candidate_ptr = decoded;
             // set key to the_key
@@ -194,17 +195,20 @@ char* unscramble(char *scrambled, char *the_key)
         }
         else
         {
+            
             // printf("c: %c\n", c);
             // causing crash
-            // printf("decoded: %s\n", decoded);
-            // printf("calling free\n");
-            free(decoded);
+            if (decoded)
+            {
+                free(decoded);
+            }            
             // printf("freed\n");
         }
         // printf("\n");
     }
 
-    free(freq_table);
+    if (freq_table)
+        free(freq_table);
     // choose the one with the highest frequency score
     return candidate_ptr;
 }
