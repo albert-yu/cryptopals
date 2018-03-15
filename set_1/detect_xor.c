@@ -175,7 +175,7 @@ void prob4_test()
 {
     printf("Running test for problem 4...\n");
     // unscramble_all();
-    char *filename = "S:/Projects/cryptopals/set_1/data/4.txt";
+    char *filename = "./data/4.txt";
     unsigned long zero = 0;
     unsigned long *num_lines = &zero;  // store number of lines here
     char **lines = read_file(filename, num_lines);
