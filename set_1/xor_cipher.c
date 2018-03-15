@@ -193,9 +193,10 @@ long long unscramble(char *scrambled, char *unscrambled, char *the_key)
     char *scrambled_bytes = hex_to_bytes(scrambled);
     int msg_length = strlen(scrambled_bytes);
     // printf("message length: %d\n", msg_length);
-    char *candidate_ptr; 
+    char *candidate_str = malloc(256 * sizeof(*candidate_str)); 
     long long max_freq = 0;
     long long *freq_table = get_frequency_table();
+
     // avoid the null byte
     for (char c = 1; c > 0; c++)
     {        
@@ -206,28 +207,29 @@ long long unscramble(char *scrambled, char *unscrambled, char *the_key)
         if (freq > max_freq)
         {           
             max_freq = freq;
-            candidate_ptr = decoded;
+            strcpy(candidate_str, decoded);
             // set key to the_key
             *the_key = c;
         }
-        else
-        {
+
             
-            // printf("c: %c\n", c);
-            // causing crash
-            if (decoded)
-            {
-                free(decoded);
-            }            
-            // printf("freed\n");
-        }
+        // printf("c: %c\n", c);
+        // causing crash
+        if (decoded)
+        {
+            free(decoded);
+        }            
+        // printf("freed\n");
+
         // printf("\n");
     }
 
     if (freq_table)
         free(freq_table);
+
     // choose the one with the highest frequency score
-    strcpy(unscrambled, candidate_ptr);
+    strcpy(unscrambled, candidate_str);
+    printf("success\n");
     return max_freq;
 }
 

@@ -282,7 +282,7 @@ char* unscramble_all(char **hex_strings,
     // if text is English
     long long *freq_table = get_frequency_table();
     
-    // iterate through the strings and calculate the_key
+    // iterate through the strings and calculate the
     // likelihood that it's an English sentence
     unsigned int i = 0;
     for (i = 0; i < num_strings; i++)
@@ -297,17 +297,22 @@ char* unscramble_all(char **hex_strings,
         char null_byte = '\0';
         // will point to current key
         char *curr_key = &null_byte;
-        char *unscrambled = (char*) malloc(256 * sizeof(*unscrambled));
-        long long score = unscramble(hex_str, unscrambled, curr_key);
 
-        printf("Success so far. i = %d\n", i);
-        if (score > max_score && curr_key)
+        char *unscrambled = (char*) malloc(256 * sizeof(*unscrambled));
+        
+        long long score = unscramble(hex_str, unscrambled, curr_key);
+        
+        printf("i = %d, score = %lli\n", i, score);
+
+        
+        if (score > max_score)
         {
             strcpy(candidate, unscrambled);
-            *the_key = *curr_key;
+            printf("%s\n", unscrambled);
         }
         if (unscrambled)
         {
+
             free(unscrambled);
         }
     }
