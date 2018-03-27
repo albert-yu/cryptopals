@@ -66,7 +66,6 @@ char** read_file(char *filename, unsigned long *num_lines)
     char ch;
     while ((ch = fgetc(fp)) != EOF )
     {
-        // printf("%c", ch);
         if (ch == '\n')
         {
             // copy null terminator instead of newline at end of string
@@ -75,7 +74,6 @@ char** read_file(char *filename, unsigned long *num_lines)
 
             if (curr_position >= block_size - 1)
             {
-                // printf("Reallocating\n");
                 // double the block size to account for more lines
                 block_size *= 2;
 
@@ -96,14 +94,13 @@ char** read_file(char *filename, unsigned long *num_lines)
             line_ptr_offset = 0;
             continue;
         }
-        // printf("Line count: %d\n", curr_position);
+
         // copy character over to array of pointers
         all_lines[curr_position][line_ptr_offset] = ch;
         line_ptr_offset++;
     }
  
     unsigned long line_count = curr_position + 1;
-    // printf("\nLine count: %d\n", line_count); 
     
     *num_lines = line_count;
     if (fp)
@@ -174,7 +171,7 @@ char* unscramble_all(char **hex_strings,
 void prob4_test()
 {
     printf("Running test for problem 4...\n");
-    // unscramble_all();
+
     char *filename = "./data/4.txt";
     unsigned long zero = 0;
     unsigned long *num_lines = &zero;  // store number of lines here
