@@ -2,7 +2,6 @@
 #define XOR_CIPHER_H
 
 #include "fixed_xor.h"
-// #include "hex_to_base64.h"
 
 /*
  * Runs the test for Challenge 3, Set 1

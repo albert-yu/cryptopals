@@ -1,5 +1,6 @@
 # make directory
 md -Force build
+md -Force build/data
 
 gcc -c hex_to_base64.c -o hex.o
 gcc -c fixed_xor.c -o fixed_xor.o
