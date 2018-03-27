@@ -4,9 +4,8 @@
 #include "fixed_xor.h"
 
 
-
 /*
- * Byte-by-byte XOR on two string inputs of same finite length 
+ * Returns empty string if string lengths are not equal
  */
 char* fixed_xor(char *input1, char *input2)
 {
@@ -20,10 +19,6 @@ char* fixed_xor(char *input1, char *input2)
     for (int i = 0; i < length1; i++)
     {
         int val = hex_val(input1[i]) ^ hex_val(input2[i]);
-        // int val2 = input1[i] ^ input2[i];
-        // printf("val:  %d\n", val);
-        // printf("val2: %d\n\n", val2);
-        // printf("hex_val: %c\n", digit_to_hex(val));
         ret_val[i] = digit_to_hex(val);
     }
     return ret_val;
