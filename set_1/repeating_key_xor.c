@@ -3,6 +3,16 @@
 #include <stdlib.h>
 #include "repeating_key_xor.h"
 
+
+/*
+ * Convert an ASCII string to bytes, then to hex
+ */
+char* convert_to_hex(char* input)
+{
+
+}
+
+
 void encrypt(char *input, const char *key, char *output)
 {
     // contains current index
@@ -17,12 +27,14 @@ void encrypt(char *input, const char *key, char *output)
         // take the modulus
         size_t key_offset = iter % key_len;
 
-
+        // assuming that output has been allocated
+        output[iter] = c;
 
         iter++;
         input++;
     }
 }
+
 
 void prob5_test()
 {
