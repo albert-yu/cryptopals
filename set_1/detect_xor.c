@@ -64,7 +64,7 @@ char** read_file(char *filename, unsigned long *num_lines)
     int line_ptr_offset = 0;  // points to position within the line
 
     char ch;
-    while ((ch = fgetc(fp)) != EOF )
+    while ((ch = fgetc(fp)) != EOF)
     {
         if (ch == '\n')
         {
@@ -197,6 +197,4 @@ void prob4_test()
     {
         printf("Unable to unscramble with XOR cipher!\n");
     }
-
-    printf("\n");
 }

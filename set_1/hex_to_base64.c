@@ -94,6 +94,7 @@ char* hex_to_base64(char *hex)
     return base64;
 }
 
+
 void prob1_test()
 {
     printf("Running test for problem 1...\n");
