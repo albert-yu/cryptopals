@@ -62,4 +62,6 @@ void prob5_test()
     char *actual = (char*) malloc(stanza_len * sizeof(*actual));
     encrypt(stanza, key, actual);
     printf("Actual: %s\n", actual);
+
+    free(actual);
 }
