@@ -102,5 +102,6 @@ void prob5_test()
         printf("Expected: \t[%s]\n", expected);
         printf("Actual: \t[%s]\n", actual);
     }
+    printf("\n");
     free(actual);
 }

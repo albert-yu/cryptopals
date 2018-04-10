@@ -3,7 +3,7 @@
 #include <limits.h>
 #include <string.h>
 
-#include "repeating_key_xor.h"
+#include "break_xor.h"
 
 int main()
 {
@@ -13,5 +13,6 @@ int main()
     prob3_test();
     prob4_test();
     prob5_test();
+    prob6_test();
     return 0;
 }
