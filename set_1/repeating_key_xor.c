@@ -58,12 +58,12 @@ void encrypt(const char *input, const char *key, char *output)
         size_t key_offset = iter % key_len;
 
         char xord = c ^ key[key_offset];
-        // printf("%d\n", xord);
+
         // assuming that output has been allocated
         // get the hex digits
         char left_part = get_left_hex_char(xord);
         char right_part = get_right_hex_char(xord);
-        printf("%c%c\n", left_part, right_part);
+
         // output should be double the size of the input
         output[iter * 2] = left_part;
         output[iter * 2 + 1] = right_part;
@@ -91,7 +91,7 @@ void prob5_test()
     size_t stanza_len = strlen(stanza) * 2 + 1;
     char *actual = (char*) malloc(stanza_len * sizeof(*actual));
     encrypt(stanza, key, actual);
-    printf("Actual: %s\n", actual);
+
     if (strcmp(expected, actual) == 0)
     {        
         printf("Repeating XOR key test passed.\n");
