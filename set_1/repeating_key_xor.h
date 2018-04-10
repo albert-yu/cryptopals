@@ -10,8 +10,9 @@ void prob5_test();
 
 /*
  * Encrypt a message with repeating-key XOR
+ * and output in hex form
  */
-void encrypt(char *input, const char *key, char *output);
+void encrypt(const char *input, const char *key, char *output);
 
 
 #endif
