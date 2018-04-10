@@ -63,6 +63,7 @@ void encrypt(const char *input, const char *key, char *output)
         // get the hex digits
         char left_part = get_left_hex_char(xord);
         char right_part = get_right_hex_char(xord);
+        printf("%c%c\n", left_part, right_part);
         // output should be double the size of the input
         output[iter * 2] = left_part;
         output[iter * 2 + 1] = right_part;
@@ -81,7 +82,7 @@ void prob5_test()
 {
     printf("Running test for problem 5...\n");
     char *key = "ICE";
-    char *stanza = "Burning 'em, if you ain't quick and nimble I go crazy when I hear a cymbal";
+    char *stanza = "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal";
     char *expected = "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f";
 
     // alloc memory for output
