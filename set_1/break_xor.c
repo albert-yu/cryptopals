@@ -55,7 +55,7 @@ void prob6_test()
     }
     else
     {
-        printf("Repeating XOR key failed.\n");
+        printf("Hamming distance test failed.\n");
         printf("Expected: \t[%d]\n", expected);
         printf("Actual: \t[%d]\n", dist);
     }
