@@ -10,3 +10,4 @@ Going through The Matasano Crypto Challenges to better understand cryptography a
 2. Fixed XOR - [fixed_xor.h](set_1/fixed_xor.h), [fixed_xor.c](set_1/fixed_xor.c)
 3. Single-byte XOR cipher - [xor_cipher.h](set_1/xor_cipher.h), [xor_cipher.c](set_1/xor_cipher.c)
 4. Detect single-character XOR - [detect_xor.h](set_1/detect_xor.h), [detect_xor.c](set_1/detect_xor.c)
+5. Repeating-key XOR [repeating_key_xor.h](set_1/repeating_key_xor.h), [repeating_key_xor.c](set_1/repeating_key_xor.c)
