@@ -197,4 +197,6 @@ void prob4_test()
     {
         printf("Unable to unscramble with XOR cipher!\n");
     }
+
+    free(unscrambled_string);
 }

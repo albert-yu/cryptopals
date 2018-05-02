@@ -137,6 +137,14 @@ char* read_file_as_string(char *filename)
 }
 
 
+/*
+ * Converts a b64 string to byte array
+ */
+char* b64_to_bytes(char *b64str)
+{
+    
+}
+
 
 /*
  * Try a bunch of different keysizes and find out which yield 
