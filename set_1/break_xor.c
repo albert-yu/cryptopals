@@ -137,10 +137,29 @@ char* read_file_as_string(char *filename)
 }
 
 
+char* get_b64_lookup()
+{
+    const int B64_SIZE = 64;
+    char *dec_2_base64 = 
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    char *decode_b64_lookup = malloc(B64_SIZE * sizeof(char));
+
+    for (int i = 0; i < B64_SIZE; i++)
+    {
+        decode_b64_lookup[dec_2_base64[i]] = i;
+    }
+
+    return decode_b64_lookup;
+}
+
+
 /*
  * Converts a b64 string to byte array
+ * @param b64str - the input string encoded in b64
+ * @param b64lookup - the table/array that maps 
+ *   a b64 char to int (e.g. A -> 0, B -> 1, etc.)
  */
-char* b64_to_bytes(char *b64str)
+char* b64_to_bytes(char *b64str, char *b64lookup)
 {
     
 }
