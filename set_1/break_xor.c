@@ -1,14 +1,30 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "break_xor.h"
+
+
+/*
+ * Determine if given integer is a power of 2
+ */
+bool is_power_of_2(size_t v)
+{
+    if (v == 0)
+        return false;
+
+    bool f;         // the result goes here 
+    f = (v & (v - 1)) == 0;
+    return f;
+}
+
 
 /*
  * Computes the Hamming distance between
  * two strings of equal length.
  * The Hamming distance is just the number of differing bits.
  */
-unsigned int hamming(const char *str_1, const char *str_2)
+size_t hamming(const char *str_1, const char *str_2)
 {
     size_t len_1 = strlen(str_1);
     size_t len_2 = strlen(str_2);
@@ -19,14 +35,14 @@ unsigned int hamming(const char *str_1, const char *str_2)
         exit(EXIT_FAILURE);
     }
 
-    unsigned int total = 0;
+    size_t total = 0;
     char c1, c2;
     while ((c1 = *str_1) && (c2 = *str_2))
     {
         char xord = c1 ^ c2; 
 
         // count the number of ones, Brian Kernighan's way
-        unsigned int count;
+        size_t count;
         for (count = 0; xord; count++)
         {
             xord &= xord - 1;
@@ -42,13 +58,104 @@ unsigned int hamming(const char *str_1, const char *str_2)
 }
 
 
+/*
+ * Read the input file into one long string
+ * and remove newlines and carriage returns.
+ */
+char* read_file_as_string(char *filename)
+{
+    // open the file
+    FILE *fp;
+    fp = fopen(filename, "r");
+
+    if (fp == NULL)
+    {
+        perror("Error while opening the file.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // allocate memory for string
+    size_t BUF_LEN = 256;
+    char *ret_val = (char*)calloc(BUF_LEN, sizeof(*ret_val));
+
+    // keep track of character count
+    size_t count = 0;
+    char ch;
+    while ((ch = fgetc(fp)) != EOF)
+    {
+        bool is_escape_char = false;
+        switch (ch)
+        {
+            case '\n':
+            case '\r':
+            case '\t':
+                is_escape_char = true;
+                break;
+
+            default:
+                break;
+        }
+
+        if (is_escape_char)
+        {
+            continue;
+        }
+
+        // check if we've reached the end of the buffer
+        if (count == BUF_LEN)
+        {
+            // create a new buffer that is 2x size
+            BUF_LEN *= 2;
+            // char *temp_buf = (char*) calloc(BUF_LEN, sizeof(*temp_buf));
+
+            // // copy contents
+            // strcpy(temp_buf, ret_val);
+            // char *old = ret_val;
+            // ret_val = temp_buf;
+            // free(old);
+
+            ret_val = (char*) realloc(ret_val, BUF_LEN);
+        }
+
+        ret_val[count] = ch;
+
+        count++;
+    }
+
+    // handle edge case where
+    // the last character occupies
+    // the last space in the buffer
+    // (preventing null termination)
+    if (is_power_of_2(count))
+    {
+        BUF_LEN *= 2;
+        ret_val = (char*) realloc(ret_val, BUF_LEN);
+        ret_val[count] = '\0';
+    }
+
+    return ret_val;
+}
+
+
+
+/*
+ * Try a bunch of different keysizes and find out which yield 
+ * the smallest N Hamming distances. Store the results in
+ * the keysizelengths array
+ */
+void get_best_keysizes(char *encrypted, int *keysizelengths, size_t num_keys)
+{
+
+}
+
+
 void prob6_test()
 {
     printf("Running test for problem 6...\n");
     char *string1 = "this is a test";
     char *string2 = "wokka wokka!!!";
-    unsigned int dist = hamming(string1, string2);
-    unsigned int expected = 37;
+    size_t dist = hamming(string1, string2);
+    size_t expected = 37;
     if (dist == expected)
     {
         printf("Hamming distance test passed.\n");
