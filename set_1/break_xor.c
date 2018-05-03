@@ -65,6 +65,13 @@ size_t hamming(const char *str_1, const char *str_2)
  */
 char* read_file_as_string(char *filename, size_t *length_out)
 {
+    // check to make sure length_out is not null
+    if (!length_out)
+    {
+        perror("length_out param must not be null.\n");
+        exit(EXIT_FAILURE);
+    }
+
     // open the file
     FILE *fp;
     fp = fopen(filename, "r");
@@ -134,14 +141,7 @@ char* read_file_as_string(char *filename, size_t *length_out)
         ret_val[count] = '\0';
     }
 
-    if (length_out)
-    {
-        *length_out = count;
-    }
-    else
-    {
-        length_out = &count;
-    }
+    *length_out = count;           
 
     return ret_val;
 }
@@ -169,10 +169,10 @@ char* get_b64_lookup()
  * @param b64lookup - the table/array that maps 
  *   a b64 char to int (e.g. A -> 0, B -> 1, etc.)
  */
-char* b64_to_bytes(char *b64str, char *b64lookup)
-{
+// char* b64_to_bytes(char *b64str, char *b64lookup)
+// {
     
-}
+// }
 
 
 /*
@@ -203,6 +203,22 @@ void prob6_test()
         printf("Expected: \t[%d]\n", expected);
         printf("Actual: \t[%d]\n", dist);
     }
+
+
+    // test reading file
+    char *filename = "./data/6.txt";
+    size_t *num_chars = (size_t*) malloc(sizeof(*num_chars));
+    char *long_ass_string = 
+        read_file_as_string(filename, num_chars);
+
+    // printf("%s\n", long_ass_string);
+    if (num_chars)
+        printf("Number of characters: %d\n", *num_chars);
+    else
+        printf("Failed to read.\n");
+
+    free(long_ass_string);
+    free(num_chars);
 
     printf("\n");
 }
