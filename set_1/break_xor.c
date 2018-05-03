@@ -147,12 +147,13 @@ char* read_file_as_string(char *filename, size_t *length_out)
 }
 
 
-char* get_b64_lookup()
+unsigned char* get_b64_lookup()
 {
     const int B64_SIZE = 64;
-    char *dec_2_base64 = 
+    unsigned char *dec_2_base64 = 
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    char *decode_b64_lookup = malloc(B64_SIZE * sizeof(char));
+    unsigned char *decode_b64_lookup = 
+        calloc(B64_SIZE, sizeof(*decode_b64_lookup));
 
     for (int i = 0; i < B64_SIZE; i++)
     {
@@ -170,7 +171,7 @@ char* get_b64_lookup()
  * @param b64lookup - the table/array that maps 
  *   a b64 char to int (e.g. A -> 0, B -> 1, etc.)
  */
-char* b64_to_bytes(char *b64str, size_t b64length, char *b64lookup)
+unsigned char* b64_to_bytes(char *b64str, size_t b64length, unsigned char *b64lookup)
 {
     if (b64length % 4 != 0)
     {
@@ -179,26 +180,26 @@ char* b64_to_bytes(char *b64str, size_t b64length, char *b64lookup)
     }
 
     size_t outputlen = (b64length / 4) * 3 + 1;
-    char* decoded = (char*) calloc(outputlen, sizeof(*decoded));
+    unsigned char* decoded = (unsigned char*) calloc(outputlen, sizeof(*decoded));
 
     size_t i = 0;
     size_t j = 0;
     while (i < b64length - 3)
     {
         // every 4 base-64 chars is 3 bytes
-        char b64char1 = b64lookup[b64str[i]];
-        char b64char2 = b64lookup[b64str[i + 1]];
-        char b64char3 = b64lookup[b64str[i + 2]];
-        char b64char4 = b64lookup[b64str[i + 3]];
+        unsigned char b64char1 = b64lookup[b64str[i]];
+        unsigned char b64char2 = b64lookup[b64str[i + 1]];
+        unsigned char b64char3 = b64lookup[b64str[i + 2]];
+        unsigned char b64char4 = b64lookup[b64str[i + 3]];
 
         // byte 1 consists of all 6 bits of 
         // b64char1 and the first two bits 
         // b64char2
-        decoded[j] = (b64char1 << 2) + (b64char2 >> 6);
+        decoded[j] = (b64char1 << 2) + (b64char2 >> 4);
 
         // byte 2 is the right 4 bits of b64char2 and
         // left 4 bits of b64char3
-        decoded[j + 1] = (b64char2 << 4) + (b64char3 >> 4);
+        decoded[j + 1] = (b64char2 << 4) + (b64char3 >> 2);
 
         // byte 3 is the right 2 bits of b64char3 and 
         // all 6 bits of b64 char4
@@ -264,8 +265,8 @@ void prob6_test()
                              generation of knowledge, exceeds the short vehemence \
                              of any carnal pleasure.";
 
-    char *b64lookup = get_b64_lookup();
-    char* b64decoded = b64_to_bytes(b64_encoded, strlen(b64_encoded), b64lookup);
+    unsigned char *b64lookup = get_b64_lookup();
+    unsigned char* b64decoded = b64_to_bytes(b64_encoded, strlen(b64_encoded), b64lookup);
     printf("%s\n", b64decoded);
 
     // clean up
