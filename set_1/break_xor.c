@@ -61,8 +61,9 @@ size_t hamming(const char *str_1, const char *str_2)
 /*
  * Read the input file into one long string
  * and remove newlines and carriage returns.
+ * Stores the length as well.
  */
-char* read_file_as_string(char *filename)
+char* read_file_as_string(char *filename, size_t *length_out)
 {
     // open the file
     FILE *fp;
@@ -131,6 +132,15 @@ char* read_file_as_string(char *filename)
         BUF_LEN *= 2;
         ret_val = (char*) realloc(ret_val, BUF_LEN);
         ret_val[count] = '\0';
+    }
+
+    if (length_out)
+    {
+        *length_out = count;
+    }
+    else
+    {
+        length_out = &count;
     }
 
     return ret_val;
