@@ -251,23 +251,38 @@ void prob6_test()
         read_file_as_string(filename, num_chars);
 
     if (num_chars)
+    {
+        printf("Successfully read file.\n");
         printf("Number of characters: %d\n", *num_chars);
+    }
     else
+    {
         printf("Failed to read.\n");
+    }
 
     // test b64 decoding
     char *b64_encoded = "TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=";
 
-    char *expected_decode = "Man is distinguished, not only by his reason, \
-                             but by this singular passion from other animals, \
-                             which is a lust of the mind, that by a perseverance \
-                             of delight in the continued and indefatigable \
-                             generation of knowledge, exceeds the short vehemence \
-                             of any carnal pleasure.";
+    char *expected_decode = "Man is distinguished, not only by his reason, "
+                            "but by this singular passion from other animals, "
+                            "which is a lust of the mind, that by a perseverance "
+                            "of delight in the continued and indefatigable "
+                            "generation of knowledge, exceeds the short vehemence "
+                            "of any carnal pleasure.";
 
     unsigned char *b64lookup = get_b64_lookup();
     unsigned char* b64decoded = b64_to_bytes(b64_encoded, strlen(b64_encoded), b64lookup);
-    printf("%s\n", b64decoded);
+
+    if (strcmp(b64decoded, expected_decode) == 0)
+    {
+        printf("b64 decode test passed.\n");
+    }
+    else
+    {
+        printf("b64 test failed.\n");
+        printf("Expected: \t%s\n", expected_decode);
+        printf("Actual: \t%s\n", b64decoded);
+    }
 
     // clean up
     free(long_ass_string);
