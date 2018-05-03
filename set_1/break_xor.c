@@ -20,6 +20,31 @@ bool is_power_of_2(size_t v)
 
 
 /*
+ * Returns the substring specified by the start and end indices.
+ * End is not inclusive (e.g. 2 to 5 will just return 3 characters). 
+ */
+char* substring(char *input, size_t start, size_t end)
+{
+    if (start >= end)
+    {
+        perror("Cannot have a starting index that is greater than the ending one.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    size_t size = start - end + 1;
+    char *substr = (char*) calloc(size, sizeof(*substr));
+    size_t substring_index = 0;
+    for (size_t i = start; i < end; i++)
+    {
+        substr[substring_index] = input[i];
+        substring_index++;
+    }
+
+    return substr;
+}
+
+
+/*
  * Computes the Hamming distance between
  * two strings of equal length.
  * The Hamming distance is just the number of differing bits.
@@ -215,15 +240,26 @@ unsigned char* b64_to_bytes(char *b64str, size_t b64length, unsigned char *b64lo
 /*
  * Try a bunch of different keysizes and find out which yield 
  * the smallest N Hamming distances. Store the results in
- * the keysizelengths array
+ * the keysizelengths array.
+ * Assume encrypted string is greater than or equal to 2x the max 
+ * keysize length.
  */
-void get_best_keysizes(char *encrypted, int *keysizelengths, size_t num_keys)
+void get_best_keysizes(char *encrypted, size_t *keysizelengths, size_t num_keys)
 {
     size_t keysize = 2;
-    const size_t MAX_KEYSIZE = 40;
-    for (;keysize < MAX_KEYSIZE; keysize++)
-    {
+    const size_t MAX_KEYSIZE = 40;  
 
+    for (; keysize <= MAX_KEYSIZE; keysize++)
+    {
+        char *firstn = substring(encrypted, 0, keysize);
+        char *secondn = substring(encrypted, keysize, keysize * 2);
+        size_t distance = hamming(firstn, secondn);
+        double normalized = (distance * 1.0) / keysize;
+
+
+
+        free(firstn);
+        free(secondn);
     }
 }
 
