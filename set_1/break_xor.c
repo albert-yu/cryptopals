@@ -166,13 +166,49 @@ char* get_b64_lookup()
 /*
  * Converts a b64 string to byte array
  * @param b64str - the input string encoded in b64
+ * @param b64length - the size of the b64 string
  * @param b64lookup - the table/array that maps 
  *   a b64 char to int (e.g. A -> 0, B -> 1, etc.)
  */
-// char* b64_to_bytes(char *b64str, char *b64lookup)
-// {
-    
-// }
+char* b64_to_bytes(char *b64str, size_t b64length, char *b64lookup)
+{
+    if (b64length % 4 != 0)
+    {
+        perror("Invalid base-64 string. Must be evenly divisible by 4.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    size_t outputlen = (b64length / 4) * 3 + 1;
+    char* decoded = (char*) calloc(outputlen, sizeof(*decoded));
+
+    size_t i = 0;
+    size_t j = 0;
+    while (i < b64length - 3)
+    {
+        // every 4 base-64 chars is 3 bytes
+        char b64char1 = b64lookup[b64str[i]];
+        char b64char2 = b64lookup[b64str[i + 1]];
+        char b64char3 = b64lookup[b64str[i + 2]];
+        char b64char4 = b64lookup[b64str[i + 3]];
+
+        // byte 1 consists of all 6 bits of 
+        // b64char1 and the first two bits 
+        // b64char2
+        decoded[j] = (b64char1 << 2) + (b64char2 >> 6);
+
+        // byte 2 is the right 4 bits of b64char2 and
+        // left 4 bits of b64char3
+        decoded[j + 1] = (b64char2 << 4) + (b64char3 >> 4);
+
+        // byte 3 is the right 2 bits of b64char3 and 
+        // all 6 bits of b64 char4
+        decoded[j + 2] = (b64char3 << 6) + b64char4;
+
+        j += 3;
+        i += 4;
+    }
+    return decoded;
+}
 
 
 /*
@@ -189,6 +225,8 @@ void get_best_keysizes(char *encrypted, int *keysizelengths, size_t num_keys)
 void prob6_test()
 {
     printf("Running test for problem 6...\n");
+
+    // test Hamming distance
     char *string1 = "this is a test";
     char *string2 = "wokka wokka!!!";
     size_t dist = hamming(string1, string2);
@@ -211,14 +249,31 @@ void prob6_test()
     char *long_ass_string = 
         read_file_as_string(filename, num_chars);
 
-    // printf("%s\n", long_ass_string);
     if (num_chars)
         printf("Number of characters: %d\n", *num_chars);
     else
         printf("Failed to read.\n");
 
+    // test b64 decoding
+    char *b64_encoded = "TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=";
+
+    char *expected_decode = "Man is distinguished, not only by his reason, \
+                             but by this singular passion from other animals, \
+                             which is a lust of the mind, that by a perseverance \
+                             of delight in the continued and indefatigable \
+                             generation of knowledge, exceeds the short vehemence \
+                             of any carnal pleasure.";
+
+    char *b64lookup = get_b64_lookup();
+    char* b64decoded = b64_to_bytes(b64_encoded, strlen(b64_encoded), b64lookup);
+    printf("%s\n", b64decoded);
+
+    // clean up
     free(long_ass_string);
     free(num_chars);
+
+    free(b64lookup);
+    free(b64decoded);
 
     printf("\n");
 }
