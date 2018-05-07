@@ -273,11 +273,11 @@ int compare_function(const void *a,const void *b)
 /*
  * Try a bunch of different keysizes and find out which yield 
  * the smallest N Hamming distances. Store the results in
- * the keysizelengths array.
+ * the an array.
  * Assume encrypted string is greater than or equal to 2x the max 
  * keysize length.
  */
-void get_best_keysizes(char *encrypted, size_t *keysizelengths, size_t num_keys)
+size_t* get_best_keysizes(char *encrypted, size_t num_keys)
 {
     size_t keysize = 2;
     const size_t MAX_KEYSIZE = 40;  
@@ -305,7 +305,60 @@ void get_best_keysizes(char *encrypted, size_t *keysizelengths, size_t num_keys)
     memcpy(sorted_hammings, hammings_lookup, KEYS_ARR_SIZE);
     qsort(sorted_hammings, KEYS_ARR_SIZE, sizeof(*sorted_hammings), compare_function);
 
-    // find the first nonzero min
+    // store the smallest n distances here
+    // double *smallest_n_dists = 
+    //     (double*) calloc(num_keys + 1, sizeof(*smallest_n_dists));
+
+    // store the smallest n key sizes here
+    size_t *smallest_n_keysizes =
+        (size_t*) calloc(num_keys + 1, sizeof(*smallest_n_keysizes));
+
+    // find the first n nonzero mins
+    const double ZERO = 0.0;
+    size_t start_i = 0;
+    while (dbl_equals(sorted_hammings[start_i], ZERO))
+    {
+        start_i++;
+    }
+
+    for (size_t i = 0; i < num_keys; i++)
+    {
+        // could check if we ever reach a buffer overflow,
+        // but nah
+        double next_min = sorted_hammings[start_i];
+
+        // iterate through all the possible key
+        // sizes and find the one that produced
+        // this distance
+        for (; keysize <= MAX_KEYSIZE; keysize++)
+        {
+            double hamming = hammings_lookup[keysize];
+            if (dbl_equals(hamming, next_min))
+            {
+                smallest_n_keysizes[i] = next_min;
+            }
+        }
+
+        start_i++;
+    }
+
+    
+    return smallest_n_keysizes;
+}
+
+
+void break_xor(char *encrypted)
+{
+    // get 3 best key sizes
+    const size_t N_KEYS = 3;
+    size_t *best_keysizes = get_best_keysizes(encrypted, size_t N_KEYS);
+
+    for (size_t i = 0; i < N_KEYS; i++)
+    {
+        
+    }
+
+    free(best_keysizes);
 }
 
 
