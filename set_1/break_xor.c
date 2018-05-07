@@ -341,13 +341,12 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
 
         start_i++;
     }
-
     
     return smallest_n_keysizes;
 }
 
 
-void break_xor(char *encrypted)
+void break_xor(char *encrypted, size_t encryptd_length)
 {
     // get 3 best key sizes
     const size_t N_KEYS = 3;
@@ -355,7 +354,61 @@ void break_xor(char *encrypted)
 
     for (size_t i = 0; i < N_KEYS; i++)
     {
+        size_t curr_keysize = best_keysizes[i];
+
+        // FIRST partition the blocks by the keysize
+        size_t partition_length = 
+            // it is entirely possible for us to have 
+            // extra, but that is better than having 
+            // not enough
+            encryptd_length / curr_keysize + 2;
+
+        // array of strings
+        char **all_partitions = 
+            (char**) malloc(curr_keysize * sizeof(*all_partitions));
+
+        for (size_t j = 0; j < curr_keysize; j++)
+        {
+            all_partitions[j] = 
+                (char*) calloc(partition_length, sizeof(char));
+        }
+
+        // these indices wil keep track of the position
+        // within each partition
+        // ------------
+        // |0|1|2| etc. <- partition 0
+        // ------------
+        // |0|1|2|      <- partition 1
+        // ------------
+        size_t *inner_indices = 
+            calloc(curr_keysize, sizeof(*inner_indices));
+
+        // now iterate through the encrypted text to partition it
+        for (size_t k = 0; k < encryptd_length; k++)
+        {
+            char c = encrypted[k];
+            size_t outer_i = k % curr_keysize;
+
+            size_t inner_i = inner_indices[outer_i];
+
+            // copy value to buffer
+            all_partitions[outer_i][inner_i] = c;
+
+            // increment the inner index
+            inner_indices[outer_i]++;
+        }
+
+        // THEN solve each parition (block) as a single-character XOR
         
+
+        // cleanup
+        for (size_t j = 0; j < curr_keysize; j++)
+        {
+            free(all_partitions[j]);
+        }
+        free(all_partitions);
+
+        free(inner_indices);
     }
 
     free(best_keysizes);
