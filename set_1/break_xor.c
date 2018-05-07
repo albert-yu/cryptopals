@@ -279,7 +279,8 @@ int compare_function(const void *a,const void *b)
  */
 size_t* get_best_keysizes(char *encrypted, size_t num_keys)
 {
-    size_t keysize = 2;
+    const size_t MIN_KEYSIZE = 2;
+    size_t keysize = MIN_KEYSIZE;
     const size_t MAX_KEYSIZE = 40;  
 
     // hold all the normalized hamming distances
@@ -330,7 +331,7 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
         // iterate through all the possible key
         // sizes and find the one that produced
         // this distance
-        for (; keysize <= MAX_KEYSIZE; keysize++)
+        for (keysize = MIN_KEYSIZE; keysize <= MAX_KEYSIZE; keysize++)
         {
             double hamming = hammings_lookup[keysize];
             if (dbl_equals(hamming, next_min))
@@ -399,7 +400,7 @@ void break_xor(char *encrypted, size_t encryptd_length)
         }
 
         // THEN solve each parition (block) as a single-character XOR
-        
+
 
         // cleanup
         for (size_t j = 0; j < curr_keysize; j++)
