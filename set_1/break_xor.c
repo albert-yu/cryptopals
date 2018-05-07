@@ -5,6 +5,11 @@
 #include "break_xor.h"
 
 
+#ifndef EPSILON
+#define EPSILON 0.00000000000000000001
+#endif
+
+
 /*
  * Determine if given integer is a power of 2
  */
@@ -17,6 +22,17 @@ bool is_power_of_2(size_t v)
     f = (v & (v - 1)) == 0;
     return f;
 }
+
+
+
+/*
+ * Determine if two doubles are equal
+ */
+bool dbl_equals(double dbl1, double dbl2)
+{
+    return (abs(dbl1 - dbl2) < EPSILON);
+}
+
 
 
 /*
@@ -238,6 +254,23 @@ unsigned char* b64_to_bytes(char *b64str, size_t b64length, unsigned char *b64lo
 
 
 /*
+ * Compare function used for sorting
+ * https://stackoverflow.com/a/1791064/9555588
+ */
+int compare_function(const void *a,const void *b) 
+{
+    double *x = (double *) a;
+    double *y = (double *) b;
+
+    if (*x < *y) 
+        return -1;
+    else if (*x > *y) 
+        return 1; 
+    return 0;
+}
+
+
+/*
  * Try a bunch of different keysizes and find out which yield 
  * the smallest N Hamming distances. Store the results in
  * the keysizelengths array.
@@ -249,6 +282,11 @@ void get_best_keysizes(char *encrypted, size_t *keysizelengths, size_t num_keys)
     size_t keysize = 2;
     const size_t MAX_KEYSIZE = 40;  
 
+    // hold all the normalized hamming distances
+    const size_t KEYS_ARR_SIZE = 64;  
+    double *hammings_lookup =
+        calloc(KEYS_ARR_SIZE, sizeof(*hammings_lookup));
+
     for (; keysize <= MAX_KEYSIZE; keysize++)
     {
         char *firstn = substring(encrypted, 0, keysize);
@@ -256,11 +294,18 @@ void get_best_keysizes(char *encrypted, size_t *keysizelengths, size_t num_keys)
         size_t distance = hamming(firstn, secondn);
         double normalized = (distance * 1.0) / keysize;
 
-
+        hammings_lookup[keysize] = normalized;
 
         free(firstn);
         free(secondn);
     }
+
+    // sort in a new array
+    double *sorted_hammings = calloc(KEYS_ARR_SIZE, sizeof(*sorted_hammings));
+    memcpy(sorted_hammings, hammings_lookup, KEYS_ARR_SIZE);
+    qsort(sorted_hammings, KEYS_ARR_SIZE, sizeof(*sorted_hammings), compare_function);
+
+    // find the first nonzero min
 }
 
 
@@ -319,7 +364,7 @@ void prob6_test()
                             "of any carnal pleasure.";
 
     unsigned char *b64lookup = get_b64_lookup();
-    unsigned char* b64decoded = b64_to_bytes(b64_encoded, strlen(b64_encoded), b64lookup);
+    unsigned char *b64decoded = b64_to_bytes(b64_encoded, strlen(b64_encoded), b64lookup);
 
     if (strcmp(b64decoded, expected_decode) == 0)
     {
@@ -331,13 +376,17 @@ void prob6_test()
         printf("Expected: \t%s\n", expected_decode);
         printf("Actual: \t%s\n", b64decoded);
     }
+    free(b64decoded);
+
+    // decode input string
+    unsigned char *all_the_bytes = b64_to_bytes(long_ass_string, *num_chars, b64lookup);
 
     // clean up
     free(long_ass_string);
     free(num_chars);
 
     free(b64lookup);
-    free(b64decoded);
+    free(all_the_bytes);
 
     printf("\n");
 }
