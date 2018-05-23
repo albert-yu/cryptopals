@@ -208,9 +208,11 @@ char* get_b64_lookup()
  * @param b64str - the input string encoded in b64
  * @param b64length - the size of the b64 string
  * @param b64lookup - the table/array that maps 
+ * @param len_ptr - pointer to store the length of resulting array
  *   a b64 char to int (e.g. A -> 0, B -> 1, etc.)
  */
-char* b64_to_bytes(char *b64str, size_t b64length, char *b64lookup)
+char* b64_to_bytes(
+    char *b64str, size_t b64length, char *b64lookup, size_t *len_ptr)
 {
     if (b64length % 4 != 0)
     {
@@ -218,8 +220,10 @@ char* b64_to_bytes(char *b64str, size_t b64length, char *b64lookup)
         exit(EXIT_FAILURE);
     }
 
-    size_t outputlen = (b64length / 4) * 3 + 1;
-    char* decoded = (char*) calloc(outputlen, sizeof(*decoded));
+    size_t outputlen = (b64length / 4) * 3;
+    *len_ptr = outputlen;
+
+    char* decoded = (char*) calloc(outputlen + 1, sizeof(*decoded));
 
     size_t i = 0;
     size_t j = 0;
@@ -247,7 +251,7 @@ char* b64_to_bytes(char *b64str, size_t b64length, char *b64lookup)
         j += 3;
         i += 4;
     }
-    
+
     return decoded;
 }
 
@@ -433,6 +437,20 @@ void break_xor(char *encrypted, size_t encryptd_length)
 }
 
 
+/*
+ * Print chars one by one because string format
+ * terminates at null
+ */
+void print_bytes(char *byte_array, size_t arr_len)
+{
+    for (size_t i = 0; i < arr_len; i++)
+    {
+        printf("%c", byte_array[i]);
+    }
+    printf("\n");
+}
+
+
 void prob6_test()
 {
     printf("Running test for problem 6...\n");
@@ -455,14 +473,14 @@ void prob6_test()
 
     // test reading file
     char *filename = "./data/6.txt";
-    size_t *num_chars = (size_t*) malloc(sizeof(*num_chars));
+    size_t *b64_len_ptr = (size_t*) malloc(sizeof(*b64_len_ptr));
     char *long_ass_string = 
-        read_file_as_string(filename, num_chars);
+        read_file_as_string(filename, b64_len_ptr);
 
-    if (num_chars)
+    if (b64_len_ptr)
     {
         printf("Successfully read file.\n");
-        printf("Number of characters: %d\n", *num_chars);
+        printf("\tNumber of characters: %d\n", *b64_len_ptr);
     }
     else
     {
@@ -487,7 +505,12 @@ void prob6_test()
                             "of any carnal pleasure.";
 
     char *b64lookup = get_b64_lookup();
-    char *b64decoded = b64_to_bytes(b64_encoded, strlen(b64_encoded), b64lookup);
+
+    // specify length of byte array
+    size_t bytes_len = 0;
+    size_t *bytes_len_ptr = &bytes_len;
+    char *b64decoded = b64_to_bytes(
+        b64_encoded, strlen(b64_encoded), b64lookup, bytes_len_ptr);
 
     if (strcmp(b64decoded, expected_decode) == 0)
     {
@@ -499,18 +522,20 @@ void prob6_test()
         printf("Expected: \t%s\n", expected_decode);
         printf("Actual: \t%s\n", b64decoded);
     }
-    
 
     // decode input string
-    char *all_the_bytes = b64_to_bytes(long_ass_string, *num_chars, b64lookup);
-    size_t bytes_len = strlen(all_the_bytes);
+    char *all_the_bytes = b64_to_bytes(
+        long_ass_string, *b64_len_ptr, b64lookup, bytes_len_ptr);
+    
     printf("%s\n", all_the_bytes);
+    print_bytes(all_the_bytes, bytes_len);
+
     // do the breaking
-    break_xor(all_the_bytes, bytes_len);
+    break_xor(all_the_bytes, *bytes_len_ptr);
 
     // clean up
     free(long_ass_string);
-    free(num_chars);
+    free(b64_len_ptr);
     free(b64decoded);
     free(b64lookup);
     free(all_the_bytes);
