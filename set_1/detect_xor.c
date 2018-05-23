@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "detect_xor.h"
-// #include "xor_cipher.h"
 
 void copy_over_strings(char **destination, char **source, unsigned int num_strings)
 {   
@@ -149,7 +148,7 @@ char* unscramble_all(char **hex_strings,
 
         char *unscrambled = (char*) malloc(256 * sizeof(*unscrambled));
 
-        long long score = unscramble(hex_str, unscrambled, curr_key);
+        long long score = hex_unscramble(hex_str, unscrambled, curr_key);
 
         // printf("i = %d, score = %lli\n", i, score);       
         if (score > max_score)

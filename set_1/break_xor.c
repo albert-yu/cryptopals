@@ -24,7 +24,6 @@ bool is_power_of_2(size_t v)
 }
 
 
-
 /*
  * Determine if two doubles are equal
  */
@@ -32,7 +31,6 @@ bool dbl_equals(double dbl1, double dbl2)
 {
     return (abs(dbl1 - dbl2) < EPSILON);
 }
-
 
 
 /*
@@ -351,7 +349,7 @@ void break_xor(char *encrypted, size_t encryptd_length)
 {
     // get 3 best key sizes
     const size_t N_KEYS = 3;
-    size_t *best_keysizes = get_best_keysizes(encrypted, size_t N_KEYS);
+    size_t *best_keysizes = get_best_keysizes(encrypted, N_KEYS);
 
     for (size_t i = 0; i < N_KEYS; i++)
     {

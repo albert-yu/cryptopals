@@ -175,11 +175,11 @@ long long eval_frequency(long long *freq_table, char *input)
  * Returns the score of the unscrambled string and stores the unscrambled
  * string and key in pointers.
  */
-long long unscramble(char *scrambled, char *unscrambled, char *the_key)
+long long hex_unscramble(char *scrambled, char *unscrambled, char *the_key)
 {   
     char *scrambled_bytes = hex_to_bytes(scrambled);
     int msg_length = strlen(scrambled_bytes);
-    // printf("message length: %d\n", msg_length);
+
     char *candidate_str = malloc(256 * sizeof(*candidate_str)); 
     long long max_freq = 0;
     long long *freq_table = get_frequency_table();
@@ -187,9 +187,7 @@ long long unscramble(char *scrambled, char *unscrambled, char *the_key)
     // avoid the null byte
     for (char c = 1; c > 0; c++)
     {        
-        // printf("Char: %c\n", c);
         char *decoded = decode_with_key(scrambled_bytes, msg_length, c);
-        // printf("%s\n", decoded);
         long long freq = eval_frequency(freq_table, decoded);
         if (freq > max_freq)
         {           
@@ -199,16 +197,10 @@ long long unscramble(char *scrambled, char *unscrambled, char *the_key)
             *the_key = c;
         }
 
-            
-        // printf("c: %c\n", c);
-        // causing crash
         if (decoded)
         {
             free(decoded);
         }            
-        // printf("freed\n");
-
-        // printf("\n");
     }
 
     if (freq_table)
@@ -227,7 +219,7 @@ void prob3_test()
     char *the_key = &null_term;
     char *scrambled = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
     char *unscrambled = malloc(256 * sizeof(*unscrambled));
-    long long score = unscramble(scrambled, unscrambled, the_key);
+    long long score = hex_unscramble(scrambled, unscrambled, the_key);
     if (*the_key != '\0')
     {
         printf("Key: %c\n", *the_key);
