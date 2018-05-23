@@ -186,12 +186,12 @@ char* read_file_as_string(char *filename, size_t *length_out)
 }
 
 
-unsigned char* get_b64_lookup()
+char* get_b64_lookup()
 {
     const int B64_SIZE = 64;
-    unsigned char *dec_2_base64 = 
+    char *dec_2_base64 = 
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    unsigned char *decode_b64_lookup = 
+    char *decode_b64_lookup = 
         calloc(B64_SIZE, sizeof(*decode_b64_lookup));
 
     for (int i = 0; i < B64_SIZE; i++)
@@ -210,7 +210,7 @@ unsigned char* get_b64_lookup()
  * @param b64lookup - the table/array that maps 
  *   a b64 char to int (e.g. A -> 0, B -> 1, etc.)
  */
-unsigned char* b64_to_bytes(char *b64str, size_t b64length, unsigned char *b64lookup)
+char* b64_to_bytes(char *b64str, size_t b64length, char *b64lookup)
 {
     if (b64length % 4 != 0)
     {
@@ -219,17 +219,17 @@ unsigned char* b64_to_bytes(char *b64str, size_t b64length, unsigned char *b64lo
     }
 
     size_t outputlen = (b64length / 4) * 3 + 1;
-    unsigned char* decoded = (unsigned char*) calloc(outputlen, sizeof(*decoded));
+    char* decoded = (char*) calloc(outputlen, sizeof(*decoded));
 
     size_t i = 0;
     size_t j = 0;
     while (i < b64length - 3)
     {
         // every 4 base-64 chars is 3 bytes
-        unsigned char b64char1 = b64lookup[b64str[i]];
-        unsigned char b64char2 = b64lookup[b64str[i + 1]];
-        unsigned char b64char3 = b64lookup[b64str[i + 2]];
-        unsigned char b64char4 = b64lookup[b64str[i + 3]];
+        char b64char1 = b64lookup[b64str[i]];
+        char b64char2 = b64lookup[b64str[i + 1]];
+        char b64char3 = b64lookup[b64str[i + 2]];
+        char b64char4 = b64lookup[b64str[i + 3]];
 
         // byte 1 consists of all 6 bits of 
         // b64char1 and the first two bits 
@@ -246,7 +246,6 @@ unsigned char* b64_to_bytes(char *b64str, size_t b64length, unsigned char *b64lo
 
         j += 3;
         i += 4;
-        printf("%s\n", decoded);
     }
     
     return decoded;
@@ -487,8 +486,8 @@ void prob6_test()
                             "generation of knowledge, exceeds the short vehemence "
                             "of any carnal pleasure.";
 
-    unsigned char *b64lookup = get_b64_lookup();
-    unsigned char *b64decoded = b64_to_bytes(b64_encoded, strlen(b64_encoded), b64lookup);
+    char *b64lookup = get_b64_lookup();
+    char *b64decoded = b64_to_bytes(b64_encoded, strlen(b64_encoded), b64lookup);
 
     if (strcmp(b64decoded, expected_decode) == 0)
     {
@@ -503,9 +502,9 @@ void prob6_test()
     
 
     // decode input string
-    unsigned char *all_the_bytes = b64_to_bytes(long_ass_string, *num_chars, b64lookup);
+    char *all_the_bytes = b64_to_bytes(long_ass_string, *num_chars, b64lookup);
     size_t bytes_len = strlen(all_the_bytes);
-
+    printf("%s\n", all_the_bytes);
     // do the breaking
     break_xor(all_the_bytes, bytes_len);
 
