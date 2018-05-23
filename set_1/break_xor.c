@@ -45,8 +45,8 @@ char* substring(char *input, size_t start, size_t end)
         exit(EXIT_FAILURE);
     }
 
-    size_t size = start - end + 1;
-    char *substr = (char*) calloc(size, sizeof(*substr));
+    size_t size = end - start + 1;      
+    char *substr = (char*) calloc(size, sizeof(*substr));    
     size_t substring_index = 0;
     for (size_t i = start; i < end; i++)
     {
@@ -255,7 +255,7 @@ unsigned char* b64_to_bytes(char *b64str, size_t b64length, unsigned char *b64lo
  * Compare function used for sorting
  * https://stackoverflow.com/a/1791064/9555588
  */
-int compare_function(const void *a,const void *b) 
+int compare_function(const void *a, const void *b) 
 {
     double *x = (double *) a;
     double *y = (double *) b;
@@ -285,9 +285,9 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
     const size_t KEYS_ARR_SIZE = 64;  
     double *hammings_lookup =
         calloc(KEYS_ARR_SIZE, sizeof(*hammings_lookup));
-
+    
     for (; keysize <= MAX_KEYSIZE; keysize++)
-    {
+    {       
         char *firstn = substring(encrypted, 0, keysize);
         char *secondn = substring(encrypted, keysize, keysize * 2);
         size_t distance = hamming(firstn, secondn);
@@ -397,9 +397,23 @@ void break_xor(char *encrypted, size_t encryptd_length)
             inner_indices[outer_i]++;
         }
 
-        // THEN solve each parition (block) as a single-character XOR
+        // this will contain the characters of the key
+        char *the_key = calloc(curr_keysize, sizeof(*the_key));
 
+        // THEN solve each partition as a single-character XOR
+        for (size_t i = 0; i < curr_keysize; i++)
+        {
+            // get current partition
+            char *partition = all_partitions[i];
 
+            // unscramble it
+            char *unscrambled = calloc(partition_length, sizeof(*unscrambled));
+            long long score = unscramble(partition, unscrambled, the_key);
+            the_key++;
+            free(unscrambled);
+        }
+
+        printf("key: %s\n", the_key);
         // cleanup
         for (size_t j = 0; j < curr_keysize; j++)
         {
@@ -408,6 +422,7 @@ void break_xor(char *encrypted, size_t encryptd_length)
         free(all_partitions);
 
         free(inner_indices);
+        free(the_key);
     }
 
     free(best_keysizes);
@@ -433,7 +448,6 @@ void prob6_test()
         printf("Expected: \t[%d]\n", expected);
         printf("Actual: \t[%d]\n", dist);
     }
-
 
     // test reading file
     char *filename = "./data/6.txt";
@@ -485,6 +499,9 @@ void prob6_test()
 
     // decode input string
     unsigned char *all_the_bytes = b64_to_bytes(long_ass_string, *num_chars, b64lookup);
+    size_t bytes_len = strlen(all_the_bytes);
+
+    break_xor(all_the_bytes, bytes_len);
 
     // clean up
     free(long_ass_string);
