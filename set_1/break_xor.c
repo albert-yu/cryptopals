@@ -443,10 +443,12 @@ void break_xor(char *encrypted, size_t encryptd_length)
  */
 void print_bytes(char *byte_array, size_t arr_len)
 {
-    for (size_t i = 0; i < arr_len; i++)
+    size_t i;
+    for (i = 0; i < arr_len; i++)
     {
         printf("%c", byte_array[i]);
     }
+    
     printf("\n");
 }
 
@@ -526,8 +528,8 @@ void prob6_test()
     // decode input string
     char *all_the_bytes = b64_to_bytes(
         long_ass_string, *b64_len_ptr, b64lookup, bytes_len_ptr);
-    
-    printf("%s\n", all_the_bytes);
+
+    // printf("%s\n", all_the_bytes);
     print_bytes(all_the_bytes, bytes_len);
 
     // do the breaking
