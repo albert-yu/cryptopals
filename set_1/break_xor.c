@@ -246,7 +246,9 @@ unsigned char* b64_to_bytes(char *b64str, size_t b64length, unsigned char *b64lo
 
         j += 3;
         i += 4;
+        printf("%s\n", decoded);
     }
+    
     return decoded;
 }
 
@@ -290,6 +292,9 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
     {       
         char *firstn = substring(encrypted, 0, keysize);
         char *secondn = substring(encrypted, keysize, keysize * 2);
+        // printf("foo\n");
+        // printf("1. %s\n", firstn);
+        // printf("2. %s\n", secondn);
         size_t distance = hamming(firstn, secondn);
         double normalized = (distance * 1.0) / keysize;
 
@@ -495,18 +500,19 @@ void prob6_test()
         printf("Expected: \t%s\n", expected_decode);
         printf("Actual: \t%s\n", b64decoded);
     }
-    free(b64decoded);
+    
 
     // decode input string
     unsigned char *all_the_bytes = b64_to_bytes(long_ass_string, *num_chars, b64lookup);
     size_t bytes_len = strlen(all_the_bytes);
 
+    // do the breaking
     break_xor(all_the_bytes, bytes_len);
 
     // clean up
     free(long_ass_string);
     free(num_chars);
-
+    free(b64decoded);
     free(b64lookup);
     free(all_the_bytes);
 
