@@ -169,16 +169,15 @@ long long eval_frequency(long long *freq_table, char *input)
 
 
 /*
- * Unscrambles the hex string by first converting it to a byte
- * array and XOR'ing it against all possible keys, choosing
- * the one with the highest frequency score.
- * Returns the score of the unscrambled string and stores the unscrambled
- * string and key in pointers.
+ * Unscrambles the byte array by XOR'ing it against all 
+ * possible keys, choosing the one with the highest 
+ * frequency score.
+ * Returns the score of the unscrambled string and stores 
+ * the unscrambled string and key in pointers.
  */
-long long hex_unscramble(char *scrambled, char *unscrambled, char *the_key)
-{   
-    char *scrambled_bytes = hex_to_bytes(scrambled);
-    int msg_length = strlen(scrambled_bytes);
+long long unscramble(char *scrambled, char *unscrambled, char *the_key)
+{
+    int msg_length = strlen(scrambled);
 
     char *candidate_str = malloc(256 * sizeof(*candidate_str)); 
     long long max_freq = 0;
@@ -187,7 +186,7 @@ long long hex_unscramble(char *scrambled, char *unscrambled, char *the_key)
     // avoid the null byte
     for (char c = 1; c > 0; c++)
     {        
-        char *decoded = decode_with_key(scrambled_bytes, msg_length, c);
+        char *decoded = decode_with_key(scrambled, msg_length, c);
         long long freq = eval_frequency(freq_table, decoded);
         if (freq > max_freq)
         {           
@@ -209,6 +208,17 @@ long long hex_unscramble(char *scrambled, char *unscrambled, char *the_key)
     // choose the one with the highest frequency score
     strcpy(unscrambled, candidate_str);
     return max_freq;
+}
+
+
+/*
+ * Unscrambles the hex string by first converting it to a byte
+ * array and applying the unscramble function
+ */
+long long hex_unscramble(char *scrambled, char *unscrambled, char *the_key)
+{   
+    char *scrambled_bytes = hex_to_bytes(scrambled);
+    return unscramble(scrambled_bytes, unscrambled, the_key);
 }
 
 
