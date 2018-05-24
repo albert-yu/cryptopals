@@ -60,6 +60,22 @@ char* substring(char *input, size_t start, size_t end)
 
 
 /*
+ * Counts the number of ones in a byte
+ */
+size_t count_ones(char c)
+{
+    // count the number of ones, Brian Kernighan's way
+    size_t count;
+    for (count = 0; c; count++)
+    {
+        c &= c - 1;
+    }
+
+    return count;
+}
+
+
+/*
  * Computes the Hamming distance between
  * two strings of equal length.
  * The Hamming distance is just the number of differing bits.
@@ -80,18 +96,35 @@ size_t hamming(const char *str_1, const char *str_2)
     while ((c1 = *str_1) && (c2 = *str_2))
     {
         char xord = c1 ^ c2; 
-
-        // count the number of ones, Brian Kernighan's way
-        size_t count;
-        for (count = 0; xord; count++)
-        {
-            xord &= xord - 1;
-        }
-
+        size_t count = count_ones(xord);
         total += count;
 
         str_1++;
         str_2++;
+    }
+
+    return total;
+}
+
+
+/*
+ * Computes the hamming distance between two byte arrays.
+ * ASSUMING both are of length @length. 
+ * Access violations totally possible.
+ */
+size_t hamming_with_len(
+    const char *str_1, const char *str_2, size_t length)
+{
+    size_t total = 0;
+    char c1, c2;
+    for (size_t i = 0; i < length; i++)
+    {
+        c1 = str_1[i];
+        c2 = str_2[i];
+        // use XOR to get the number of differing bits
+        char xord = c1 ^ c2;
+        size_t count = count_ones(xord);
+        total += count;
     }
 
     return total;
@@ -461,7 +494,7 @@ void prob6_test()
     // test Hamming distance
     char *string1 = "this is a test";
     char *string2 = "wokka wokka!!!";
-    size_t dist = hamming(string1, string2);
+    size_t dist = hamming_with_len(string1, string2, strlen(string1));
     size_t expected = 37;
     if (dist == expected)
     {
