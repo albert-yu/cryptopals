@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 #include "break_xor.h"
 
 
@@ -29,7 +30,7 @@ bool is_power_of_2(size_t v)
  */
 bool dbl_equals(double dbl1, double dbl2)
 {
-    return (abs(dbl1 - dbl2) < EPSILON);
+    return (fabs(dbl1 - dbl2) < EPSILON);
 }
 
 
@@ -469,8 +470,8 @@ void prob6_test()
     else
     {
         printf("Hamming distance test failed.\n");
-        printf("Expected: \t[%d]\n", expected);
-        printf("Actual: \t[%d]\n", dist);
+        printf("Expected: \t[%zu]\n", expected);
+        printf("Actual: \t[%zu]\n", dist);
     }
 
     // test reading file
@@ -482,7 +483,7 @@ void prob6_test()
     if (b64_len_ptr)
     {
         printf("Successfully read file.\n");
-        printf("\tNumber of characters: %d\n", *b64_len_ptr);
+        printf("\tNumber of characters: %zu\n", *b64_len_ptr);
     }
     else
     {
