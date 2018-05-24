@@ -332,7 +332,7 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
         // printf("foo\n");
         // printf("1. %s\n", firstn);
         // printf("2. %s\n", secondn);
-        size_t distance = hamming(firstn, secondn);
+        size_t distance = hamming_with_len(firstn, secondn, keysize);
         double normalized = (distance * 1.0) / keysize;
 
         hammings_lookup[keysize] = normalized;
@@ -564,7 +564,7 @@ void prob6_test()
         long_ass_string, *b64_len_ptr, b64lookup, bytes_len_ptr);
 
     // printf("%s\n", all_the_bytes);
-    print_bytes(all_the_bytes, bytes_len);
+    // print_bytes(all_the_bytes, bytes_len);
 
     // do the breaking
     break_xor(all_the_bytes, *bytes_len_ptr);
