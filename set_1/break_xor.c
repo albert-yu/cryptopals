@@ -60,6 +60,26 @@ char* substring(char *input, size_t start, size_t end)
 
 
 /*
+ * Copies substring to the buffer
+ */
+void substr_cpy(char *destination, const char *source, size_t start, size_t end)
+{
+    if (start >= end)
+    {
+        perror("Cannot have a starting index that is greater than the ending one.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    size_t substr_i = 0;
+    for (size_t i = start; i < end; i++)
+    {
+        destination[substr_i] = source[i];
+        substr_i++;
+    }
+}
+
+
+/*
  * Counts the number of ones in a byte
  */
 size_t count_ones(char c)
@@ -324,31 +344,42 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
     const size_t KEYS_ARR_SIZE = 64;  
     double *hammings_lookup =
         calloc(KEYS_ARR_SIZE, sizeof(*hammings_lookup));
-    
+
+    char *firstn = calloc(MAX_KEYSIZE + 1, sizeof(char));
+    char *secondn = calloc(MAX_KEYSIZE + 1, sizeof(char));
     for (; keysize <= MAX_KEYSIZE; keysize++)
-    {       
-        char *firstn = substring(encrypted, 0, keysize);
-        char *secondn = substring(encrypted, keysize, keysize * 2);
-        // printf("foo\n");
+    {    
+        // printf("foo\n");           
+        // printf("%zu\n", keysize);
+        // char *firstn = substring(encrypted, 0, keysize);
+        // char *secondn = substring(encrypted, keysize, keysize * 2);
+        substr_cpy(firstn, encrypted, 0 , keysize);
+        substr_cpy(secondn, encrypted, keysize, keysize * 2);
+
         // printf("1. %s\n", firstn);
         // printf("2. %s\n", secondn);
+        
         size_t distance = hamming_with_len(firstn, secondn, keysize);
         double normalized = (distance * 1.0) / keysize;
-
-        hammings_lookup[keysize] = normalized;
-
-        free(firstn);
-        free(secondn);
+        // printf("%f\n", normalized);
+        hammings_lookup[keysize] = normalized;        
     }
+    
+    free(firstn);
+    free(secondn);
+
+    firstn = NULL;
+    secondn = NULL;
 
     // sort in a new array
     double *sorted_hammings = calloc(KEYS_ARR_SIZE, sizeof(*sorted_hammings));
     memcpy(sorted_hammings, hammings_lookup, KEYS_ARR_SIZE);
     qsort(sorted_hammings, KEYS_ARR_SIZE, sizeof(*sorted_hammings), compare_function);
 
-    // store the smallest n distances here
-    // double *smallest_n_dists = 
-    //     (double*) calloc(num_keys + 1, sizeof(*smallest_n_dists));
+    // for (size_t i = 0; i < KEYS_ARR_SIZE; i++)
+    // {
+    //     printf("%f\n", sorted_hammings[i]);
+    // }
 
     // store the smallest n key sizes here
     size_t *smallest_n_keysizes =
