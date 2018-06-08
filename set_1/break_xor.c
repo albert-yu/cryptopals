@@ -341,6 +341,7 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
     const size_t MAX_KEYSIZE = 40;  
 
     // hold all the normalized hamming distances
+    // and maps key size -> hamming distance
     const size_t KEYS_ARR_SIZE = 64;  
     double *hammings_lookup =
         calloc(KEYS_ARR_SIZE, sizeof(*hammings_lookup));
@@ -364,10 +365,11 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
         // printf("%f\n", normalized);
         hammings_lookup[keysize] = normalized;        
     }
-    
+    //printf("foo\n");
     free(firstn);
+    //printf("foo\n");
     free(secondn);
-
+    //printf("foo\n");
     firstn = NULL;
     secondn = NULL;
 
@@ -425,9 +427,9 @@ void break_xor(char *encrypted, size_t encryptd_length)
     size_t *best_keysizes = get_best_keysizes(encrypted, N_KEYS);
 
     for (size_t i = 0; i < N_KEYS; i++)
-    {
+    {        
         size_t curr_keysize = best_keysizes[i];
-
+        printf("currkeysize: %zu\n", curr_keysize);  
         // FIRST partition the blocks by the keysize
         size_t partition_length = 
             // it is entirely possible for us to have 
@@ -492,12 +494,10 @@ void break_xor(char *encrypted, size_t encryptd_length)
         {
             free(all_partitions[j]);
         }
-        free(all_partitions);
-
+        free(all_partitions); 
         free(inner_indices);
         free(the_key);
-    }
-
+    }       
     free(best_keysizes);
 }
 
@@ -598,8 +598,14 @@ void prob6_test()
     // print_bytes(all_the_bytes, bytes_len);
 
     // do the breaking
-    break_xor(all_the_bytes, *bytes_len_ptr);
-
+    // break_xor(all_the_bytes, *bytes_len_ptr);
+    const size_t NUM_KEYS = 3;
+    size_t *best_keysizes = get_best_keysizes(all_the_bytes, NUM_KEYS);
+    for (size_t i = 0; i < NUM_KEYS; i++)
+    {
+        printf("%zu\n", best_keysizes[i]);  
+    }
+ 
     // clean up
     free(long_ass_string);
     free(b64_len_ptr);
