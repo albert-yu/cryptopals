@@ -327,6 +327,15 @@ int compare_function(const void *a, const void *b)
 }
 
 
+void dblcpy(double *destination, const double *source, size_t length)
+{
+    for (size_t i = 0; i < length; i++)
+    {
+	destination[i] = source[i];
+    }
+}
+
+
 /*
  * Try a bunch of different keysizes and find out which yield 
  * the smallest N Hamming distances. Store the results in
@@ -374,18 +383,25 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
     secondn = NULL;
 
     // sort in a new array
-    double *sorted_hammings = calloc(KEYS_ARR_SIZE, sizeof(*sorted_hammings));
-    memcpy(sorted_hammings, hammings_lookup, KEYS_ARR_SIZE);
+    double *sorted_hammings = (double*) calloc(KEYS_ARR_SIZE, sizeof(*sorted_hammings));
+    // memcpy(sorted_hammings, hammings_lookup, KEYS_ARR_SIZE);
+    dblcpy(sorted_hammings, hammings_lookup, KEYS_ARR_SIZE);    
+    for (size_t i = 0; i < KEYS_ARR_SIZE; i++)
+    { 
+        printf("%f\n", sorted_hammings[i]);
+        printf("%f\n\n", hammings_lookup[i]);
+    }
     qsort(sorted_hammings, KEYS_ARR_SIZE, sizeof(*sorted_hammings), compare_function);
 
     // for (size_t i = 0; i < KEYS_ARR_SIZE; i++)
-    // {
+    // { 
     //     printf("%f\n", sorted_hammings[i]);
+    //     printf("%f\n\n", hammings_lookup[i]);
     // }
 
     // store the smallest n key sizes here
     size_t *smallest_n_keysizes =
-        (size_t*) calloc(num_keys + 1, sizeof(*smallest_n_keysizes));
+        (size_t*) calloc(num_keys, sizeof(*smallest_n_keysizes));
 
     // find the first n nonzero mins
     const double ZERO = 0.0;
