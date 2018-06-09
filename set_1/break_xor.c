@@ -435,7 +435,7 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
     // store the smallest n key sizes here
     size_t *smallest_n_keysizes =
         (size_t*) calloc(num_keys * 4, sizeof(*smallest_n_keysizes));
-    printf("foo\n");
+
     // find the first n nonzero mins
     const double ZERO = 0.0;
     size_t start_i = 0;
@@ -478,11 +478,11 @@ void break_xor(char *encrypted, size_t encryptd_length)
             // it is entirely possible for us to have 
             // extra, but that is better than having 
             // not enough
-            encryptd_length / curr_keysize + 2;
+            encryptd_length / curr_keysize * 2;
 
         // array of strings
         char **all_partitions = 
-            (char**) malloc(curr_keysize * sizeof(*all_partitions));
+            (char**) malloc(curr_keysize * 2 * sizeof(*all_partitions));
 
         for (size_t j = 0; j < curr_keysize; j++)
         {
@@ -498,7 +498,7 @@ void break_xor(char *encrypted, size_t encryptd_length)
         // |0|1|2|      <- partition 1
         // ------------
         size_t *inner_indices = 
-            calloc(curr_keysize, sizeof(*inner_indices));
+            calloc(curr_keysize * 2, sizeof(*inner_indices));
 
         // now iterate through the encrypted text to partition it
         for (size_t k = 0; k < encryptd_length; k++)
@@ -516,7 +516,9 @@ void break_xor(char *encrypted, size_t encryptd_length)
         }
 
         // this will contain the characters of the key
-        char *the_key = calloc(curr_keysize, sizeof(*the_key));
+        char *the_key = (char*) calloc(curr_keysize * 8, sizeof(*the_key));
+
+        printf("foo\n");
 
         // THEN solve each partition as a single-character XOR
         for (size_t i = 0; i < curr_keysize; i++)
@@ -641,13 +643,13 @@ void prob6_test()
     // print_bytes(all_the_bytes, bytes_len);
 
     // do the breaking
-    // break_xor(all_the_bytes, *bytes_len_ptr);
-    const size_t NUM_KEYS = 3;
-    size_t *best_keysizes = get_best_keysizes(all_the_bytes, NUM_KEYS);
-    for (size_t i = 0; i < NUM_KEYS; i++)
-    {
-        printf("size: %zu\n", best_keysizes[i]);  
-    }
+    break_xor(all_the_bytes, *bytes_len_ptr);
+    // const size_t NUM_KEYS = 3;
+    // size_t *best_keysizes = get_best_keysizes(all_the_bytes, NUM_KEYS);
+    // for (size_t i = 0; i < NUM_KEYS; i++)
+    // {
+    //     printf("size: %zu\n", best_keysizes[i]);  
+    // }
  
     // clean up
     free(long_ass_string);
