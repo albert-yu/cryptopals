@@ -379,35 +379,44 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
     // hold all the normalized hamming distances
     // and maps key size -> hamming distance
     size_t KEYS_ARR_SIZE = MAX_KEYSIZE + 1;  
+    size_t MALLOC_SZ = KEYS_ARR_SIZE * 2;
     double *hammings_lookup =
         (double*) calloc(KEYS_ARR_SIZE, sizeof(*hammings_lookup));
-    
-    char *firstn = (char*) calloc(KEYS_ARR_SIZE, sizeof(*firstn));
-    printf("foo\n");
-    char *secondn = (char*) calloc(KEYS_ARR_SIZE, sizeof(*secondn));
+    printf("foo1\n");
+    char *first_n = (char*) malloc(MALLOC_SZ * sizeof(*first_n));
+    if (first_n == NULL)
+    {
+        exit(EXIT_FAILURE);
+    }
+    printf("foo2\n");
+    char *second_n = (char*) malloc(MALLOC_SZ * sizeof(*second_n));
+    if (second_n == NULL)
+    {
+        exit(EXIT_FAILURE);
+    }
     for (; keysize <= MAX_KEYSIZE; keysize++)
     {             
         // printf("%zu\n", keysize);
-        // char *firstn = substring(encrypted, 0, keysize);
-        // char *secondn = substring(encrypted, keysize, keysize * 2);
-        substr_cpy(firstn, encrypted, 0 , keysize);
-        substr_cpy(secondn, encrypted, keysize, keysize * 2);
+        // char *first_n = substring(encrypted, 0, keysize);
+        // char *second_n = substring(encrypted, keysize, keysize * 2);
+        substr_cpy(first_n, encrypted, 0 , keysize);
+        substr_cpy(second_n, encrypted, keysize, keysize * 2);
 
-        // printf("1. %s\n", firstn);
-        // printf("2. %s\n", secondn);
+        // printf("1. %s\n", first_n);
+        // printf("2. %s\n", second_n);
         
-        size_t distance = hamming_with_len(firstn, secondn, keysize);
+        size_t distance = hamming_with_len(first_n, second_n, keysize);
         double normalized = (distance * 1.0) / keysize;
         // printf("%f\n", normalized);
         hammings_lookup[keysize] = normalized;        
-        // free(firstn);
-        // free(secondn);
+        // free(first_n);
+        // free(second_n);
     }
 
-    free(firstn);
-    free(secondn);
-    firstn = NULL;
-    secondn = NULL;
+    free(first_n);
+    free(second_n);
+    first_n = NULL;
+    second_n = NULL;
 
     // sort in a new array
     double *sorted_hammings = (double*) calloc(KEYS_ARR_SIZE, sizeof(*sorted_hammings));
@@ -438,7 +447,7 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
         // could check if we ever reach a buffer overflow,
         // but nah
         double next_min = sorted_hammings[start_i];
-        
+
         // iterate through all the possible key
         // sizes and find the one that produced
         // this distance
