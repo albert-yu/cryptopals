@@ -327,12 +327,39 @@ int compare_function(const void *a, const void *b)
 }
 
 
+/*
+ * Copies the contents of an array of doubles to another
+ */
 void dblcpy(double *destination, const double *source, size_t length)
 {
     for (size_t i = 0; i < length; i++)
     {
-	destination[i] = source[i];
+	    destination[i] = source[i];
     }
+}
+
+/*
+ * Given a map from key size to hamming distance and 
+ * a hamming distance, find the original key size that
+ * is associated with that distance
+ * @param keysize_to_hamm - maps the keysizes to the
+    hamming distances
+ * @param length - number of keysizes
+ * @param target - the target hamming distance
+ */
+size_t get_keysize(double *keysize_to_hamm, size_t length, double target)
+{
+    for (size_t i = 0; i < length; i++)
+    {
+        double hamm_dist = keysize_to_hamm[i];
+        if (dbl_equals(hamm_dist, target))
+        {
+            return i;
+        }
+    }
+    // cannot have keysize 0, so makes sense
+    // to return this as default
+    return 0;
 }
 
 
@@ -351,15 +378,15 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
 
     // hold all the normalized hamming distances
     // and maps key size -> hamming distance
-    const size_t KEYS_ARR_SIZE = 64;  
+    size_t KEYS_ARR_SIZE = MAX_KEYSIZE + 1;  
     double *hammings_lookup =
-        calloc(KEYS_ARR_SIZE, sizeof(*hammings_lookup));
-
-    char *firstn = calloc(MAX_KEYSIZE + 1, sizeof(char));
-    char *secondn = calloc(MAX_KEYSIZE + 1, sizeof(char));
+        (double*) calloc(KEYS_ARR_SIZE, sizeof(*hammings_lookup));
+    
+    char *firstn = (char*) calloc(KEYS_ARR_SIZE, sizeof(*firstn));
+    printf("foo\n");
+    char *secondn = (char*) calloc(KEYS_ARR_SIZE, sizeof(*secondn));
     for (; keysize <= MAX_KEYSIZE; keysize++)
-    {    
-        // printf("foo\n");           
+    {             
         // printf("%zu\n", keysize);
         // char *firstn = substring(encrypted, 0, keysize);
         // char *secondn = substring(encrypted, keysize, keysize * 2);
@@ -373,12 +400,12 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
         double normalized = (distance * 1.0) / keysize;
         // printf("%f\n", normalized);
         hammings_lookup[keysize] = normalized;        
+        // free(firstn);
+        // free(secondn);
     }
-    //printf("foo\n");
+
     free(firstn);
-    //printf("foo\n");
     free(secondn);
-    //printf("foo\n");
     firstn = NULL;
     secondn = NULL;
 
@@ -386,18 +413,13 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
     double *sorted_hammings = (double*) calloc(KEYS_ARR_SIZE, sizeof(*sorted_hammings));
     // memcpy(sorted_hammings, hammings_lookup, KEYS_ARR_SIZE);
     dblcpy(sorted_hammings, hammings_lookup, KEYS_ARR_SIZE);    
-    for (size_t i = 0; i < KEYS_ARR_SIZE; i++)
-    { 
-        printf("%f\n", sorted_hammings[i]);
-        printf("%f\n\n", hammings_lookup[i]);
-    }
     qsort(sorted_hammings, KEYS_ARR_SIZE, sizeof(*sorted_hammings), compare_function);
 
-    // for (size_t i = 0; i < KEYS_ARR_SIZE; i++)
-    // { 
-    //     printf("%f\n", sorted_hammings[i]);
-    //     printf("%f\n\n", hammings_lookup[i]);
-    // }
+    for (size_t i = 0; i < KEYS_ARR_SIZE; i++)
+    { 
+        // printf("%f\n", sorted_hammings[i]);
+        printf("%zu: %f\n\n", i, hammings_lookup[i]);
+    }
 
     // store the smallest n key sizes here
     size_t *smallest_n_keysizes =
@@ -410,24 +432,18 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
     {
         start_i++;
     }
-
+    // printf("%zu\n", start_i);
     for (size_t i = 0; i < num_keys; i++)
     {
         // could check if we ever reach a buffer overflow,
         // but nah
         double next_min = sorted_hammings[start_i];
-
+        
         // iterate through all the possible key
         // sizes and find the one that produced
         // this distance
-        for (keysize = MIN_KEYSIZE; keysize <= MAX_KEYSIZE; keysize++)
-        {
-            double hamming = hammings_lookup[keysize];
-            if (dbl_equals(hamming, next_min))
-            {
-                smallest_n_keysizes[i] = next_min;
-            }
-        }
+        size_t keysize = get_keysize(hammings_lookup, KEYS_ARR_SIZE, next_min);
+        smallest_n_keysizes[i] = keysize;
 
         start_i++;
     }
@@ -619,7 +635,7 @@ void prob6_test()
     size_t *best_keysizes = get_best_keysizes(all_the_bytes, NUM_KEYS);
     for (size_t i = 0; i < NUM_KEYS; i++)
     {
-        printf("%zu\n", best_keysizes[i]);  
+        printf("size: %zu\n", best_keysizes[i]);  
     }
  
     // clean up
