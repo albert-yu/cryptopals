@@ -382,18 +382,19 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
     size_t MALLOC_SZ = KEYS_ARR_SIZE * 2;
     double *hammings_lookup =
         (double*) calloc(KEYS_ARR_SIZE, sizeof(*hammings_lookup));
-    printf("foo1\n");
+    // printf("foo1\n");
     char *first_n = (char*) malloc(MALLOC_SZ * sizeof(*first_n));
     if (first_n == NULL)
     {
         exit(EXIT_FAILURE);
     }
-    printf("foo2\n");
+    // printf("foo2\n");
     char *second_n = (char*) malloc(MALLOC_SZ * sizeof(*second_n));
     if (second_n == NULL)
     {
         exit(EXIT_FAILURE);
     }
+
     for (; keysize <= MAX_KEYSIZE; keysize++)
     {             
         // printf("%zu\n", keysize);
@@ -415,6 +416,7 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
 
     free(first_n);
     free(second_n);
+    
     first_n = NULL;
     second_n = NULL;
 
@@ -424,16 +426,16 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
     dblcpy(sorted_hammings, hammings_lookup, KEYS_ARR_SIZE);    
     qsort(sorted_hammings, KEYS_ARR_SIZE, sizeof(*sorted_hammings), compare_function);
 
-    for (size_t i = 0; i < KEYS_ARR_SIZE; i++)
-    { 
-        // printf("%f\n", sorted_hammings[i]);
-        printf("%zu: %f\n\n", i, hammings_lookup[i]);
-    }
+    // for (size_t i = 0; i < KEYS_ARR_SIZE; i++)
+    // { 
+    //     // printf("%f\n", sorted_hammings[i]);
+    //     printf("%zu: %f\n\n", i, hammings_lookup[i]);
+    // }
 
     // store the smallest n key sizes here
     size_t *smallest_n_keysizes =
-        (size_t*) calloc(num_keys, sizeof(*smallest_n_keysizes));
-
+        (size_t*) calloc(num_keys * 4, sizeof(*smallest_n_keysizes));
+    printf("foo\n");
     // find the first n nonzero mins
     const double ZERO = 0.0;
     size_t start_i = 0;
