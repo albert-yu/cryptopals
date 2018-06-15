@@ -262,8 +262,8 @@ char* get_b64_lookup()
  * @param b64str - the input string encoded in b64
  * @param b64length - the size of the b64 string
  * @param b64lookup - the table/array that maps 
- * @param len_ptr - pointer to store the length of resulting array
- *   a b64 char to int (e.g. A -> 0, B -> 1, etc.)
+ *    a b64 char to int (e.g. A -> 0, B -> 1, etc.)
+ * @param len_ptr - pointer to store the length of resulting array  
  */
 char* b64_to_bytes(
     char *b64str, size_t b64length, char *b64lookup, size_t *len_ptr)
@@ -543,10 +543,9 @@ void break_xor(char *encrypted, size_t encryptd_length)
         
         free(all_partitions);        
         free(inner_indices);	
-        free(the_key);
-        printf("foo\n");
+        free(the_key); 
     }       
-    free(best_keysizes);
+    free(best_keysizes); 
 }
 
 
@@ -657,8 +656,9 @@ void prob6_test()
     // clean up
     free(long_ass_string);
     free(b64_len_ptr);
-    free(b64decoded);
+    free(b64decoded); 
     free(b64lookup);
+    printf("foo\n");
     free(all_the_bytes);
 
     printf("\n");
