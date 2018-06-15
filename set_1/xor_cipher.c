@@ -198,6 +198,7 @@ long long unscramble_with_len(char* scrambled, char *unscrambled, char *the_key,
 
     // choose the one with the highest frequency score
     strcpy(unscrambled, candidate_str);
+    free(candidate_str);
     return max_freq;
 }
 

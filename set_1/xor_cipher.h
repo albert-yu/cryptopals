@@ -17,6 +17,7 @@ char* hex_to_bytes(char *hex_string);
  * Unscrambles single XOR-encrypted string.
  * Returns the score of the unscrambled string
  */
+long long unscramble_with_len(char* scrambled, char *unscrambled, char *the_key, size_t msg_length);
 long long unscramble(char *scrambled, char *unscrambled, char *the_key);
 
 /*
