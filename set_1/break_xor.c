@@ -246,7 +246,7 @@ char* get_b64_lookup()
     char *dec_2_base64 = 
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     char *decode_b64_lookup = 
-        calloc(B64_SIZE, sizeof(*decode_b64_lookup));
+        (char*) calloc(B64_SIZE * 2, sizeof(*decode_b64_lookup));
 
     for (int i = 0; i < B64_SIZE; i++)
     {
