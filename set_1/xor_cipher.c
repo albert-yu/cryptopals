@@ -168,17 +168,8 @@ long long eval_frequency(long long *freq_table, char *input)
 }
 
 
-/*
- * Unscrambles the byte array by XOR'ing it against all 
- * possible keys, choosing the one with the highest 
- * frequency score.
- * Returns the score of the unscrambled string and stores 
- * the unscrambled string and key in pointers.
- */
-long long unscramble(char *scrambled, char *unscrambled, char *the_key)
+long long unscramble_with_len(char* scrambled, char *unscrambled, char *the_key, size_t msg_length)
 {
-    size_t msg_length = strlen(scrambled);
-
     char *candidate_str = calloc(msg_length + 1, sizeof(*candidate_str)); 
     long long max_freq = 0;
     long long *freq_table = get_frequency_table();
@@ -208,6 +199,20 @@ long long unscramble(char *scrambled, char *unscrambled, char *the_key)
     // choose the one with the highest frequency score
     strcpy(unscrambled, candidate_str);
     return max_freq;
+}
+
+
+/*
+ * Unscrambles the byte array by XOR'ing it against all 
+ * possible keys, choosing the one with the highest 
+ * frequency score.
+ * Returns the score of the unscrambled string and stores 
+ * the unscrambled string and key in pointers.
+ */
+long long unscramble(char *scrambled, char *unscrambled, char *the_key)
+{
+    size_t msg_length = strlen(scrambled);
+    return unscramble_with_len(scrambled, unscrambled, the_key, msg_length);
 }
 
 
