@@ -530,7 +530,7 @@ void break_xor(char *encrypted, size_t encryptd_length)
             char *unscrambled = calloc(partition_length, sizeof(*unscrambled));
             long long score = unscramble(partition, unscrambled, key_ch_ptr);
             key_ch_ptr++;
-            
+            printf("unscrambled: %s\n", unscrambled); 
             free(unscrambled);
         }
 

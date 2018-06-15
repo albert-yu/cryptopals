@@ -63,7 +63,7 @@ char* byte_xor(char* string_1, char* string_2)
 /* 
  * Decodes a byte array with a given key with XOR
  */
-char* decode_with_key(char *message, int msg_length, char key)
+char* decode_with_key(char *message, size_t msg_length, char key)
 {   
     // first create string with char repeatedly concatenated
     // with itself   
@@ -177,9 +177,9 @@ long long eval_frequency(long long *freq_table, char *input)
  */
 long long unscramble(char *scrambled, char *unscrambled, char *the_key)
 {
-    int msg_length = strlen(scrambled);
+    size_t msg_length = strlen(scrambled);
 
-    char *candidate_str = malloc(256 * sizeof(*candidate_str)); 
+    char *candidate_str = calloc(msg_length + 1, sizeof(*candidate_str)); 
     long long max_freq = 0;
     long long *freq_table = get_frequency_table();
 
