@@ -517,8 +517,8 @@ void break_xor(char *encrypted, size_t encryptd_length)
 
         // this will contain the characters of the key
         char *the_key = (char*) calloc(curr_keysize * 8, sizeof(*the_key));
-
-        printf("foo\n");
+        char *key_ch_ptr = the_key;
+        // printf("foo\n");
 
         // THEN solve each partition as a single-character XOR
         for (size_t i = 0; i < curr_keysize; i++)
@@ -528,8 +528,9 @@ void break_xor(char *encrypted, size_t encryptd_length)
 
             // unscramble it
             char *unscrambled = calloc(partition_length, sizeof(*unscrambled));
-            long long score = unscramble(partition, unscrambled, the_key);
-            the_key++;
+            long long score = unscramble(partition, unscrambled, key_ch_ptr);
+            key_ch_ptr++;
+            
             free(unscrambled);
         }
 
@@ -539,9 +540,11 @@ void break_xor(char *encrypted, size_t encryptd_length)
         {
             free(all_partitions[j]);
         }
-        free(all_partitions); 
-        free(inner_indices);
+        
+        free(all_partitions);        
+        free(inner_indices);	
         free(the_key);
+        printf("foo\n");
     }       
     free(best_keysizes);
 }
