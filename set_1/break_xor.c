@@ -648,7 +648,7 @@ void break_xor(char *encrypted, size_t encryptd_length)
     // finally, use the best key to unscramble
     // the original message
     // char *plaintext = (char*) calloc(encryptd_length * 2, sizeof(*plaintext));
-    
+
 
     free(best_key);
     free(best_keysizes); 
@@ -748,8 +748,8 @@ void prob6_test()
         long_ass_string, *b64_len_ptr, b64lookup, bytes_len_ptr);
 
     // test partition
-    // size_t num_partitions = 5;
-    // char **partitions = partition(all_the_bytes, *bytes_len_ptr, num_partitions);
+    // size_t num_partitions = 2;
+    // char **partitions = partition("123456789", 9, num_partitions);
     // for (size_t i = 0; i < num_partitions; i++)
     // {
     //     printf("%s\n", partitions[i]);
