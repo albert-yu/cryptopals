@@ -463,6 +463,83 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
 }
 
 
+/*
+ * Maps N+{0} to (N+{0})^2
+ * breadth first (exhaust x-coordinate first)
+ * 
+ * 0 -> (0, 0)
+ * 1 -> (1, 0)
+ * 2 -> (2, 0)
+ * ...
+ * N-1 -> (N-1, 0)
+ * N -> (0, 1)
+ * N+1 -> (1, 1)
+ * etc.
+ * 
+ * x coord = n % depth
+ * y coord = n / depth (floor div)
+
+ * @param n - nonnegative integer
+ * @param depth - the maximum value of the x coordinate
+ * @param x - the x coordinate of the ordered pair
+ * @param y - the y coordinate of the ordered pair
+ */
+void one_to_2d(size_t n, const size_t depth, size_t *x, size_t *y)
+{
+    *x = n % depth;
+    *y = n / depth;
+}
+
+
+/*
+ * Given a partition size K, partitions a byte array 
+ * A into partitions P such that:
+ *
+ * P[0] = A[0], A[0 + K], A[0 + 2K],...
+ * P[1] = A[1], A[1 + K], A[1 + 2K],...
+ * ...
+ * P[K-1] = A[K-1], A[K-1 + K], etc...
+ *
+ * @param str - the byte array from which we are reading
+ * @param str_len - the length of the array
+ * @param num_partitions - K
+ */
+char** partition(const char *str, size_t str_len, size_t num_partitions)
+{
+    size_t remainder = str_len % num_partitions;
+
+    // figure out how large each partition needs to be
+    size_t partition_sz = remainder == 0 ? 
+                        str_len / num_partitions : 
+                        str_len / num_partitions + 1;
+
+    // allocate array of pointers
+    char **all_blocks = (char**) malloc(num_partitions * sizeof(char*));
+
+    // allocate mem for each partition
+    for (size_t i = 0; i < num_partitions; i++)
+    {
+        all_blocks[i] = (char*) calloc(partition_sz * 2, sizeof(char));
+    }
+
+    // now copy string contents into each partition
+    // we do this by defining a bijection from the nonnegative
+    // integers to ordered pairs of nonnegative integers
+    size_t x = 0;
+    size_t y = 0;
+    size_t *ptr_x = &x;
+    size_t *ptr_y = &y;
+    for (size_t i = 0; i < str_len; i++)
+    {
+        char c = str[i];
+        one_to_2d(i, num_partitions, ptr_x, ptr_y);
+        all_blocks[x][y] = c;
+    }
+
+    return all_blocks;
+}
+
+
 void break_xor(char *encrypted, size_t encryptd_length)
 {
     // get 3 best key sizes
@@ -472,23 +549,22 @@ void break_xor(char *encrypted, size_t encryptd_length)
     for (size_t i = 0; i < N_KEYS; i++)
     {        
         size_t curr_keysize = best_keysizes[i];
-        printf("currkeysize: %zu\n", curr_keysize);  
+        printf("current keysize: %zu\n", curr_keysize);  
         // FIRST partition the blocks by the keysize
         size_t partition_length = 
-            // it is entirely possible for us to have 
-            // extra, but that is better than having 
-            // not enough
-            encryptd_length / curr_keysize * 2;
+            encryptd_length / curr_keysize;
 
         // array of strings
         char **all_partitions = 
-            (char**) malloc(curr_keysize * 2 * sizeof(*all_partitions));
+            partition(encrypted, encryptd_length, curr_keysize);
 
-        for (size_t j = 0; j < curr_keysize; j++)
-        {
-            all_partitions[j] = 
-                (char*) calloc(partition_length, sizeof(char));
-        }
+        //     (char**) malloc(curr_keysize * 2 * sizeof(*all_partitions));
+
+        // for (size_t j = 0; j < curr_keysize; j++)
+        // {
+        //     all_partitions[j] = 
+        //         (char*) calloc(partition_length * 2, sizeof(char));
+        // }
 
         // these indices wil keep track of the position
         // within each partition
@@ -497,23 +573,23 @@ void break_xor(char *encrypted, size_t encryptd_length)
         // ------------
         // |0|1|2|      <- partition 1
         // ------------
-        size_t *inner_indices = 
-            calloc(curr_keysize * 2, sizeof(*inner_indices));
+        // size_t *inner_indices = 
+        //     calloc(curr_keysize * 2, sizeof(*inner_indices));
 
-        // now iterate through the encrypted text to partition it
-        for (size_t k = 0; k < encryptd_length; k++)
-        {
-            char c = encrypted[k];
-            size_t outer_i = k % curr_keysize;
+        // // now iterate through the encrypted text to partition it
+        // for (size_t k = 0; k < encryptd_length; k++)
+        // {
+        //     char c = encrypted[k];
+        //     size_t outer_i = k % curr_keysize;
 
-            size_t inner_i = inner_indices[outer_i];
+        //     size_t inner_i = inner_indices[outer_i];
 
-            // copy value to buffer
-            all_partitions[outer_i][inner_i] = c;
+        //     // copy value to buffer
+        //     all_partitions[outer_i][inner_i] = c;
 
-            // increment the inner index
-            inner_indices[outer_i]++;
-        }
+        //     // increment the inner index
+        //     inner_indices[outer_i]++;
+        // }
 
         // this will contain the characters of the key
         char *the_key = (char*) calloc(curr_keysize * 8, sizeof(*the_key));
@@ -528,6 +604,7 @@ void break_xor(char *encrypted, size_t encryptd_length)
 
             // unscramble it
             char *unscrambled = calloc(partition_length, sizeof(*unscrambled));
+            printf("%zu\n", partition_length);
             long long score = unscramble(partition, unscrambled, key_ch_ptr);
             key_ch_ptr++;
             printf("unscrambled: %s\n", unscrambled); 
@@ -542,7 +619,7 @@ void break_xor(char *encrypted, size_t encryptd_length)
         }
         
         free(all_partitions);        
-        free(inner_indices);	
+        // free(inner_indices);	
         free(the_key); 
     }       
     free(best_keysizes); 
@@ -640,6 +717,15 @@ void prob6_test()
     // decode input string
     char *all_the_bytes = b64_to_bytes(
         long_ass_string, *b64_len_ptr, b64lookup, bytes_len_ptr);
+
+    // test partition
+    // size_t num_partitions = 5;
+    // char **partitions = partition(all_the_bytes, *bytes_len_ptr, num_partitions);
+    // for (size_t i = 0; i < num_partitions; i++)
+    // {
+    //     printf("%s\n", partitions[i]);
+    // }
+
 
     // printf("%s\n", all_the_bytes);
     // print_bytes(all_the_bytes, bytes_len);
