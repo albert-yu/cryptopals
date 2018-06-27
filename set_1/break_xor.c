@@ -546,6 +546,12 @@ void break_xor(char *encrypted, size_t encryptd_length)
     const size_t N_KEYS = 3;
     size_t *best_keysizes = get_best_keysizes(encrypted, N_KEYS);
 
+    long long best_score = 0;
+
+    // allocate memory to hold the key
+    const int ARB_SIZE = 64;
+    char *best_key = (char*) calloc(ARB_SIZE, sizeof(*best_key));
+
     for (size_t i = 0; i < N_KEYS; i++)
     {        
         size_t curr_keysize = best_keysizes[i];
@@ -596,6 +602,7 @@ void break_xor(char *encrypted, size_t encryptd_length)
         char *key_ch_ptr = the_key;
         // printf("foo\n");
 
+        long long score_for_key = 0;
         // THEN solve each partition as a single-character XOR
         for (size_t i = 0; i < curr_keysize; i++)
         {
@@ -604,14 +611,24 @@ void break_xor(char *encrypted, size_t encryptd_length)
 
             // unscramble it
             char *unscrambled = calloc(partition_length, sizeof(*unscrambled));
-            printf("%zu\n", partition_length);
+            // printf("%zu\n", partition_length);
             long long score = unscramble(partition, unscrambled, key_ch_ptr);
+            // add to score for this key
+            score_for_key += score;
             key_ch_ptr++;
-            printf("unscrambled: %s\n", unscrambled); 
+            // printf("unscrambled: %s\n", unscrambled); 
             free(unscrambled);
         }
-
+        // put the key together
         printf("key: %s\n", the_key);
+
+        // check if we bested the best_score 
+        if (score_for_key > best_score)
+        {
+            best_score = score_for_key;
+            strcpy(best_key, the_key);
+        }
+       
         // cleanup
         for (size_t j = 0; j < curr_keysize; j++)
         {
@@ -622,6 +639,18 @@ void break_xor(char *encrypted, size_t encryptd_length)
         // free(inner_indices);	
         free(the_key); 
     }       
+
+    if (strlen(best_key))
+    {
+        printf("best key: %s\n", best_key);
+    }
+
+    // finally, use the best key to unscramble
+    // the original message
+    // char *plaintext = (char*) calloc(encryptd_length * 2, sizeof(*plaintext));
+    
+
+    free(best_key);
     free(best_keysizes); 
 }
 
