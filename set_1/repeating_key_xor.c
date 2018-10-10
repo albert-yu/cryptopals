@@ -9,8 +9,7 @@
  * e.g. 'B' = 0100 0010, so we would return the 
  * hex digit for 0100 => 4 (in dec) => '4'. 
  */
-char get_left_hex_char(char input)
-{
+char get_left_hex_char(char input) {
     char no_lower_half = input >> 4;
 
     // convert to int because function 
@@ -26,8 +25,7 @@ char get_left_hex_char(char input)
  * e.g. 'B' = 0100 0010, so we would return the 
  * hex digit for 0010 => 2 (in dec) => '2'. 
  */
-char get_right_hex_char(char input)
-{
+char get_right_hex_char(char input) {
     char mask = 15; // 0000 1111
     char no_upper_half = mask & input;
     int as_int = (int) no_upper_half;
@@ -36,11 +34,9 @@ char get_right_hex_char(char input)
 }
 
 
-void encrypt(const char *input, const char *key, char *output)
-{
+void encrypt(const char *input, const char *key, char *output) {
     // check if output has been allocated at all
-    if (!output)
-    {
+    if (!output) {
         perror("Need to allocate memory for output.\n");
         exit(EXIT_FAILURE);
     }
@@ -52,8 +48,7 @@ void encrypt(const char *input, const char *key, char *output)
     size_t key_len = strlen(key);
 
     char c;
-    while (c = *input)
-    {
+    while ((c = *input) != 0) {
         // take the modulus
         size_t key_offset = iter % key_len;
 
@@ -78,8 +73,7 @@ void encrypt(const char *input, const char *key, char *output)
 }
 
 
-void prob5_test()
-{
+void prob5_test() {
     printf("Running test for problem 5...\n");
     char *key = "ICE";
     char *stanza = "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal";
@@ -92,12 +86,10 @@ void prob5_test()
     char *actual = (char*) malloc(stanza_len * sizeof(*actual));
     encrypt(stanza, key, actual);
 
-    if (strcmp(expected, actual) == 0)
-    {        
+    if (strcmp(expected, actual) == 0) {        
         printf("Repeating XOR key test passed.\n");
     }
-    else
-    {
+    else {
         printf("Repeating XOR key failed.\n");
         printf("Expected: \t[%s]\n", expected);
         printf("Actual: \t[%s]\n", actual);

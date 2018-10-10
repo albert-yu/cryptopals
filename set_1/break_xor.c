@@ -14,8 +14,7 @@
 /*
  * Determine if given integer is a power of 2
  */
-bool is_power_of_2(size_t v)
-{
+bool is_power_of_2(size_t v) {
     if (v == 0)
         return false;
 
@@ -28,8 +27,7 @@ bool is_power_of_2(size_t v)
 /*
  * Determine if two doubles are equal
  */
-bool dbl_equals(double dbl1, double dbl2)
-{
+bool dbl_equals(double dbl1, double dbl2) {
     return (fabs(dbl1 - dbl2) < EPSILON);
 }
 
@@ -38,10 +36,8 @@ bool dbl_equals(double dbl1, double dbl2)
  * Returns the substring specified by the start and end indices.
  * End is not inclusive (e.g. 2 to 5 will just return 3 characters). 
  */
-char* substring(char *input, size_t start, size_t end)
-{
-    if (start >= end)
-    {
+char* substring(char *input, size_t start, size_t end) {
+    if (start >= end) {
         perror("Cannot have a starting index that is greater than the ending one.\n");
         exit(EXIT_FAILURE);
     }
@@ -49,8 +45,7 @@ char* substring(char *input, size_t start, size_t end)
     size_t size = end - start + 1;      
     char *substr = (char*) calloc(size, sizeof(*substr));    
     size_t substring_index = 0;
-    for (size_t i = start; i < end; i++)
-    {
+    for (size_t i = start; i < end; i++) {
         substr[substring_index] = input[i];
         substring_index++;
     }
@@ -62,17 +57,14 @@ char* substring(char *input, size_t start, size_t end)
 /*
  * Copies substring to the buffer
  */
-void substr_cpy(char *destination, const char *source, size_t start, size_t end)
-{
-    if (start >= end)
-    {
+void substr_cpy(char *destination, const char *source, size_t start, size_t end) {
+    if (start >= end) {
         perror("Cannot have a starting index that is greater than the ending one.\n");
         exit(EXIT_FAILURE);
     }
 
     size_t substr_i = 0;
-    for (size_t i = start; i < end; i++)
-    {
+    for (size_t i = start; i < end; i++) {
         destination[substr_i] = source[i];
         substr_i++;
     }
@@ -82,12 +74,10 @@ void substr_cpy(char *destination, const char *source, size_t start, size_t end)
 /*
  * Counts the number of ones in a byte
  */
-size_t count_ones(char c)
-{
+size_t count_ones(char c) {
     // count the number of ones, Brian Kernighan's way
     size_t count;
-    for (count = 0; c; count++)
-    {
+    for (count = 0; c; count++) {
         c &= c - 1;
     }
 
@@ -100,21 +90,18 @@ size_t count_ones(char c)
  * two strings of equal length.
  * The Hamming distance is just the number of differing bits.
  */
-size_t hamming(const char *str_1, const char *str_2)
-{
+size_t hamming(const char *str_1, const char *str_2) {
     size_t len_1 = strlen(str_1);
     size_t len_2 = strlen(str_2);
 
-    if (len_1 != len_2)
-    {
+    if (len_1 != len_2) {
         perror("Hamming distance not defined for strings of differing lengths.\n");
         exit(EXIT_FAILURE);
     }
 
     size_t total = 0;
     char c1, c2;
-    while ((c1 = *str_1) && (c2 = *str_2))
-    {
+    while ((c1 = *str_1) && (c2 = *str_2)) {
         char xord = c1 ^ c2; 
         size_t count = count_ones(xord);
         total += count;
@@ -133,12 +120,10 @@ size_t hamming(const char *str_1, const char *str_2)
  * Access violations totally possible.
  */
 size_t hamming_with_len(
-    const char *str_1, const char *str_2, size_t length)
-{
+    const char *str_1, const char *str_2, size_t length) {
     size_t total = 0;
     char c1, c2;
-    for (size_t i = 0; i < length; i++)
-    {
+    for (size_t i = 0; i < length; i++) {
         c1 = str_1[i];
         c2 = str_2[i];
         // use XOR to get the number of differing bits
@@ -156,11 +141,9 @@ size_t hamming_with_len(
  * and remove newlines and carriage returns.
  * Stores the length as well.
  */
-char* read_file_as_string(char *filename, size_t *length_out)
-{
+char* read_file_as_string(char *filename, size_t *length_out) {
     // check to make sure length_out is not null
-    if (!length_out)
-    {
+    if (!length_out) {
         perror("length_out param must not be null.\n");
         exit(EXIT_FAILURE);
     }
@@ -169,8 +152,7 @@ char* read_file_as_string(char *filename, size_t *length_out)
     FILE *fp;
     fp = fopen(filename, "r");
 
-    if (fp == NULL)
-    {
+    if (fp == NULL) {
         perror("Error while opening the file.\n");
         exit(EXIT_FAILURE);
     }
@@ -182,11 +164,9 @@ char* read_file_as_string(char *filename, size_t *length_out)
     // keep track of character count
     size_t count = 0;
     char ch;
-    while ((ch = fgetc(fp)) != EOF)
-    {
+    while ((ch = fgetc(fp)) != EOF) {
         bool is_escape_char = false;
-        switch (ch)
-        {
+        switch (ch) {
             case '\n':
             case '\r':
             case '\t':
@@ -197,14 +177,12 @@ char* read_file_as_string(char *filename, size_t *length_out)
                 break;
         }
 
-        if (is_escape_char)
-        {
+        if (is_escape_char) {
             continue;
         }
 
         // check if we've reached the end of the buffer
-        if (count == BUF_LEN)
-        {
+        if (count == BUF_LEN) {
             // create a new buffer that is 2x size
             BUF_LEN *= 2;
             // char *temp_buf = (char*) calloc(BUF_LEN, sizeof(*temp_buf));
@@ -227,8 +205,7 @@ char* read_file_as_string(char *filename, size_t *length_out)
     // the last character occupies
     // the last space in the buffer
     // (preventing null termination)
-    if (is_power_of_2(count))
-    {
+    if (is_power_of_2(count)) {
         BUF_LEN *= 2;
         ret_val = (char*) realloc(ret_val, BUF_LEN);
         ret_val[count] = '\0';
@@ -240,16 +217,14 @@ char* read_file_as_string(char *filename, size_t *length_out)
 }
 
 
-char* get_b64_lookup()
-{
+char* get_b64_lookup() {
     const int B64_SIZE = 64;
     char *dec_2_base64 = 
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     char *decode_b64_lookup = 
         (char*) calloc(B64_SIZE * 2, sizeof(*decode_b64_lookup));
 
-    for (int i = 0; i < B64_SIZE; i++)
-    {
+    for (int i = 0; i < B64_SIZE; i++) {
         decode_b64_lookup[dec_2_base64[i]] = i;
     }
 
@@ -266,10 +241,8 @@ char* get_b64_lookup()
  * @param len_ptr - pointer to store the length of resulting array  
  */
 char* b64_to_bytes(
-    char *b64str, size_t b64length, char *b64lookup, size_t *len_ptr)
-{
-    if (b64length % 4 != 0)
-    {
+    char *b64str, size_t b64length, char *b64lookup, size_t *len_ptr) {
+    if (b64length % 4 != 0) {
         perror("Invalid base-64 string. Must be evenly divisible by 4.\n");
         exit(EXIT_FAILURE);
     }
@@ -281,8 +254,7 @@ char* b64_to_bytes(
 
     size_t i = 0;
     size_t j = 0;
-    while (i < b64length - 3)
-    {
+    while (i < b64length - 3) {
         // every 4 base-64 chars is 3 bytes
         char b64char1 = b64lookup[b64str[i]];
         char b64char2 = b64lookup[b64str[i + 1]];
@@ -314,8 +286,7 @@ char* b64_to_bytes(
  * Compare function used for sorting
  * https://stackoverflow.com/a/1791064/9555588
  */
-int compare_function(const void *a, const void *b) 
-{
+int compare_function(const void *a, const void *b)  {
     double *x = (double *) a;
     double *y = (double *) b;
 
@@ -330,10 +301,8 @@ int compare_function(const void *a, const void *b)
 /*
  * Copies the contents of an array of doubles to another
  */
-void dblcpy(double *destination, const double *source, size_t length)
-{
-    for (size_t i = 0; i < length; i++)
-    {
+void dblcpy(double *destination, const double *source, size_t length) {
+    for (size_t i = 0; i < length; i++) {
 	    destination[i] = source[i];
     }
 }
@@ -347,13 +316,10 @@ void dblcpy(double *destination, const double *source, size_t length)
  * @param length - number of keysizes
  * @param target - the target hamming distance
  */
-size_t get_keysize(double *keysize_to_hamm, size_t length, double target)
-{
-    for (size_t i = 0; i < length; i++)
-    {
+size_t get_keysize(double *keysize_to_hamm, size_t length, double target) {
+    for (size_t i = 0; i < length; i++) {
         double hamm_dist = keysize_to_hamm[i];
-        if (dbl_equals(hamm_dist, target))
-        {
+        if (dbl_equals(hamm_dist, target)) {
             return i;
         }
     }
@@ -370,8 +336,7 @@ size_t get_keysize(double *keysize_to_hamm, size_t length, double target)
  * Assume encrypted string is greater than or equal to 2x the max 
  * keysize length.
  */
-size_t* get_best_keysizes(char *encrypted, size_t num_keys)
-{
+size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
     const size_t MIN_KEYSIZE = 2;
     size_t keysize = MIN_KEYSIZE;
     const size_t MAX_KEYSIZE = 40;  
@@ -384,19 +349,16 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
         (double*) calloc(KEYS_ARR_SIZE, sizeof(*hammings_lookup));
     // printf("foo1\n");
     char *first_n = (char*) malloc(MALLOC_SZ * sizeof(*first_n));
-    if (first_n == NULL)
-    {
+    if (first_n == NULL) {
         exit(EXIT_FAILURE);
     }
     // printf("foo2\n");
     char *second_n = (char*) malloc(MALLOC_SZ * sizeof(*second_n));
-    if (second_n == NULL)
-    {
+    if (second_n == NULL) {
         exit(EXIT_FAILURE);
     }
 
-    for (; keysize <= MAX_KEYSIZE; keysize++)
-    {             
+    for (; keysize <= MAX_KEYSIZE; keysize++) {             
         // printf("%zu\n", keysize);
         // char *first_n = substring(encrypted, 0, keysize);
         // char *second_n = substring(encrypted, keysize, keysize * 2);
@@ -439,13 +401,11 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
     // find the first n nonzero mins
     const double ZERO = 0.0;
     size_t start_i = 0;
-    while (dbl_equals(sorted_hammings[start_i], ZERO))
-    {
+    while (dbl_equals(sorted_hammings[start_i], ZERO)) {
         start_i++;
     }
     // printf("%zu\n", start_i);
-    for (size_t i = 0; i < num_keys; i++)
-    {
+    for (size_t i = 0; i < num_keys; i++) {
         // could check if we ever reach a buffer overflow,
         // but nah
         double next_min = sorted_hammings[start_i];
@@ -484,8 +444,7 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys)
  * @param x - the x coordinate of the ordered pair
  * @param y - the y coordinate of the ordered pair
  */
-void one_to_2d(size_t n, const size_t depth, size_t *x, size_t *y)
-{
+void one_to_2d(size_t n, const size_t depth, size_t *x, size_t *y) {
     *x = n % depth;
     *y = n / depth;
 }
@@ -504,8 +463,7 @@ void one_to_2d(size_t n, const size_t depth, size_t *x, size_t *y)
  * @param str_len - the length of the array
  * @param num_partitions - K
  */
-char** partition(const char *str, size_t str_len, size_t num_partitions)
-{
+char** partition(const char *str, size_t str_len, size_t num_partitions) {
     size_t remainder = str_len % num_partitions;
 
     // figure out how large each partition needs to be
@@ -517,8 +475,7 @@ char** partition(const char *str, size_t str_len, size_t num_partitions)
     char **all_blocks = (char**) malloc(num_partitions * sizeof(char*));
 
     // allocate mem for each partition
-    for (size_t i = 0; i < num_partitions; i++)
-    {
+    for (size_t i = 0; i < num_partitions; i++) {
         all_blocks[i] = (char*) calloc(partition_sz * 2, sizeof(char));
     }
 
@@ -529,8 +486,7 @@ char** partition(const char *str, size_t str_len, size_t num_partitions)
     size_t y = 0;
     size_t *ptr_x = &x;
     size_t *ptr_y = &y;
-    for (size_t i = 0; i < str_len; i++)
-    {
+    for (size_t i = 0; i < str_len; i++) {
         char c = str[i];
         one_to_2d(i, num_partitions, ptr_x, ptr_y);
         all_blocks[x][y] = c;
@@ -540,8 +496,7 @@ char** partition(const char *str, size_t str_len, size_t num_partitions)
 }
 
 
-void break_xor(char *encrypted, size_t encryptd_length)
-{
+void break_xor(char *encrypted, size_t encryptd_length) {
     // get 3 best key sizes
     const size_t N_KEYS = 3;
     size_t *best_keysizes = get_best_keysizes(encrypted, N_KEYS);
@@ -552,8 +507,7 @@ void break_xor(char *encrypted, size_t encryptd_length)
     const int ARB_SIZE = 64;
     char *best_key = (char*) calloc(ARB_SIZE, sizeof(*best_key));
 
-    for (size_t i = 0; i < N_KEYS; i++)
-    {        
+    for (size_t i = 0; i < N_KEYS; i++) {        
         size_t curr_keysize = best_keysizes[i];
         printf("current keysize: %zu\n", curr_keysize);  
         // FIRST partition the blocks by the keysize
@@ -604,8 +558,7 @@ void break_xor(char *encrypted, size_t encryptd_length)
 
         long long score_for_key = 0;
         // THEN solve each partition as a single-character XOR
-        for (size_t i = 0; i < curr_keysize; i++)
-        {
+        for (size_t i = 0; i < curr_keysize; i++) {
             // get current partition
             char *partition = all_partitions[i];
 
@@ -623,15 +576,13 @@ void break_xor(char *encrypted, size_t encryptd_length)
         printf("key: %s\n", the_key);
 
         // check if we bested the best_score 
-        if (score_for_key > best_score)
-        {
+        if (score_for_key > best_score) {
             best_score = score_for_key;
             strcpy(best_key, the_key);
         }
        
         // cleanup
-        for (size_t j = 0; j < curr_keysize; j++)
-        {
+        for (size_t j = 0; j < curr_keysize; j++) {
             free(all_partitions[j]);
         }
         
@@ -640,8 +591,7 @@ void break_xor(char *encrypted, size_t encryptd_length)
         free(the_key); 
     }       
 
-    if (strlen(best_key))
-    {
+    if (strlen(best_key)) {
         printf("best key: %s\n", best_key);
     }
 
@@ -659,11 +609,9 @@ void break_xor(char *encrypted, size_t encryptd_length)
  * Print chars one by one because string format
  * terminates at null
  */
-void print_bytes(char *byte_array, size_t arr_len)
-{
+void print_bytes(char *byte_array, size_t arr_len) {
     size_t i;
-    for (i = 0; i < arr_len; i++)
-    {
+    for (i = 0; i < arr_len; i++) {
         printf("%c", byte_array[i]);
     }
     
@@ -671,8 +619,7 @@ void print_bytes(char *byte_array, size_t arr_len)
 }
 
 
-void prob6_test()
-{
+void prob6_test() {
     printf("Running test for problem 6...\n");
 
     // test Hamming distance
@@ -680,12 +627,10 @@ void prob6_test()
     char *string2 = "wokka wokka!!!";
     size_t dist = hamming_with_len(string1, string2, strlen(string1));
     size_t expected = 37;
-    if (dist == expected)
-    {
+    if (dist == expected) {
         printf("Hamming distance test passed.\n");
     }
-    else
-    {
+    else {
         printf("Hamming distance test failed.\n");
         printf("Expected: \t[%zu]\n", expected);
         printf("Actual: \t[%zu]\n", dist);
@@ -697,13 +642,11 @@ void prob6_test()
     char *long_ass_string = 
         read_file_as_string(filename, b64_len_ptr);
 
-    if (b64_len_ptr)
-    {
+    if (b64_len_ptr) {
         printf("Successfully read file.\n");
         printf("\tNumber of characters: %zu\n", *b64_len_ptr);
     }
-    else
-    {
+    else {
         printf("Failed to read.\n");
     }
 
@@ -732,12 +675,10 @@ void prob6_test()
     char *b64decoded = b64_to_bytes(
         b64_encoded, strlen(b64_encoded), b64lookup, bytes_len_ptr);
 
-    if (strcmp(b64decoded, expected_decode) == 0)
-    {
+    if (strcmp(b64decoded, expected_decode) == 0) {
         printf("b64 decode test passed.\n");
     }
-    else
-    {
+    else {
         printf("b64 test failed.\n");
         printf("Expected: \t%s\n", expected_decode);
         printf("Actual: \t%s\n", b64decoded);
@@ -750,8 +691,7 @@ void prob6_test()
     // test partition
     size_t num_partitions = 10;
     char **partitions = partition("012345678901234567890123456789", 30, num_partitions);
-    for (size_t i = 0; i < num_partitions; i++)
-    {
+    for (size_t i = 0; i < num_partitions; i++) {
         printf("%s\n", partitions[i]);
     }
 

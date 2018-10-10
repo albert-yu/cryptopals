@@ -5,8 +5,7 @@
 
 #include "break_xor.h"
 
-int main()
-{
+int main() {
     // Set 1
     prob1_test();
     prob2_test();

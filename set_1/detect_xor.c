@@ -4,11 +4,9 @@
 
 #include "detect_xor.h"
 
-void copy_over_strings(char **destination, char **source, unsigned int num_strings)
-{   
+void copy_over_strings(char **destination, char **source, unsigned int num_strings) {   
     unsigned int i;
-    for (i = 0; i < num_strings; i++)
-    {
+    for (i = 0; i < num_strings; i++) {
         char *line = source[i];
         size_t str_size = strlen(line) + 1;  // + 1 for null terminator
 
@@ -24,11 +22,9 @@ void copy_over_strings(char **destination, char **source, unsigned int num_strin
 /*
  * Frees up the memory used by an array of pointers
  */
-void delete(char **pointer_arr, unsigned int block_size)
-{
+void delete(char **pointer_arr, unsigned int block_size) {
     unsigned int i;
-    for (i = 0; i < block_size; i++)
-    {
+    for (i = 0; i < block_size; i++) {
         free(pointer_arr[i]);
     }
 
@@ -40,14 +36,12 @@ void delete(char **pointer_arr, unsigned int block_size)
  * Reads file into memory. Returns an array of pointers as well as the number of lines.
  * Assumes the length of the lines as 60
  */
-char** read_file(char *filename, unsigned long *num_lines)
-{
+char** read_file(char *filename, unsigned long *num_lines) {
     // open the file
     FILE *fp;
     fp = fopen(filename, "r");
 
-    if (fp == NULL)
-    {
+    if (fp == NULL) {
         perror("Error while opening the file.\n");
         exit(EXIT_FAILURE);
     }
@@ -63,16 +57,13 @@ char** read_file(char *filename, unsigned long *num_lines)
     int line_ptr_offset = 0;  // points to position within the line
 
     char ch;
-    while ((ch = fgetc(fp)) != EOF)
-    {
-        if (ch == '\n')
-        {
+    while ((ch = fgetc(fp)) != EOF) {
+        if (ch == '\n') {
             // copy null terminator instead of newline at end of string
             all_lines[curr_position][line_ptr_offset] = '\0';
             curr_position++;
 
-            if (curr_position >= block_size - 1)
-            {
+            if (curr_position >= block_size - 1) {
                 // double the block size to account for more lines
                 block_size *= 2;
 
@@ -102,8 +93,7 @@ char** read_file(char *filename, unsigned long *num_lines)
     unsigned long line_count = curr_position + 1;
     
     *num_lines = line_count;
-    if (fp)
-    {
+    if (fp) {
         fclose(fp);
     }
     
@@ -118,8 +108,7 @@ char** read_file(char *filename, unsigned long *num_lines)
  */
 char* unscramble_all(char **hex_strings, 
                      unsigned long num_strings, 
-                     char *the_key)
-{
+                     char *the_key) {
     // expected string length
     const int EXPECTED_LEN = 60; 
 
@@ -133,11 +122,9 @@ char* unscramble_all(char **hex_strings,
     // iterate through the strings and calculate the
     // likelihood that it's an English sentence
     unsigned int i = 0;
-    for (i = 0; i < num_strings; i++)
-    {
+    for (i = 0; i < num_strings; i++) {
         char* hex_str = hex_strings[i];
-        if (strlen(hex_str) != EXPECTED_LEN)
-        {
+        if (strlen(hex_str) != EXPECTED_LEN) {
             // length must be 60
             continue;
         }
@@ -151,14 +138,12 @@ char* unscramble_all(char **hex_strings,
         long long score = hex_unscramble(hex_str, unscrambled, curr_key);
 
         // printf("i = %d, score = %lli\n", i, score);       
-        if (score > max_score)
-        {
+        if (score > max_score) {
             strcpy(candidate, unscrambled);
             *the_key = *curr_key;
             max_score = score;
         }
-        if (unscrambled)
-        {
+        if (unscrambled) {
             free(unscrambled);
         }
     }
@@ -167,8 +152,7 @@ char* unscramble_all(char **hex_strings,
 }
 
 
-void prob4_test()
-{
+void prob4_test() {
     printf("Running test for problem 4...\n");
 
     char *filename = "./data/4.txt";
@@ -183,17 +167,14 @@ void prob4_test()
     char *unscrambled_string = unscramble_all(lines, *num_lines, key);
 
 
-    if (key)
-    {
+    if (key) {
         printf("Key: %c\n", *key);
     }
 
-    if (unscrambled_string)
-    {
+    if (unscrambled_string) {
         printf("Unscrambled: %s\n", unscrambled_string);
     }
-    else
-    {
+    else {
         printf("Unable to unscramble with XOR cipher!\n");
     }
 

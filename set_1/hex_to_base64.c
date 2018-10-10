@@ -9,8 +9,7 @@
 /*
  * Converts every 6 hex characters to 4 b64 characters
  */
-void get_b64_quads(const char *hex, char *b64quads, int pad)
-{  
+void get_b64_quads(const char *hex, char *b64quads, int pad) {  
     char *dec_2_base64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
     char h0 = hex_byte(hex + 0);
@@ -33,36 +32,28 @@ void get_b64_quads(const char *hex, char *b64quads, int pad)
 /*
  * Converts a hexadecimal formatted string to base64
  */
-char* hex_to_base64(char *hex)
-{
+char* hex_to_base64(char *hex) {
     int hexstring_size = strlen(hex);
-    if (!hexstring_size)
-    {
+    if (!hexstring_size) {
         return NULL;
     }
 
-    if (hexstring_size % 2 != 0)
-    {
+    if (hexstring_size % 2 != 0) {
         return NULL;
     }
 
     // remove whitespaces from hex string
     char *moveto = NULL;
     char *p = hex;
-    while (*p)
-    {
-        if (*p == ' ')
-        {
-            if (moveto == NULL)
-            {
+    while (*p) {
+        if (*p == ' ') {
+            if (moveto == NULL) {
                 moveto = p;
             }
         }
 
-        else
-        {
-            if (moveto)
-            {
+        else {
+            if (moveto) {
                 memmove(moveto, p, strlen(p) + 1);
                 moveto = NULL;
             }
@@ -76,16 +67,14 @@ char* hex_to_base64(char *hex)
 
     // walk through the byte array, converting each 6 hex characters to 4 base64 chars
     char *base64ptr = base64;
-    while (hexstring_size > 6)
-    {
+    while (hexstring_size > 6) {
         get_b64_quads(hex, base64ptr, 0);
         hexstring_size -= 6;
         hex += 6;
         base64ptr += 4;
     }
 
-    if (hexstring_size > 0)
-    {
+    if (hexstring_size > 0) {
         char temphex[6] = { '0', '0', '0', '0', '0', '0' };
         memcpy(temphex, hex, hexstring_size);
         get_b64_quads(temphex, base64ptr, hexstring_size);
@@ -95,18 +84,15 @@ char* hex_to_base64(char *hex)
 }
 
 
-void prob1_test()
-{
+void prob1_test() {
     printf("Running test for problem 1...\n");
     char *input = "49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d";
     char *expected = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t";
     char *actual = hex_to_base64(input);
-    if (strcmp(expected, actual) == 0)
-    {
+    if (strcmp(expected, actual) == 0) {
         printf("Hex to Base64 test passed.\n");
     }
-    else
-    {
+    else {
         printf("Hex to Base64 test failed.\n");
         printf("Expected: \t[%s]\n", expected);
         printf("Actual: \t[%s]\n", actual);

@@ -11,12 +11,10 @@
  * Convert hex string to bytes by parsing two chars at a time
  * Need to free resulting pointer's memory
  */
-char* hex_to_bytes(char *hex_string)
-{
+char* hex_to_bytes(char *hex_string) {
     int hex_length = strlen(hex_string);
     // not handling the odd case--yet
-    if ((hex_length % 2) != 0)
-    {
+    if ((hex_length % 2) != 0) {
         return "";
     }
 
@@ -24,8 +22,7 @@ char* hex_to_bytes(char *hex_string)
     char *byte_array = calloc(ascii_length, sizeof(*byte_array));
     int i = 0;
     int j = 0;
-    while (i < hex_length)
-    {
+    while (i < hex_length) {
         int char_val = hex_to_int(hex_string[i], hex_string[i + 1]);
         byte_array[j] = (char)char_val;
         j += 1;
@@ -38,18 +35,15 @@ char* hex_to_bytes(char *hex_string)
 /*
  * Byte-by-byte xor
  */
-char* byte_xor(char* string_1, char* string_2)
-{
+char* byte_xor(char* string_1, char* string_2) {
     int len_1 = strlen(string_1);
     int len_2 = strlen(string_2);
-    if (len_1 != len_2)
-    {
+    if (len_1 != len_2) {
         return "";
     }
     // needs to be freed
     char *retval = malloc((len_1 + 1) * sizeof(*retval));
-    for (int i = 0; i < len_1; i++)
-    {
+    for (int i = 0; i < len_1; i++) {
         retval[i] = string_1[i] ^ string_2[i];
     }
 
@@ -63,13 +57,11 @@ char* byte_xor(char* string_1, char* string_2)
 /* 
  * Decodes a byte array with a given key with XOR
  */
-char* decode_with_key(char *message, size_t msg_length, char key)
-{   
+char* decode_with_key(char *message, size_t msg_length, char key) {   
     // first create string with char repeatedly concatenated
     // with itself   
     char *key_string = malloc((msg_length + 1) * sizeof(char));
-    for (int i = 0; i < msg_length; i++)
-    {
+    for (int i = 0; i < msg_length; i++) {
         key_string[i] = key;
     }
     key_string[msg_length] = '\0';
@@ -89,8 +81,7 @@ char* decode_with_key(char *message, size_t msg_length, char key)
  * Since characters behave like integers, we can use them as
  * the array indices.
  */
-long long* get_frequency_table()
-{
+long long* get_frequency_table() {
     const int NUM_CHARS = 256;
     long long *freq_table = (long long*)calloc(NUM_CHARS, sizeof(*freq_table));
 
@@ -136,8 +127,7 @@ long long* get_frequency_table()
  * Converts upper-case ASCII char to lower case
  * or leaves it alone if it's already lower case
  */
-char lower_ascii(char c)
-{
+char lower_ascii(char c) {
     return (c <= 'Z' && c >= 'A' ? c + 32: c);
 }
 
@@ -145,17 +135,14 @@ char lower_ascii(char c)
 /*
  * Scores a piece of text for the likelihood that it's English
  */
-long long eval_frequency(long long *freq_table, char *input)
-{ 
+long long eval_frequency(long long *freq_table, char *input) { 
     long long freq = 0;
 
-    while (*input)
-    {
+    while (*input) {
         char c = *input;
         c = lower_ascii(c);
 
-        if (isalpha(c) || c == ' ')
-        {
+        if (isalpha(c) || c == ' ') {
             long long freq_val = freq_table[c];
             freq += freq_val;
         }
@@ -168,27 +155,23 @@ long long eval_frequency(long long *freq_table, char *input)
 }
 
 
-long long unscramble_with_len(char* scrambled, char *unscrambled, char *the_key, size_t msg_length)
-{
+long long unscramble_with_len(char* scrambled, char *unscrambled, char *the_key, size_t msg_length) {
     char *candidate_str = calloc(msg_length + 1, sizeof(*candidate_str)); 
     long long max_freq = 0;
     long long *freq_table = get_frequency_table();
 
     // avoid the null byte
-    for (char c = 1; c > 0; c++)
-    {        
+    for (char c = 1; c > 0; c++) {        
         char *decoded = decode_with_key(scrambled, msg_length, c);
         long long freq = eval_frequency(freq_table, decoded);
-        if (freq > max_freq)
-        {           
+        if (freq > max_freq) {           
             max_freq = freq;
             strcpy(candidate_str, decoded);
             // set key to the_key
             *the_key = c;
         }
 
-        if (decoded)
-        {
+        if (decoded) {
             free(decoded);
         }            
     }
@@ -210,8 +193,7 @@ long long unscramble_with_len(char* scrambled, char *unscrambled, char *the_key,
  * Returns the score of the unscrambled string and stores 
  * the unscrambled string and key in pointers.
  */
-long long unscramble(char *scrambled, char *unscrambled, char *the_key)
-{
+long long unscramble(char *scrambled, char *unscrambled, char *the_key) {
     size_t msg_length = strlen(scrambled);
     return unscramble_with_len(scrambled, unscrambled, the_key, msg_length);
 }
@@ -221,28 +203,24 @@ long long unscramble(char *scrambled, char *unscrambled, char *the_key)
  * Unscrambles the hex string by first converting it to a byte
  * array and applying the unscramble function
  */
-long long hex_unscramble(char *scrambled, char *unscrambled, char *the_key)
-{   
+long long hex_unscramble(char *scrambled, char *unscrambled, char *the_key) {   
     char *scrambled_bytes = hex_to_bytes(scrambled);
     return unscramble(scrambled_bytes, unscrambled, the_key);
 }
 
 
-void prob3_test()
-{
+void prob3_test() {
     printf("Running test for problem 3...\n");
     char null_term = '\0';
     char *the_key = &null_term;
     char *scrambled = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
     char *unscrambled = malloc(256 * sizeof(*unscrambled));
     long long score = hex_unscramble(scrambled, unscrambled, the_key);
-    if (*the_key != '\0')
-    {
+    if (*the_key != '\0') {
         printf("Key: %c\n", *the_key);
         printf("Unscrambled: %s\n", unscrambled);
     }
-    else
-    {
+    else {
         printf("Key not found!\n");
     }
     printf("\n");
