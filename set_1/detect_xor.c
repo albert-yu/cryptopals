@@ -13,7 +13,7 @@ void copy_over_strings(char **destination, char **source, unsigned int num_strin
         size_t str_size = strlen(line) + 1;  // + 1 for null terminator
 
         // allocate memory for string
-        destination[i] = (char*) malloc((str_size) * sizeof(char));
+        destination[i] = (char*) calloc((str_size), sizeof(char));
 
         // copy string
         strcpy(destination[i], source[i]);
@@ -56,10 +56,10 @@ char** read_file(char *filename, unsigned long *num_lines)
     const int LINE_BUF_SIZE = 64;    // line_length should be no more than 60
     unsigned long block_size = 256;  // for the array of pointers
     unsigned long curr_position = 0; // actual no. of lines in block
-    char **all_lines = (char **) malloc(block_size * sizeof(char*));
+    char **all_lines = (char **)calloc(block_size, sizeof(char*));
 
     all_lines[curr_position] = 
-        (char*) malloc((LINE_BUF_SIZE) * sizeof(char));
+        (char*)calloc((LINE_BUF_SIZE), sizeof(char));
     int line_ptr_offset = 0;  // points to position within the line
 
     char ch;
@@ -77,7 +77,7 @@ char** read_file(char *filename, unsigned long *num_lines)
                 block_size *= 2;
 
                 // create temp block with bigger size
-                char **temp = (char**) malloc(block_size * sizeof(char*));
+                char **temp = (char**)calloc(block_size, sizeof(char*));
 
                 // copy over old contents over
                 copy_over_strings(temp, all_lines, curr_position); 
@@ -88,7 +88,7 @@ char** read_file(char *filename, unsigned long *num_lines)
 
             // allocate more memory
             all_lines[curr_position] = 
-                (char*) malloc((LINE_BUF_SIZE) * sizeof(char));
+                (char*)calloc(LINE_BUF_SIZE,  sizeof(char));
 
             line_ptr_offset = 0;
             continue;
@@ -128,7 +128,7 @@ char* unscramble_all(char **hex_strings,
 
     // keep track of most likely candidate
     char *candidate = 
-        (char*)malloc((EXPECTED_LEN + 1) * sizeof(*candidate));
+        (char*)calloc((EXPECTED_LEN + 1), sizeof(*candidate));
     
     // iterate through the strings and calculate the
     // likelihood that it's an English sentence
@@ -146,7 +146,7 @@ char* unscramble_all(char **hex_strings,
         // will point to current key
         char *curr_key = &null_byte;
 
-        char *unscrambled = (char*) malloc(256 * sizeof(*unscrambled));
+        char *unscrambled = (char*)calloc(256, sizeof(*unscrambled));
 
         long long score = hex_unscramble(hex_str, unscrambled, curr_key);
 

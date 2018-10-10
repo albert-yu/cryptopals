@@ -748,12 +748,12 @@ void prob6_test()
         long_ass_string, *b64_len_ptr, b64lookup, bytes_len_ptr);
 
     // test partition
-    // size_t num_partitions = 2;
-    // char **partitions = partition("123456789", 9, num_partitions);
-    // for (size_t i = 0; i < num_partitions; i++)
-    // {
-    //     printf("%s\n", partitions[i]);
-    // }
+    size_t num_partitions = 10;
+    char **partitions = partition("012345678901234567890123456789", 30, num_partitions);
+    for (size_t i = 0; i < num_partitions; i++)
+    {
+        printf("%s\n", partitions[i]);
+    }
 
 
     // printf("%s\n", all_the_bytes);
