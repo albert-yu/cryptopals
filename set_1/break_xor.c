@@ -207,9 +207,9 @@ char* read_file_as_string(char *filename, size_t *length_out) {
     // (preventing null termination)
     if (is_power_of_2(count)) {
         BUF_LEN *= 2;
-        ret_val = (char*) realloc(ret_val, BUF_LEN);
-        ret_val[count] = '\0';
+        ret_val = (char*) realloc(ret_val, BUF_LEN);        
     }
+    ret_val[count] = '\0';
 
     *length_out = count;           
 
