@@ -348,12 +348,12 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
     double *hammings_lookup =
         (double*) calloc(KEYS_ARR_SIZE, sizeof(*hammings_lookup));
     // printf("foo1\n");
-    char *first_n = (char*) malloc(MALLOC_SZ * sizeof(*first_n));
+    char *first_n = (char*)calloc(MALLOC_SZ, sizeof(*first_n));
     if (first_n == NULL) {
         exit(EXIT_FAILURE);
     }
     // printf("foo2\n");
-    char *second_n = (char*) malloc(MALLOC_SZ * sizeof(*second_n));
+    char *second_n = (char*)calloc(MALLOC_SZ, sizeof(*second_n));
     if (second_n == NULL) {
         exit(EXIT_FAILURE);
     }
@@ -472,7 +472,7 @@ char** partition(const char *str, size_t str_len, size_t num_partitions) {
                         str_len / num_partitions + 1;
 
     // allocate array of pointers
-    char **all_blocks = (char**) malloc(num_partitions * sizeof(char*));
+    char **all_blocks = (char**) calloc(num_partitions, sizeof(char*));
 
     // allocate mem for each partition
     for (size_t i = 0; i < num_partitions; i++) {
@@ -638,7 +638,7 @@ void prob6_test() {
 
     // test reading file
     char *filename = "./data/6.txt";
-    size_t *b64_len_ptr = (size_t*) malloc(sizeof(*b64_len_ptr));
+    size_t *b64_len_ptr = (size_t*)malloc(sizeof(*b64_len_ptr));
     char *long_ass_string = 
         read_file_as_string(filename, b64_len_ptr);
 
@@ -689,11 +689,11 @@ void prob6_test() {
         long_ass_string, *b64_len_ptr, b64lookup, bytes_len_ptr);
 
     // test partition
-    size_t num_partitions = 10;
-    char **partitions = partition("012345678901234567890123456789", 30, num_partitions);
-    for (size_t i = 0; i < num_partitions; i++) {
-        printf("%s\n", partitions[i]);
-    }
+    // size_t num_partitions = 10;
+    // char **partitions = partition("012345678901234567890123456789", 30, num_partitions);
+    // for (size_t i = 0; i < num_partitions; i++) {
+    //     // printf("%s\n", partitions[i]);
+    // }
 
 
     // printf("%s\n", all_the_bytes);

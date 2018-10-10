@@ -83,7 +83,7 @@ void prob5_test() {
     // need double because need 2 hex digits for each 8-bit char
     // plus one for null byte
     size_t stanza_len = strlen(stanza) * 2 + 1;
-    char *actual = (char*) malloc(stanza_len * sizeof(*actual));
+    char *actual = (char*) calloc(stanza_len, sizeof(*actual));
     encrypt(stanza, key, actual);
 
     if (strcmp(expected, actual) == 0) {        
