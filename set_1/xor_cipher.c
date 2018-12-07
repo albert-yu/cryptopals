@@ -19,7 +19,11 @@ char* hex_to_bytes(char *hex_string) {
     }
 
     int ascii_length = hex_length / 2;
-    char *byte_array = calloc(ascii_length, sizeof(*byte_array));
+    char *byte_array = calloc(ascii_length + 1, sizeof(*byte_array));
+    if (!byte_array) {
+        fprintf(stderr, "Failed to allocate memory. Exiting...\n");
+        exit(1);
+    }
     int i = 0;
     int j = 0;
     while (i < hex_length) {
