@@ -1,14 +1,21 @@
-CC = gcc
-CFLAGS = -g -O2
-OBJECTS = main.o hex_to_base64.o fixed_xor.o \
-		xor_cipher.o detect_xor.o repeating_key_xor.o \
-		break_xor.o
+EXE = set1
+SRC_DIR = src
+OBJ_DIR = obj
 
-main : $(OBJECTS)
-	$(CC) $(CFLAGS) $(OBJECTS) -o main.exe
+SRC = $(wildcard $(SRC_DIR)/*.c)
+OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-%.o : %.c
-	$(CC) $(CFLAGS) -c $<
+CPPFLAGS += -Iinclude  # default "include" directory
+
+.PHONY: all clean
+
+all: $(EXE)
+
+$(EXE): $(OBJ)
+	$(CC) $(LDFLAGS) $^ -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f *.o main
+	$(RM) $(OBJ)
