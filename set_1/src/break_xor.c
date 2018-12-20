@@ -420,7 +420,7 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
 
         start_i++;
     }
-    
+    free(sorted_hammings); 
     free(hammings_lookup); 
     return smallest_n_keysizes;
 }
