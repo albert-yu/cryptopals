@@ -178,5 +178,10 @@ void prob4_test() {
         printf("Unable to unscramble with XOR cipher!\n");
     }
 
+    // gc
+    for (unsigned long i = 0; i < *num_lines; i++) {
+        free(lines[i]);
+    }
+    free(lines);
     free(unscrambled_string);
 }
