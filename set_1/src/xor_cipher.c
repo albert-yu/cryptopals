@@ -209,7 +209,7 @@ long long unscramble(char *scrambled, char *unscrambled, char *the_key) {
  */
 long long hex_unscramble(char *scrambled, char *unscrambled, char *the_key) {   
     char *scrambled_bytes = hex_to_bytes(scrambled);
-    long long high_score = unscramble(scrambled_bytes, unscrambled, the_key;
+    long long high_score = unscramble(scrambled_bytes, unscrambled, the_key);
     free(scrambled_bytes);
     return high_score;
 }

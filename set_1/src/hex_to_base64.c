@@ -64,6 +64,10 @@ char* hex_to_base64(char *hex) {
     // allocate memory for base64 output (must be freed by whoever calls this function)
     int b64length = (((hexstring_size + 2) / 3) * 4) + 1;
     char *base64 = calloc(1, b64length + 1);
+    if (!base64) {
+        fprintf(stderr, "Out of memory. Exiting...\n");
+        exit(1);
+    }
 
     // walk through the byte array, converting each 6 hex characters to 4 base64 chars
     char *base64ptr = base64;
@@ -98,4 +102,7 @@ void prob1_test() {
         printf("Actual: \t[%s]\n", actual);
     }
     printf("\n");
+    
+    // gc
+    free(actual);
 }
