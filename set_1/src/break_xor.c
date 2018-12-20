@@ -185,15 +185,15 @@ char* read_file_as_string(char *filename, size_t *length_out) {
         if (count == BUF_LEN) {
             // create a new buffer that is 2x size
             BUF_LEN *= 2;
-            // char *temp_buf = (char*) calloc(BUF_LEN, sizeof(*temp_buf));
+            char *temp_buf = (char*)calloc(BUF_LEN, sizeof(*temp_buf));
 
-            // // copy contents
-            // strcpy(temp_buf, ret_val);
-            // char *old = ret_val;
-            // ret_val = temp_buf;
-            // free(old);
+            // copy contents
+            strcpy(temp_buf, ret_val);
+            char *old = ret_val;
+            ret_val = temp_buf;
+            free(old);
 
-            ret_val = (char*) realloc(ret_val, BUF_LEN);
+            // ret_val = (char*) realloc(ret_val, BUF_LEN);
         }
 
         ret_val[count] = ch;
@@ -212,7 +212,7 @@ char* read_file_as_string(char *filename, size_t *length_out) {
     ret_val[count] = '\0';
 
     *length_out = count;           
-
+    fclose(fp);
     return ret_val;
 }
 
