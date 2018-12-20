@@ -185,15 +185,15 @@ char* read_file_as_string(char *filename, size_t *length_out) {
         if (count == BUF_LEN) {
             // create a new buffer that is 2x size
             BUF_LEN *= 2;
-            char *temp_buf = (char*)calloc(BUF_LEN, sizeof(*temp_buf));
+            //char *temp_buf = (char*)calloc(BUF_LEN, sizeof(*temp_buf));
 
             // copy contents
-            strcpy(temp_buf, ret_val);
-            char *old = ret_val;
-            ret_val = temp_buf;
-            free(old);
+            //strcpy(temp_buf, ret_val);
+            //char *old = ret_val;
+            //ret_val = temp_buf;
+            //free(old);
 
-            // ret_val = (char*) realloc(ret_val, BUF_LEN);
+            ret_val = (char*) realloc(ret_val, BUF_LEN);
         }
 
         ret_val[count] = ch;
@@ -349,12 +349,14 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
         (double*) calloc(KEYS_ARR_SIZE, sizeof(*hammings_lookup));
     // printf("foo1\n");
     char *first_n = (char*)calloc(MALLOC_SZ, sizeof(*first_n));
-    if (first_n == NULL) {
+    if (first_n == NULL || hammings_lookup == NULL) {
+        fprintf(stderr, "Out of memory. Exiting...\n");
         exit(EXIT_FAILURE);
     }
     // printf("foo2\n");
     char *second_n = (char*)calloc(MALLOC_SZ, sizeof(*second_n));
     if (second_n == NULL) {
+        fprintf(stderr, "Could not allocate mem for second_n.\n");
         exit(EXIT_FAILURE);
     }
 
@@ -419,6 +421,7 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
         start_i++;
     }
     
+    free(hammings_lookup); 
     return smallest_n_keysizes;
 }
 
