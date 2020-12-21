@@ -347,13 +347,11 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
     size_t MALLOC_SZ = KEYS_ARR_SIZE * 2;
     double *hammings_lookup =
         (double*) calloc(KEYS_ARR_SIZE, sizeof(*hammings_lookup));
-    // printf("foo1\n");
     char *first_n = (char*)calloc(MALLOC_SZ, sizeof(*first_n));
     if (first_n == NULL || hammings_lookup == NULL) {
         fprintf(stderr, "Out of memory. Exiting...\n");
         exit(EXIT_FAILURE);
     }
-    // printf("foo2\n");
     char *second_n = (char*)calloc(MALLOC_SZ, sizeof(*second_n));
     if (second_n == NULL) {
         fprintf(stderr, "Could not allocate mem for second_n.\n");
@@ -361,21 +359,11 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
     }
 
     for (; keysize <= MAX_KEYSIZE; keysize++) {             
-        // printf("%zu\n", keysize);
-        // char *first_n = substring(encrypted, 0, keysize);
-        // char *second_n = substring(encrypted, keysize, keysize * 2);
         substr_cpy(first_n, encrypted, 0 , keysize);
         substr_cpy(second_n, encrypted, keysize, keysize * 2);
-
-        // printf("1. %s\n", first_n);
-        // printf("2. %s\n", second_n);
-        
         size_t distance = hamming_with_len(first_n, second_n, keysize);
         double normalized = (distance * 1.0) / keysize;
-        // printf("%f\n", normalized);
-        hammings_lookup[keysize] = normalized;        
-        // free(first_n);
-        // free(second_n);
+        hammings_lookup[keysize] = normalized;
     }
 
     free(first_n);
@@ -390,12 +378,6 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
     dblcpy(sorted_hammings, hammings_lookup, KEYS_ARR_SIZE);    
     qsort(sorted_hammings, KEYS_ARR_SIZE, sizeof(*sorted_hammings), compare_function);
 
-    // for (size_t i = 0; i < KEYS_ARR_SIZE; i++)
-    // { 
-    //     // printf("%f\n", sorted_hammings[i]);
-    //     printf("%zu: %f\n\n", i, hammings_lookup[i]);
-    // }
-
     // store the smallest n key sizes here
     size_t *smallest_n_keysizes =
         (size_t*) calloc(num_keys * 4, sizeof(*smallest_n_keysizes));
@@ -406,7 +388,6 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
     while (dbl_equals(sorted_hammings[start_i], ZERO)) {
         start_i++;
     }
-    // printf("%zu\n", start_i);
     for (size_t i = 0; i < num_keys; i++) {
         // could check if we ever reach a buffer overflow,
         // but nah
@@ -499,7 +480,7 @@ char** partition(const char *str, size_t str_len, size_t num_partitions) {
 }
 
 
-void break_xor(char *encrypted, size_t encryptd_length) {
+void break_xor(char *encrypted, size_t encrypted_len) {
     // get 3 best key sizes
     const size_t N_KEYS = 3;
     size_t *best_keysizes = get_best_keysizes(encrypted, N_KEYS);
@@ -515,44 +496,11 @@ void break_xor(char *encrypted, size_t encryptd_length) {
         printf("current keysize: %zu\n", curr_keysize);  
         // FIRST partition the blocks by the keysize
         size_t partition_length = 
-            encryptd_length / curr_keysize;
+            encrypted_len / curr_keysize;
 
         // array of strings
         char **all_partitions = 
-            partition(encrypted, encryptd_length, curr_keysize);
-
-        //     (char**) malloc(curr_keysize * 2 * sizeof(*all_partitions));
-
-        // for (size_t j = 0; j < curr_keysize; j++)
-        // {
-        //     all_partitions[j] = 
-        //         (char*) calloc(partition_length * 2, sizeof(char));
-        // }
-
-        // these indices wil keep track of the position
-        // within each partition
-        // ------------
-        // |0|1|2| etc. <- partition 0
-        // ------------
-        // |0|1|2|      <- partition 1
-        // ------------
-        // size_t *inner_indices = 
-        //     calloc(curr_keysize * 2, sizeof(*inner_indices));
-
-        // // now iterate through the encrypted text to partition it
-        // for (size_t k = 0; k < encryptd_length; k++)
-        // {
-        //     char c = encrypted[k];
-        //     size_t outer_i = k % curr_keysize;
-
-        //     size_t inner_i = inner_indices[outer_i];
-
-        //     // copy value to buffer
-        //     all_partitions[outer_i][inner_i] = c;
-
-        //     // increment the inner index
-        //     inner_indices[outer_i]++;
-        // }
+            partition(encrypted, encrypted_len, curr_keysize);
 
         // this will contain the characters of the key
         char *the_key = (char*) calloc(curr_keysize * 8, sizeof(*the_key));
@@ -691,32 +639,14 @@ void prob6_test() {
     char *all_the_bytes = b64_to_bytes(
         long_ass_string, *b64_len_ptr, b64lookup, bytes_len_ptr);
 
-    // test partition
-    // size_t num_partitions = 10;
-    // char **partitions = partition("012345678901234567890123456789", 30, num_partitions);
-    // for (size_t i = 0; i < num_partitions; i++) {
-    //     // printf("%s\n", partitions[i]);
-    // }
-
-
-    // printf("%s\n", all_the_bytes);
-    // print_bytes(all_the_bytes, bytes_len);
-
     // do the breaking
     break_xor(all_the_bytes, *bytes_len_ptr);
-    // const size_t NUM_KEYS = 3;
-    // size_t *best_keysizes = get_best_keysizes(all_the_bytes, NUM_KEYS);
-    // for (size_t i = 0; i < NUM_KEYS; i++)
-    // {
-    //     printf("size: %zu\n", best_keysizes[i]);  
-    // }
  
     // clean up
     free(long_ass_string);
     free(b64_len_ptr);
     free(b64decoded); 
     free(b64lookup);
-    printf("foo\n");
     free(all_the_bytes);
 
     printf("\n");
