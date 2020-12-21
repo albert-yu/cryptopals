@@ -237,11 +237,11 @@ char* get_b64_lookup() {
 
 /*
  * Converts a b64 string to byte array
- * @param b64str - the input string encoded in b64
- * @param b64length - the size of the b64 string
- * @param b64lookup - the table/array that maps 
+ * @param b64str the input string encoded in b64
+ * @param b64length the size of the b64 string
+ * @param b64lookup the table/array that maps 
  *    a b64 char to int (e.g. A -> 0, B -> 1, etc.)
- * @param len_ptr - pointer to store the length of resulting array  
+ * @param len_ptr pointer to store the length of resulting array  
  */
 char* b64_to_bytes(
     char *b64str, size_t b64length, char *b64lookup, size_t *len_ptr) {
@@ -598,6 +598,34 @@ char** partition(const char *str, size_t str_len, size_t num_partitions) {
 
 
 /*
+ * Takes the encrypted bytes and decrypts them with
+ * the given key
+ */
+void decrypt_repeating_key_xor(const char *encrypted, size_t encrypted_len, const char *key, char *decrypted_ptr) {
+    size_t iter, key_len;
+    iter = 0;
+    key_len = strlen(key);
+    
+    int length = 0;
+
+    char c;
+    while (iter < encrypted_len) {
+        c = encrypted[iter];
+        size_t key_offset = iter % key_len;
+        char xord_c = c ^ key[key_offset];
+        decrypted_ptr[iter] = xord_c;
+        iter++;
+        encrypted++;
+        length++;
+    }
+
+    decrypted_ptr[iter] = '\0';
+    printf("Length: %d\n", length);
+    printf("Str Length: %lu\n", strlen(decrypted_ptr));
+}
+
+
+/*
  * A key along with its score
  */
 typedef struct key_score_t {
@@ -644,6 +672,9 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
     }
     // put the key together
     printf("key: %s\n", the_key);
+    char *decrypted_ptr = calloc(encrypted_len + 1, sizeof(*decrypted_ptr));
+    decrypt_repeating_key_xor(encrypted, encrypted_len, the_key, decrypted_ptr);
+    printf("decrypted: %s\n", decrypted_ptr);
 
     KeyScore *key_score = malloc(sizeof(*key_score));
     key_score->key = the_key;
@@ -700,8 +731,11 @@ void break_xor(char *encrypted, size_t encrypted_len) {
  */
 void print_bytes(char *byte_array, size_t arr_len) {
     size_t i;
+    char ch;
     for (i = 0; i < arr_len; i++) {
-        printf("%c", byte_array[i]);
+        // printf("%c", byte_array[i]);
+        ch = byte_array[i];
+        printf("%2.2x", ch & 0xff);
     }
     
     printf("\n");
@@ -730,7 +764,7 @@ void prob6_test() {
     size_t *b64_len_ptr = (size_t*)malloc(sizeof(*b64_len_ptr));
     char *long_ass_string = 
         read_file_as_string(filename, b64_len_ptr);
-
+    
     if (b64_len_ptr) {
         printf("Successfully read file.\n");
         printf("\tNumber of characters: %zu\n", *b64_len_ptr);
@@ -776,7 +810,9 @@ void prob6_test() {
     // decode input string
     char *all_the_bytes = b64_to_bytes(
         long_ass_string, *b64_len_ptr, b64lookup, bytes_len_ptr);
-
+    
+    // print_bytes(all_the_bytes, *bytes_len_ptr);
+    
     // do the breaking
     break_xor(all_the_bytes, *bytes_len_ptr);
  
