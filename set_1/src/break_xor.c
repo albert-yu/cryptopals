@@ -411,15 +411,15 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
 
 
 /*
- * Get the hamming distance between ith and jth block of size `keysize`
+ * Get the normalized hamming distance between ith and jth block of size `keysize`
  */
-size_t hamming_i_j(char *encrypted, size_t i, size_t j, size_t keysize) {
+double hamming_i_j_normalized(char *encrypted, size_t i, size_t j, size_t keysize) {
     char *start_i, *start_j;
     start_i = encrypted + i;
     start_j = encrypted + j;
     
     size_t hamming_dist = hamming_with_len(start_i, start_j, keysize);
-    return hamming_dist;
+    return hamming_dist / ((double)keysize);
 }
 
 
@@ -452,9 +452,13 @@ int keysize_candidates_cmp(const void *a, const void *b) {
 
 /**
  * Free everything (including the key size candidates array itself)
+ * 
+ * @param candidates array of pointers to candidates
+ * @param start start index (inclusive)
+ * @param end end index (exclusive)
  */
-void keysize_candidates_free(KeySizeCandidate **candidates, size_t num) {
-    for (size_t i = 0; i < num; i++) {
+void keysize_candidates_free(KeySizeCandidate **candidates, size_t start, size_t end) {
+    for (size_t i = start; i < end; i++) {
         free(candidates[i]);
     }
 
@@ -476,19 +480,21 @@ size_t* get_best_keysizes2(char *encrypted, size_t num_keys) {
     KeySizeCandidate **scores = malloc((MAX_KEYSIZE + 1) * sizeof(*scores));
     size_t keysize = MIN_KEYSIZE;
     for (; keysize <= MAX_KEYSIZE; keysize++) {
-        size_t hamming_0_1, hamming_0_2, hamming_0_3;
-        size_t hamming_1_2, hamming_1_3;
-        size_t hamming_2_3;
+        double hamming_0_1, hamming_0_2, hamming_0_3;
+        double hamming_1_2, hamming_1_3;
+        double hamming_2_3;
 
-        hamming_0_1 = hamming_i_j(encrypted, 0, 1, keysize);
-        hamming_0_2 = hamming_i_j(encrypted, 0, 2, keysize);
-        hamming_0_3 = hamming_i_j(encrypted, 0, 3, keysize);
-        hamming_1_2 = hamming_i_j(encrypted, 1, 2, keysize);
-        hamming_1_3 = hamming_i_j(encrypted, 1, 3, keysize);
-        hamming_2_3 = hamming_i_j(encrypted, 2, 3, keysize);
+        hamming_0_1 = hamming_i_j_normalized(encrypted, 0, 1, keysize);
+        hamming_0_2 = hamming_i_j_normalized(encrypted, 0, 2, keysize);
+        hamming_0_3 = hamming_i_j_normalized(encrypted, 0, 3, keysize);
+        hamming_1_2 = hamming_i_j_normalized(encrypted, 1, 2, keysize);
+        hamming_1_3 = hamming_i_j_normalized(encrypted, 1, 3, keysize);
+        hamming_2_3 = hamming_i_j_normalized(encrypted, 2, 3, keysize);
 
         double average = (hamming_0_1 + hamming_0_2 + hamming_0_3 + hamming_1_2 + hamming_1_3 + hamming_2_3) / 6.0;
-        KeySizeCandidate* candidate = (KeySizeCandidate*) malloc(sizeof(candidate));
+        // printf("size: %zu, score: %f\n", keysize, average);
+
+        KeySizeCandidate* candidate = malloc(sizeof(*candidate));
         candidate->score = average;
         candidate->size = keysize;
         scores[keysize] = candidate;
@@ -507,10 +513,12 @@ size_t* get_best_keysizes2(char *encrypted, size_t num_keys) {
     size_t *result = malloc(num_keys * sizeof(*result));
     for (size_t i = 0; i < num_keys; i++) {
         KeySizeCandidate *candidate = arr_start[i];
+        printf("size: %zu, score: %f\n", candidate->size, candidate->score);
+
         result[i] = candidate->size;
     }
 
-    keysize_candidates_free(scores, MAX_KEYSIZE + 1);
+    keysize_candidates_free(scores, MIN_KEYSIZE, MAX_KEYSIZE + 1);
 
     return result;
 }
@@ -594,10 +602,6 @@ void break_xor(char *encrypted, size_t encrypted_len) {
     const size_t N_KEYS = 3;
     size_t *best_keysizes = get_best_keysizes2(encrypted, N_KEYS);
 
-    for (size_t i = 0; i < N_KEYS; i++) {
-        printf("size: %zu\n", best_keysizes[i]);
-    }
-
     long long best_score = 0;
 
     // allocate memory to hold the key
@@ -661,7 +665,6 @@ void break_xor(char *encrypted, size_t encrypted_len) {
 
     // finally, use the best key to unscramble
     // the original message
-    // char *plaintext = (char*) calloc(encryptd_length * 2, sizeof(*plaintext));
 
 
     free(best_key);
