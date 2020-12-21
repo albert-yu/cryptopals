@@ -3,7 +3,16 @@ https://cryptopals.com/
 
 Going through The Matasano Crypto Challenges to better understand cryptography as well as C.
 
+## Build and Run
+
+```bash
+cd set_1
+make
+./build/set1
+```
+
 ## Table of Contents
+
 ### Set 1
 
 1. Convert Hex to Base64 - [hex_to_base64.h](set_1/hex_to_base64.h), [hex_to_base64.c](set_1/hex_to_base64.c)
