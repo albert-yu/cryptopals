@@ -116,8 +116,11 @@ size_t hamming(const char *str_1, const char *str_2) {
 
 /*
  * Computes the hamming distance between two byte arrays.
- * ASSUMING both are of length @length. 
  * Access violations totally possible.
+ * 
+ * @param str_1 pointer to start of first string
+ * @param str_2 pointer to start of second string
+ * @param length length of each string
  */
 size_t hamming_with_len(
     const char *str_1, const char *str_2, size_t length) {
@@ -283,7 +286,7 @@ char* b64_to_bytes(
 
 
 /*
- * Compare function used for sorting
+ * Compare function used for sorting (low to high)
  * https://stackoverflow.com/a/1791064/9555588
  */
 int compare_function(const void *a, const void *b)  {
@@ -408,6 +411,112 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
 
 
 /*
+ * Get the hamming distance between ith and jth block of size `keysize`
+ */
+size_t hamming_i_j(char *encrypted, size_t i, size_t j, size_t keysize) {
+    char *start_i, *start_j;
+    start_i = encrypted + i;
+    start_j = encrypted + j;
+    
+    size_t hamming_dist = hamming_with_len(start_i, start_j, keysize);
+    return hamming_dist;
+}
+
+
+/*
+ * Score for key size
+ */
+typedef struct keysize_candidate_t {
+    size_t size;
+    double score;
+} KeySizeCandidate;
+
+
+/*
+ * Comparison function to be used with `qsort` (increasing order)
+ */
+int keysize_candidates_cmp(const void *a, const void *b) {
+    KeySizeCandidate **cand_a, **cand_b;
+    cand_a = (KeySizeCandidate**) a;
+    cand_b = (KeySizeCandidate**) b;
+    double x = (*cand_a)->score;
+    double y = (*cand_b)->score;
+
+    if (x < y) 
+        return -1;
+    else if (x > y) 
+        return 1; 
+    return 0;
+}
+
+
+/**
+ * Free everything (including the key size candidates array itself)
+ */
+void keysize_candidates_free(KeySizeCandidate **candidates, size_t num) {
+    for (size_t i = 0; i < num; i++) {
+        free(candidates[i]);
+    }
+
+    free(candidates);
+}
+
+
+/*
+ * Get the best keysizes with a different implementation 
+ * (compare with four blocks' average Hamming distance instead of two)
+ * 
+ * @param encrypted the encrypted bytes
+ * @param num_keys the number of key sizes to return
+ */
+size_t* get_best_keysizes2(char *encrypted, size_t num_keys) {
+    const size_t MIN_KEYSIZE = 2;
+    const size_t MAX_KEYSIZE = 15;
+
+    KeySizeCandidate **scores = malloc((MAX_KEYSIZE + 1) * sizeof(*scores));
+    size_t keysize = MIN_KEYSIZE;
+    for (; keysize <= MAX_KEYSIZE; keysize++) {
+        size_t hamming_0_1, hamming_0_2, hamming_0_3;
+        size_t hamming_1_2, hamming_1_3;
+        size_t hamming_2_3;
+
+        hamming_0_1 = hamming_i_j(encrypted, 0, 1, keysize);
+        hamming_0_2 = hamming_i_j(encrypted, 0, 2, keysize);
+        hamming_0_3 = hamming_i_j(encrypted, 0, 3, keysize);
+        hamming_1_2 = hamming_i_j(encrypted, 1, 2, keysize);
+        hamming_1_3 = hamming_i_j(encrypted, 1, 3, keysize);
+        hamming_2_3 = hamming_i_j(encrypted, 2, 3, keysize);
+
+        double average = (hamming_0_1 + hamming_0_2 + hamming_0_3 + hamming_1_2 + hamming_1_3 + hamming_2_3) / 6.0;
+        KeySizeCandidate* candidate = (KeySizeCandidate*) malloc(sizeof(candidate));
+        candidate->score = average;
+        candidate->size = keysize;
+        scores[keysize] = candidate;
+    }
+
+    KeySizeCandidate **arr_start = scores + MIN_KEYSIZE;
+
+    qsort(
+        arr_start,
+        MAX_KEYSIZE - MIN_KEYSIZE + 1,
+        sizeof(*scores),
+        keysize_candidates_cmp
+    );
+
+    // store the results of the sort
+    size_t *result = malloc(num_keys * sizeof(*result));
+    for (size_t i = 0; i < num_keys; i++) {
+        KeySizeCandidate *candidate = arr_start[i];
+        result[i] = candidate->size;
+    }
+
+    keysize_candidates_free(scores, MAX_KEYSIZE + 1);
+
+    return result;
+}
+
+
+/*
  * Maps N+{0} to (N+{0})^2
  * breadth first (exhaust x-coordinate first)
  * 
@@ -423,10 +532,10 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
  * x coord = n % depth
  * y coord = n / depth (floor div)
 
- * @param n - nonnegative integer
- * @param depth - the maximum value of the x coordinate
- * @param x - the x coordinate of the ordered pair
- * @param y - the y coordinate of the ordered pair
+ * @param n nonnegative integer
+ * @param depth the maximum value of the x coordinate
+ * @param x the x coordinate of the ordered pair
+ * @param y the y coordinate of the ordered pair
  */
 void one_to_2d(size_t n, const size_t depth, size_t *x, size_t *y) {
     *x = n % depth;
@@ -443,9 +552,9 @@ void one_to_2d(size_t n, const size_t depth, size_t *x, size_t *y) {
  * ...
  * P[K-1] = A[K-1], A[K-1 + K], etc...
  *
- * @param str - the byte array from which we are reading
- * @param str_len - the length of the array
- * @param num_partitions - K
+ * @param str the byte array from which we are reading
+ * @param str_len the length of the array
+ * @param num_partitions K
  */
 char** partition(const char *str, size_t str_len, size_t num_partitions) {
     size_t remainder = str_len % num_partitions;
@@ -483,7 +592,11 @@ char** partition(const char *str, size_t str_len, size_t num_partitions) {
 void break_xor(char *encrypted, size_t encrypted_len) {
     // get 3 best key sizes
     const size_t N_KEYS = 3;
-    size_t *best_keysizes = get_best_keysizes(encrypted, N_KEYS);
+    size_t *best_keysizes = get_best_keysizes2(encrypted, N_KEYS);
+
+    for (size_t i = 0; i < N_KEYS; i++) {
+        printf("size: %zu\n", best_keysizes[i]);
+    }
 
     long long best_score = 0;
 
