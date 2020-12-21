@@ -597,6 +597,66 @@ char** partition(const char *str, size_t str_len, size_t num_partitions) {
 }
 
 
+/*
+ * A key along with its score
+ */
+typedef struct key_score_t {
+    char *key;
+    long long score;
+} KeyScore;
+
+
+void key_score_free(KeyScore *key_score) {
+    free(key_score->key);
+    free(key_score);
+}
+
+
+KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysize) {
+    size_t partition_length = 
+        encrypted_len / keysize;
+
+    // array of strings
+    char **all_partitions = 
+        partition(encrypted, encrypted_len, keysize);
+
+    // this will contain the characters of the key
+    char *the_key = (char*) calloc(keysize * 8, sizeof(*the_key));
+    char *key_ch_ptr = the_key;
+    // printf("foo\n");
+
+    long long score_for_key = 0;
+    // THEN solve each partition as a single-character XOR
+    for (size_t i = 0; i < keysize; i++) {
+        // get current partition
+        char *partition = all_partitions[i];
+
+        char *unscrambled = calloc(partition_length, sizeof(*unscrambled));
+        long long score = unscramble(partition, unscrambled, key_ch_ptr);
+
+        // add to score for this key
+        score_for_key += score;
+        key_ch_ptr++;
+        printf("unscrambled: %s\n", unscrambled); 
+        free(unscrambled);
+    }
+    // put the key together
+    printf("key: %s\n", the_key);
+
+    KeyScore *key_score = malloc(sizeof(*key_score));
+    key_score->key = the_key;
+    key_score->score = score_for_key;
+    
+    // cleanup
+    for (size_t j = 0; j < keysize; j++) {
+        free(all_partitions[j]);
+    }
+    free(all_partitions);
+
+    return key_score;
+}
+
+
 void break_xor(char *encrypted, size_t encrypted_len) {
     // get 3 best key sizes
     const size_t N_KEYS = 3;
@@ -610,63 +670,20 @@ void break_xor(char *encrypted, size_t encrypted_len) {
 
     for (size_t i = 0; i < N_KEYS; i++) {        
         size_t curr_keysize = best_keysizes[i];
-        printf("current keysize: %zu\n", curr_keysize);  
-        // FIRST partition the blocks by the keysize
-        size_t partition_length = 
-            encrypted_len / curr_keysize;
-
-        // array of strings
-        char **all_partitions = 
-            partition(encrypted, encrypted_len, curr_keysize);
-
-        // this will contain the characters of the key
-        char *the_key = (char*) calloc(curr_keysize * 8, sizeof(*the_key));
-        char *key_ch_ptr = the_key;
-        // printf("foo\n");
-
-        long long score_for_key = 0;
-        // THEN solve each partition as a single-character XOR
-        for (size_t i = 0; i < curr_keysize; i++) {
-            // get current partition
-            char *partition = all_partitions[i];
-
-            // unscramble it
-            char *unscrambled = calloc(partition_length, sizeof(*unscrambled));
-            // printf("%zu\n", partition_length);
-            long long score = unscramble(partition, unscrambled, key_ch_ptr);
-            // add to score for this key
-            score_for_key += score;
-            key_ch_ptr++;
-            // printf("unscrambled: %s\n", unscrambled); 
-            free(unscrambled);
-        }
-        // put the key together
-        printf("key: %s\n", the_key);
-
+        printf("current keysize: %zu\n", curr_keysize);
+        KeyScore *key_score = solve_for_keysize(encrypted, encrypted_len, curr_keysize);
         // check if we bested the best_score 
-        if (score_for_key > best_score) {
-            best_score = score_for_key;
-            strcpy(best_key, the_key);
+        if (key_score->score > best_score) {
+            best_score = key_score->score;
+            strcpy(best_key, key_score->key);
         }
-       
-        // cleanup
-        for (size_t j = 0; j < curr_keysize; j++) {
-            free(all_partitions[j]);
-        }
-        
-        free(all_partitions);        
-        // free(inner_indices);	
-        free(the_key); 
     }       
 
     if (strlen(best_key)) {
         printf("best key: %s\n", best_key);
     }
-
-    // finally, use the best key to unscramble
+    // TODO: finally, use the best key to unscramble
     // the original message
-
-
     free(best_key);
     free(best_keysizes); 
 }
