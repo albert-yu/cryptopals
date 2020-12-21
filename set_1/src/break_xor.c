@@ -612,6 +612,9 @@ void key_score_free(KeyScore *key_score) {
 }
 
 
+/*
+ * Caller must call `key_score_free()` on result
+ */
 KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysize) {
     size_t partition_length = 
         encrypted_len / keysize;
@@ -637,7 +640,6 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
         // add to score for this key
         score_for_key += score;
         key_ch_ptr++;
-        printf("unscrambled: %s\n", unscrambled); 
         free(unscrambled);
     }
     // put the key together
@@ -677,13 +679,16 @@ void break_xor(char *encrypted, size_t encrypted_len) {
             best_score = key_score->score;
             strcpy(best_key, key_score->key);
         }
+        key_score_free(key_score);
     }       
 
     if (strlen(best_key)) {
         printf("best key: %s\n", best_key);
     }
+
     // TODO: finally, use the best key to unscramble
     // the original message
+
     free(best_key);
     free(best_keysizes); 
 }
