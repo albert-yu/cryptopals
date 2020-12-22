@@ -134,8 +134,6 @@ char* unscramble_all(char **hex_strings,
         char *curr_key = &null_byte;
 
         char *unscrambled = (char*)calloc(256, sizeof(*unscrambled));
-
-        printf("i: %d\n", i);
         long long score = hex_unscramble(hex_str, unscrambled, curr_key);
 
         // printf("i = %d, score = %lli\n", i, score);       

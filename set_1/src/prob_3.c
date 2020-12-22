@@ -239,9 +239,10 @@ long long unscramble(char *scrambled, char *unscrambled, char *the_key) {
  * Unscrambles the hex string by first converting it to a byte
  * array and applying the unscramble function
  */
-long long hex_unscramble(char *scrambled, char *unscrambled, char *the_key) {   
-    char *scrambled_bytes = hex_to_bytes(scrambled);
-    long long high_score = unscramble(scrambled_bytes, unscrambled, the_key);
+long long hex_unscramble(char *hex_scrambled, char *unscrambled, char *the_key) {   
+    char *scrambled_bytes = hex_to_bytes(hex_scrambled);
+    size_t msg_length = strlen(hex_scrambled) / 2;
+    long long high_score = unscramble_with_len(scrambled_bytes, unscrambled, the_key, msg_length);
     free(scrambled_bytes);
     return high_score;
 }
