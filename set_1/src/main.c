@@ -3,7 +3,7 @@
 #include <limits.h>
 #include <string.h>
 
-#include "break_xor.h"
+#include "prob_6.h"
 
 int main() {
     // Set 1
