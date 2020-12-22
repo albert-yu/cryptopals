@@ -683,6 +683,14 @@ typedef struct block_array_t {
 } BlockArray;
 
 
+/**
+ * Allocates memory for a new block array
+ * 
+ * @param buf_size the initial buffer size
+ * @param block_size the width of each block
+ * 
+ * @returns heap-allocated block array
+ */
 BlockArray* block_array_alloc(size_t buf_size, size_t block_size) {
     BlockArray *block_arr = malloc(sizeof(*block_arr));
     block_arr->blocks = malloc(buf_size * sizeof(*(block_arr->blocks)));
@@ -726,6 +734,23 @@ char* block_array_at(BlockArray *block_arr, size_t i) {
     char *block = malloc(block_arr->blocksize * sizeof(*block));
     memcpy(block, block_arr->blocks[i], block_arr->blocksize);
     return block;
+}
+
+
+/**
+ * Returns the byte given at the jth character of the ith block
+ */
+char block_array_char_at(BlockArray *block_arr, size_t i, size_t j) {
+    if (i >= block_arr->count) {
+        printf("Index out of bounds (i: %zu, count: %zu)", i, block_arr->count);
+        exit(EXIT_FAILURE);
+    }
+    if (j >= block_arr->blocksize) {
+        printf("Index out of bounds (j: %zu, blocksize: %zu)", j, block_arr->blocksize);
+        exit(EXIT_FAILURE);
+    }
+
+    return block_arr->blocks[i][j];
 }
 
 
@@ -784,6 +809,33 @@ BlockArray* make_blocks(char *encrypted, size_t encrypted_len, size_t block_size
     }
 
     return blocks;
+}
+
+
+/**
+ * Transposes the blocks
+ * 
+ * @returns the transposed blocks, heap-allocated
+ */
+BlockArray* block_array_transpose(BlockArray* orig_blocks) {
+    size_t new_block_size = orig_blocks->count;
+    size_t new_buf_size = orig_blocks->blocksize;
+    BlockArray *new_blocks = block_array_alloc(
+        new_buf_size, new_block_size);
+
+    char *ptr;
+    for (size_t j = 0; j < orig_blocks->blocksize; j++) {
+        char buf[new_block_size];
+        ptr = buf;
+        for (size_t i = 0; i < orig_blocks->count; i++) {
+            *ptr = block_array_char_at(orig_blocks, i, j);
+            ptr++;
+        }
+
+        block_array_append(new_blocks, buf);
+    }
+
+    return new_blocks;
 }
 
 
