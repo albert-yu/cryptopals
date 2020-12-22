@@ -33,6 +33,23 @@ bool dbl_equals(double dbl1, double dbl2) {
 
 
 /*
+ * Print chars one by one because string format
+ * terminates at null
+ */
+void print_bytes(char *byte_array, size_t arr_len) {
+    size_t i;
+    char ch;
+    for (i = 0; i < arr_len; i++) {
+        // printf("%c", blocks[i]);
+        ch = byte_array[i];
+        printf("%2.2x", ch & 0xff);
+    }
+    
+    printf("\n");
+}
+
+
+/*
  * Returns the substring specified by the start and end indices.
  * End is not inclusive (e.g. 2 to 5 will just return 3 characters). 
  */
@@ -754,6 +771,33 @@ char block_array_char_at(BlockArray *block_arr, size_t i, size_t j) {
 }
 
 
+/**
+ * Transposes the blocks
+ * 
+ * @returns the transposed blocks, heap-allocated
+ */
+BlockArray* block_array_transpose(BlockArray* orig_blocks) {
+    size_t new_block_size = orig_blocks->count;
+    size_t new_buf_size = orig_blocks->blocksize;
+    BlockArray *new_blocks = block_array_alloc(
+        new_buf_size, new_block_size);
+
+    char *ptr;
+    for (size_t j = 0; j < orig_blocks->blocksize; j++) {
+        char buf[new_block_size];
+        ptr = buf;
+        for (size_t i = 0; i < orig_blocks->count; i++) {
+            *ptr = block_array_char_at(orig_blocks, i, j);
+            ptr++;
+        }
+
+        block_array_append(new_blocks, buf);
+    }
+
+    return new_blocks;
+}
+
+
 void block_array_free(BlockArray *block_arr) {
     if (!block_arr){
         return;
@@ -812,60 +856,79 @@ BlockArray* make_blocks(char *encrypted, size_t encrypted_len, size_t block_size
 }
 
 
-/**
- * Transposes the blocks
- * 
- * @returns the transposed blocks, heap-allocated
- */
-BlockArray* block_array_transpose(BlockArray* orig_blocks) {
-    size_t new_block_size = orig_blocks->count;
-    size_t new_buf_size = orig_blocks->blocksize;
-    BlockArray *new_blocks = block_array_alloc(
-        new_buf_size, new_block_size);
-
-    char *ptr;
-    for (size_t j = 0; j < orig_blocks->blocksize; j++) {
-        char buf[new_block_size];
-        ptr = buf;
-        for (size_t i = 0; i < orig_blocks->count; i++) {
-            *ptr = block_array_char_at(orig_blocks, i, j);
-            ptr++;
-        }
-
-        block_array_append(new_blocks, buf);
-    }
-
-    return new_blocks;
-}
-
-
 /*
  * Caller must call `key_score_free()` on result
  */
 KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysize) {
-    size_t partition_length = 
-        encrypted_len / keysize;
+    // size_t partition_length = 
+    //     encrypted_len / keysize;
 
-    char **all_partitions = 
-        partition(encrypted, encrypted_len, keysize);
+    // char **all_partitions = 
+    //     partition(encrypted, encrypted_len, keysize);
+    // // this will contain the characters of the key
+    // char *the_key = (char*) calloc(keysize * 8, sizeof(*the_key));
+    // char *key_ch_ptr = the_key;
+    // // printf("foo\n");
 
-    // this will contain the characters of the key
-    char *the_key = (char*) calloc(keysize * 8, sizeof(*the_key));
-    char *key_ch_ptr = the_key;
-    // printf("foo\n");
+    // long long score_for_key = 0;
+    // // THEN solve each partition as a single-character XOR
+    // for (size_t i = 0; i < keysize; i++) {
+    //     // get current partition
+    //     char *partition = all_partitions[i];
 
+    //     char *unscrambled = calloc(partition_length, sizeof(*unscrambled));
+    //     long long score = unscramble_with_len(partition, unscrambled, key_ch_ptr, partition_length);
+
+    //     // add to score for this key
+    //     score_for_key += score;
+    //     key_ch_ptr++;
+    //     free(unscrambled);
+    // }
+    // // put the key together
+    // printf("key: %s\n", the_key);
+    // char *decrypted_ptr = calloc(encrypted_len + 1, sizeof(*decrypted_ptr));
+    // decrypt_repeating_key_xor(encrypted, encrypted_len, the_key, decrypted_ptr);
+    // printf("decrypted: %s\n", decrypted_ptr);
+
+    // KeyScore *key_score = malloc(sizeof(*key_score));
+    // key_score->key = the_key;
+    // key_score->score = score_for_key;
+    
+    // // cleanup
+    // for (size_t j = 0; j < keysize; j++) {
+    //     free(all_partitions[j]);
+    // }
+    // free(all_partitions);
+
+    // return key_score;
+
+    BlockArray *blocks, *transposed_blocks;
+    blocks = make_blocks(encrypted, encrypted_len, keysize);
+    transposed_blocks = block_array_transpose(blocks);
+    block_array_free(blocks);
+
+    char *the_key, *key_ch_ptr;
+    the_key = calloc(keysize, sizeof(*the_key));
+    key_ch_ptr = the_key;
     long long score_for_key = 0;
-    // THEN solve each partition as a single-character XOR
-    for (size_t i = 0; i < keysize; i++) {
-        // get current partition
-        char *partition = all_partitions[i];
 
-        char *unscrambled = calloc(partition_length, sizeof(*unscrambled));
-        long long score = unscramble(partition, unscrambled, key_ch_ptr);
+    for (size_t i = 0; i < transposed_blocks->count; i++) {
+        char *block = block_array_at(transposed_blocks, i);
+        printf("scrambled: ");
+        print_bytes(block, transposed_blocks->blocksize);
+        char *unscrambled = calloc(transposed_blocks->blocksize, sizeof(*unscrambled));
+        long long score = unscramble_with_len(
+            block,
+            unscrambled,
+            key_ch_ptr,
+            transposed_blocks->blocksize
+        );
 
         // add to score for this key
         score_for_key += score;
         key_ch_ptr++;
+
+        free(block);
         free(unscrambled);
     }
     // put the key together
@@ -877,13 +940,8 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
     KeyScore *key_score = malloc(sizeof(*key_score));
     key_score->key = the_key;
     key_score->score = score_for_key;
-    
-    // cleanup
-    for (size_t j = 0; j < keysize; j++) {
-        free(all_partitions[j]);
-    }
-    free(all_partitions);
 
+    block_array_free(transposed_blocks);
     return key_score;
 }
 
@@ -920,23 +978,6 @@ void break_xor(char *encrypted, size_t encrypted_len) {
 
     free(best_key);
     free(best_keysizes); 
-}
-
-
-/*
- * Print chars one by one because string format
- * terminates at null
- */
-void print_bytes(char *byte_array, size_t arr_len) {
-    size_t i;
-    char ch;
-    for (i = 0; i < arr_len; i++) {
-        // printf("%c", blocks[i]);
-        ch = byte_array[i];
-        printf("%2.2x", ch & 0xff);
-    }
-    
-    printf("\n");
 }
 
 

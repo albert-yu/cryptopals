@@ -73,9 +73,7 @@ char* decode_with_key(char *message, size_t msg_length, char key) {
     // now xor the two   
     char *decoded = byte_xor(message, key_string); 
 
-    // garbage collection
     free(key_string);
-    // free(decoded);
     return decoded;
 }
 
