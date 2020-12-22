@@ -697,11 +697,6 @@ BlockArray* block_array_alloc(size_t buf_size, size_t block_size) {
  * Appends a copy of the byte array
  */
 void block_array_append(BlockArray *block_arr, const char *s) {
-    if (strlen(s) != block_arr->blocksize) {
-        printf("Input string ('%s') length does not match block size %zu", s, block_arr->blocksize);
-        exit(EXIT_FAILURE);
-    }
-
     if (block_arr->count == block_arr->bufsize) {
         size_t new_bufsize = block_arr->bufsize * 2;
         block_arr->blocks = realloc(block_arr->blocks, new_bufsize);
@@ -746,10 +741,50 @@ void block_array_free(BlockArray *block_arr) {
 }
 
 
-// BlockArray* make_blocks(char *encrypted, size_t encrypted_len, size_t block_size) {
-//     BlockArray *blocks = block_array_alloc(2, block_size);
-//     return blocks;
-// }
+/**
+ * Zeros out a buffer
+ */
+void zero_buffer(char *buffer, size_t length) {
+    for (size_t i = 0; i < length; i++) {
+        buffer[i] = 0;
+    }
+}
+
+
+/**
+ * Partitions the encrypted string into blocks of fixed size
+ * and pads the end with zeroes if not evenly divisible.
+ */
+BlockArray* make_blocks(char *encrypted, size_t encrypted_len, size_t block_size) {
+    // determine number of blocks
+    size_t num_blocks, remainder;
+    remainder = encrypted_len % block_size;
+    if (remainder == 0) {
+        num_blocks = encrypted_len / block_size;
+    } else {
+        num_blocks = encrypted_len / block_size + 1;
+    }
+    BlockArray *blocks = block_array_alloc(num_blocks, block_size);
+
+    char *encrypted_ptr = encrypted;
+    for (size_t i = 0; i < num_blocks; i++) {
+        char buf [blocks->blocksize];
+        
+        // handle special case of remainder
+        if (remainder != 0 && i == num_blocks - 1) {
+            zero_buffer(buf, blocks->blocksize);
+            memcpy(buf, encrypted_ptr, remainder);
+        } else {
+            // copy as normal
+            memcpy(buf, encrypted_ptr, blocks->blocksize);
+        }
+
+        block_array_append(blocks, buf);
+        encrypted_ptr += block_size;
+    }
+
+    return blocks;
+}
 
 
 /*
