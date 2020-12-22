@@ -4,7 +4,7 @@
 #include <limits.h>
 #include <ctype.h>
 
-#include "xor_cipher.h"
+#include "prob_3.h"
 #include "helpers.h"
 
 

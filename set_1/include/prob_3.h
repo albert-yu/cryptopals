@@ -1,5 +1,5 @@
-#ifndef XOR_CIPHER_H
-#define XOR_CIPHER_H
+#ifndef PROB_3_H
+#define PROB_3_H
 
 #include "prob_2.h"
 
@@ -25,6 +25,5 @@ long long unscramble(char *scrambled, char *unscrambled, char *the_key);
  * Returns the score of the unscrambled string
  */
 long long hex_unscramble(char *scrambled, char *unscrambled, char *the_key);
-
 
 #endif

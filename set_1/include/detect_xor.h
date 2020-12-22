@@ -5,7 +5,7 @@
 #ifndef DETECT_XOR_H
 #define DETECT_XOR_H
 
-#include "xor_cipher.h"
+#include "prob_3.h"
 
 void prob4_test();
 
