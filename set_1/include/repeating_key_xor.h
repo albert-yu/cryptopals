@@ -1,7 +1,7 @@
 #ifndef REPEATING_KEY_XOR_H
 #define REPEATING_KEY_XOR_H
 
-#include "detect_xor.h"
+#include "prob_4.h"
 /*
  * Runs the test for Challenge 5, Set 1
  */
