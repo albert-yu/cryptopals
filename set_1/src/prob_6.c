@@ -860,7 +860,7 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
     //     char *partition = all_partitions[i];
 
     //     char *unscrambled = calloc(partition_length, sizeof(*unscrambled));
-    //     long long score = unscramble_with_len(partition, unscrambled, key_ch_ptr, partition_length);
+    //     long long score = unscramble_bytes(partition, unscrambled, key_ch_ptr, partition_length);
 
     //     // add to score for this key
     //     score_for_key += score;
@@ -900,7 +900,7 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
         printf("scrambled: ");
         print_bytes(block, transposed_blocks->blocksize);
         char *unscrambled = calloc(transposed_blocks->blocksize, sizeof(*unscrambled));
-        long long score = unscramble_with_len(
+        long long score = unscramble_bytes(
             block,
             unscrambled,
             key_ch_ptr,

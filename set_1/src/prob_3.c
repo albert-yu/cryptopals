@@ -190,7 +190,7 @@ long long eval_frequency(long long *freq_table, char *input) {
 }
 
 
-long long unscramble_with_len(char* scrambled, char *unscrambled, char *the_key, size_t msg_length) {
+long long unscramble_bytes(char* scrambled, char *unscrambled, char *the_key, size_t msg_length) {
     char *candidate_str = calloc(msg_length + 1, sizeof(*candidate_str)); 
     long long max_freq = 0;
     long long *freq_table = get_frequency_table();
@@ -223,30 +223,16 @@ long long unscramble_with_len(char* scrambled, char *unscrambled, char *the_key,
 
 
 /*
- * Unscrambles the byte array by XOR'ing it against all 
- * possible keys, choosing the one with the highest 
- * frequency score.
- * Returns the score of the unscrambled string and stores 
- * the unscrambled string and key in pointers.
- */
-long long unscramble(char *scrambled, char *unscrambled, char *the_key) {
-    size_t msg_length = strlen(scrambled);
-    return unscramble_with_len(scrambled, unscrambled, the_key, msg_length);
-}
-
-
-/*
  * Unscrambles the hex string by first converting it to a byte
  * array and applying the unscramble function
  */
 long long hex_unscramble(char *hex_scrambled, char *unscrambled, char *the_key) {   
     char *scrambled_bytes = hex_to_bytes(hex_scrambled);
     size_t msg_length = strlen(hex_scrambled) / 2;
-    long long high_score = unscramble_with_len(scrambled_bytes, unscrambled, the_key, msg_length);
+    long long high_score = unscramble_bytes(scrambled_bytes, unscrambled, the_key, msg_length);
     free(scrambled_bytes);
     return high_score;
 }
-
 
 
 void prob3_test() {

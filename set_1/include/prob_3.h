@@ -8,21 +8,31 @@
  */
 void prob3_test();
 
-/*
- * Converts an even-lengthed hex string to raw byte array
+/**
+ * Converts an even-length hex string to raw byte array
+ * 
+ * @returns heap-allocated byte array
  */
 char* hex_to_bytes(char *hex_string);
 
-/*
- * Unscrambles single XOR-encrypted string.
- * Returns the score of the unscrambled string
+/**
+ * Unscrambles single XOR-encrypted byte array.
+ *
+ * @param scrambled scrambled bytes
+ * @param unscrambled user pointer to unscrambled buffer (same length as scrambled)
+ * @param the_key user pointer to the key (single character)
+ * @param msg_length the length of the byt array
+ * @returns likeness to English text
  */
-long long unscramble_with_len(char* scrambled, char *unscrambled, char *the_key, size_t msg_length);
-long long unscramble(char *scrambled, char *unscrambled, char *the_key);
+long long unscramble_bytes(char* scrambled, char *unscrambled, char *the_key, size_t msg_length);
 
-/*
+/**
  * Unscrambles single XOR-encrypted string (in hex).
- * Returns the score of the unscrambled string
+ *
+ * @param scrambled scrambled bytes
+ * @param unscrambled user pointer to unscrambled buffer (same length as scrambled)
+ * @param the_key user pointer to the key (single character)
+ * @returns likeness to English text
  */
 long long hex_unscramble(char *scrambled, char *unscrambled, char *the_key);
 
