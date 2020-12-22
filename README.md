@@ -1,5 +1,4 @@
-# cryptopals
-https://cryptopals.com/
+# [cryptopals](https://cryptopals.com/)
 
 Going through The Matasano Crypto Challenges to better understand cryptography as well as C.
 
@@ -10,13 +9,3 @@ cd set_1
 make
 ./build/set1
 ```
-
-## Table of Contents
-
-### Set 1
-
-1. Convert Hex to Base64 - [hex_to_base64.h](set_1/hex_to_base64.h), [hex_to_base64.c](set_1/hex_to_base64.c)
-2. Fixed XOR - [fixed_xor.h](set_1/fixed_xor.h), [fixed_xor.c](set_1/fixed_xor.c)
-3. Single-byte XOR cipher - [xor_cipher.h](set_1/xor_cipher.h), [xor_cipher.c](set_1/xor_cipher.c)
-4. Detect single-character XOR - [detect_xor.h](set_1/detect_xor.h), [detect_xor.c](set_1/detect_xor.c)
-5. Repeating-key XOR [repeating_key_xor.h](set_1/repeating_key_xor.h), [repeating_key_xor.c](set_1/repeating_key_xor.c)

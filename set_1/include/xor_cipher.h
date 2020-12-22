@@ -1,7 +1,7 @@
 #ifndef XOR_CIPHER_H
 #define XOR_CIPHER_H
 
-#include "fixed_xor.h"
+#include "prob_2.h"
 
 /*
  * Runs the test for Challenge 3, Set 1
