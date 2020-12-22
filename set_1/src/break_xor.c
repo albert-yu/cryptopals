@@ -33,23 +33,6 @@ bool dbl_equals(double dbl1, double dbl2) {
 
 
 /*
- * Print chars one by one because string format
- * terminates at null
- */
-void print_bytes(char *byte_array, size_t arr_len) {
-    size_t i;
-    char ch;
-    for (i = 0; i < arr_len; i++) {
-        // printf("%c", blocks[i]);
-        ch = byte_array[i];
-        printf("%2.2x", ch & 0xff);
-    }
-    
-    printf("\n");
-}
-
-
-/*
  * Returns the substring specified by the start and end indices.
  * End is not inclusive (e.g. 2 to 5 will just return 3 characters). 
  */

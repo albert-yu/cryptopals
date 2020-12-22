@@ -135,6 +135,7 @@ char* unscramble_all(char **hex_strings,
 
         char *unscrambled = (char*)calloc(256, sizeof(*unscrambled));
 
+        printf("i: %d\n", i);
         long long score = hex_unscramble(hex_str, unscrambled, curr_key);
 
         // printf("i = %d, score = %lli\n", i, score);       
@@ -166,7 +167,6 @@ void prob4_test() {
     char *key = &null_byte;
     char *unscrambled_string = unscramble_all(lines, *num_lines, key);
 
-
     if (key) {
         printf("Key: %c\n", *key);
     }
@@ -178,7 +178,6 @@ void prob4_test() {
         printf("Unable to unscramble with XOR cipher!\n");
     }
 
-    // gc
     for (unsigned long i = 0; i < *num_lines; i++) {
         free(lines[i]);
     }

@@ -7,6 +7,13 @@
 #include "xor_cipher.h"
 
 
+char* empty_str() {
+    char *empty = calloc(1, sizeof(*empty));
+    empty[0]= '\0';
+    return empty;
+}
+
+
 /*
  * Convert hex string to bytes by parsing two chars at a time
  * Need to free resulting pointer's memory
@@ -15,7 +22,8 @@ char* hex_to_bytes(char *hex_string) {
     int hex_length = strlen(hex_string);
     // not handling the odd case--yet
     if ((hex_length % 2) != 0) {
-        return "";
+        char *empty = empty_str();
+        return empty;
     }
 
     int ascii_length = hex_length / 2;
@@ -36,14 +44,34 @@ char* hex_to_bytes(char *hex_string) {
 }
 
 
-/*
- * Byte-by-byte xor
+/**
+ * Byte-by-byte xor with fixed length
+ * 
+ * @param s1 byte array
+ * @param s2 byte array
+ * @param length `s1` and `s2` should be this length
+ * 
+ * @returns heap-allocated byte array
  */
-char* byte_xor(char* string_1, char* string_2) {
+char* byte_xor(char *s1, char *s2, size_t length) {
+    // needs to be freed
+    char *retval = malloc(length * sizeof(*retval));
+    for (int i = 0; i < length; i++) {
+        retval[i] = s1[i] ^ s2[i];
+        // printf("\ti: %d\n", i);
+    }
+    return retval;
+}
+
+
+/*
+ * Byte-by-byte xor for strings
+ */
+char* str_xor(char* string_1, char* string_2) {
     int len_1 = strlen(string_1);
     int len_2 = strlen(string_2);
     if (len_1 != len_2) {
-        return "";
+        return empty_str();
     }
     // needs to be freed
     char *retval = malloc((len_1 + 1) * sizeof(*retval));
@@ -57,21 +85,20 @@ char* byte_xor(char* string_1, char* string_2) {
 }
 
 
-
 /* 
  * Decodes a byte array with a given key with XOR
  */
 char* decode_with_key(char *message, size_t msg_length, char key) {   
     // first create string with char repeatedly concatenated
     // with itself   
-    char *key_string = malloc((msg_length + 1) * sizeof(char));
+    char *key_string = malloc((msg_length + 1) * sizeof(*key_string));
     for (int i = 0; i < msg_length; i++) {
         key_string[i] = key;
     }
     key_string[msg_length] = '\0';
     // printf("key:    \t%s\n", key_string);
     // now xor the two   
-    char *decoded = byte_xor(message, key_string); 
+    char *decoded = byte_xor(message, key_string, msg_length); 
 
     free(key_string);
     return decoded;
@@ -163,7 +190,8 @@ long long unscramble_with_len(char* scrambled, char *unscrambled, char *the_key,
     long long *freq_table = get_frequency_table();
 
     // avoid the null byte
-    for (char c = 1; c > 0; c++) {        
+    for (char c = 1; c != 0; c++) {        
+        // printf("\tc: %x\n", c);
         char *decoded = decode_with_key(scrambled, msg_length, c);
         long long freq = eval_frequency(freq_table, decoded);
         if (freq > max_freq) {           
