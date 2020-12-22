@@ -5,6 +5,7 @@
 #include <ctype.h>
 
 #include "xor_cipher.h"
+#include "helpers.h"
 
 
 char* empty_str() {
@@ -98,7 +99,12 @@ char* decode_with_key(char *message, size_t msg_length, char key) {
     key_string[msg_length] = '\0';
     // printf("key:    \t%s\n", key_string);
     // now xor the two   
+    // printf("message: ");
+    // print_bytes(message, msg_length);
     char *decoded = byte_xor(message, key_string, msg_length); 
+    
+    // printf("decoded: ");
+    // print_bytes(decoded, msg_length);
 
     free(key_string);
     return decoded;
