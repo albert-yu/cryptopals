@@ -3,7 +3,7 @@
 #define PROB_6_H
 
 #include "helpers.h"
-#include "repeating_key_xor.h"
+#include "prob_5.h"
 
 void prob6_test();
 

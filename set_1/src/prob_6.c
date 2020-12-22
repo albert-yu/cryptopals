@@ -633,7 +633,7 @@ char** partition(const char *str, size_t str_len, size_t num_partitions) {
  * Takes the encrypted bytes and decrypts them with
  * the given key
  */
-void decrypt_repeating_key_xor(const char *encrypted, size_t encrypted_len, const char *key, char *decrypted_ptr) {
+void decrypt_prob_5(const char *encrypted, size_t encrypted_len, const char *key, char *decrypted_ptr) {
     size_t iter, key_len;
     iter = 0;
     key_len = strlen(key);
@@ -870,7 +870,7 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
     // // put the key together
     // printf("key: %s\n", the_key);
     // char *decrypted_ptr = calloc(encrypted_len + 1, sizeof(*decrypted_ptr));
-    // decrypt_repeating_key_xor(encrypted, encrypted_len, the_key, decrypted_ptr);
+    // decrypt_prob_5(encrypted, encrypted_len, the_key, decrypted_ptr);
     // printf("decrypted: %s\n", decrypted_ptr);
 
     // KeyScore *key_score = malloc(sizeof(*key_score));
@@ -917,7 +917,7 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
     // put the key together
     printf("key: %s\n", the_key);
     char *decrypted_ptr = calloc(encrypted_len + 1, sizeof(*decrypted_ptr));
-    decrypt_repeating_key_xor(encrypted, encrypted_len, the_key, decrypted_ptr);
+    decrypt_prob_5(encrypted, encrypted_len, the_key, decrypted_ptr);
     printf("decrypted: %s\n", decrypted_ptr);
 
     KeyScore *key_score = malloc(sizeof(*key_score));
