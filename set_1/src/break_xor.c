@@ -551,6 +551,38 @@ void one_to_2d(size_t n, const size_t depth, size_t *x, size_t *y) {
 }
 
 
+// typedef struct point_2d_int_t {
+//     size_t x;
+//     size_t y;
+// } Point2DInt;
+
+
+// /*
+//  * 0 -> (0, 0),
+//  * 1 -> (1, 0),
+//  * 2 -> (2, 0),
+//  * ...,
+//  * N-1 -> (N-1, 0),
+//  * N -> (0, 1),
+//  * N+1 -> (1, 1),
+//  * etc.
+//  * 
+//  * x coord = n % depth
+//  * y coord = n / depth (floor div)
+
+//  * @param n nonnegative integer
+//  * @param depth the maximum value of the x coordinate
+//  * 
+//  * @returns pointer to Point2DInt, which must be freed
+//  */
+// Point2DInt* n_to_2d(size_t n, const size_t depth) {
+//     Point2DInt *point = malloc(sizeof(*point));
+//     point->x = n % depth;
+//     point->y = n / depth;
+//     return point;
+// }
+
+
 /*
  * Given a partition size K, partitions a byte array 
  * A into partitions P such that:
@@ -641,13 +673,92 @@ void key_score_free(KeyScore *key_score) {
 
 
 /*
+ * A block array (each byte array is of fixed size)
+ */
+typedef struct block_array_t {
+    char **blocks;
+    size_t bufsize;
+    size_t count;
+    size_t blocksize;
+} BlockArray;
+
+
+BlockArray* block_array_alloc(size_t buf_size, size_t block_size) {
+    BlockArray *block_arr = malloc(sizeof(*block_arr));
+    block_arr->blocks = malloc(buf_size * sizeof(*(block_arr->blocks)));
+    block_arr->bufsize = buf_size;
+    block_arr->count = 0;
+    block_arr->blocksize = block_size;
+    return block_arr;
+}
+
+
+/**
+ * Appends a copy of the byte array
+ */
+void block_array_append(BlockArray *block_arr, const char *s) {
+    if (strlen(s) != block_arr->blocksize) {
+        printf("Input string ('%s') length does not match block size %zu", s, block_arr->blocksize);
+        exit(EXIT_FAILURE);
+    }
+
+    if (block_arr->count == block_arr->bufsize) {
+        size_t new_bufsize = block_arr->bufsize * 2;
+        block_arr->blocks = realloc(block_arr->blocks, new_bufsize);
+        block_arr->bufsize = new_bufsize;
+    }
+    size_t index = block_arr->count;
+    block_arr->blocks[index] = calloc(block_arr->blocksize, sizeof(char));
+    memcpy(block_arr->blocks[index], s, block_arr->blocksize);
+    block_arr->count++;
+}
+
+
+/**
+ * Gets the block at index i
+ *
+ * @param block_arr the block array
+ * @param i the index
+ * 
+ * @returns heap-allocated byte array (needs to be freed)
+ */
+char* block_array_at(BlockArray *block_arr, size_t i) {
+    if (i >= block_arr->count) {
+        printf("Index out of bounds (i: %zu, count: %zu)", i, block_arr->count);
+        exit(EXIT_FAILURE);
+    }
+
+    char *block = malloc(block_arr->blocksize * sizeof(*block));
+    memcpy(block, block_arr->blocks[i], block_arr->blocksize);
+    return block;
+}
+
+
+void block_array_free(BlockArray *block_arr) {
+    if (!block_arr){
+        return;
+    }
+
+    for (size_t i = 0; i < block_arr->count; i++) {
+        free(block_arr->blocks[i]);
+    }
+    free(block_arr);
+}
+
+
+// BlockArray* make_blocks(char *encrypted, size_t encrypted_len, size_t block_size) {
+//     BlockArray *blocks = block_array_alloc(2, block_size);
+//     return blocks;
+// }
+
+
+/*
  * Caller must call `key_score_free()` on result
  */
 KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysize) {
     size_t partition_length = 
         encrypted_len / keysize;
 
-    // array of strings
     char **all_partitions = 
         partition(encrypted, encrypted_len, keysize);
 
@@ -733,7 +844,7 @@ void print_bytes(char *byte_array, size_t arr_len) {
     size_t i;
     char ch;
     for (i = 0; i < arr_len; i++) {
-        // printf("%c", byte_array[i]);
+        // printf("%c", blocks[i]);
         ch = byte_array[i];
         printf("%2.2x", ch & 0xff);
     }
