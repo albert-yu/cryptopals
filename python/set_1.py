@@ -251,8 +251,19 @@ def partition(encoded: bytes, partition_size: int) -> List[bytes]:
 
 
 def transpose(input: List[bytes]) -> List[bytes]:
+    """
+    Tranposes the list of byte arrays. Assumes
+    that each byte array is of fixed width.
+    """
     output = []
     chunk = bytearray(b'')
+    width = len(input[0])
+    for j in range(width):
+        for block in input:
+            chunk.append(block[j])
+        
+        output.append(bytes(chunk))
+
     return output 
 
 
@@ -263,7 +274,10 @@ def prob_6_test():
     as_bytes = base64.b64decode(b64)
     print(as_bytes[:20])
     print(best_keysizes(as_bytes))
-    print(partition(as_bytes, 5)[:4])
+    partitioned = partition(as_bytes, 5)
+    print(partitioned[:4])
+    transposed = transpose(partitioned)
+    print(transposed[:2][:4])
     
 
 #----------------------------------------------------------
