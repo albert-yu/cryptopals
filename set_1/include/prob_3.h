@@ -3,6 +3,11 @@
 
 #include "prob_2.h"
 
+/**
+ * Type for frequency score
+ */
+typedef long long freq_t;
+
 /*
  * Runs the test for Challenge 3, Set 1
  */
@@ -24,7 +29,7 @@ char* hex_to_bytes(char *hex_string);
  * @param msg_length the length of the byt array
  * @returns likeness to English text
  */
-long long unscramble_bytes(char* scrambled, char *unscrambled, char *the_key, size_t msg_length);
+freq_t unscramble_bytes(char* scrambled, char *unscrambled, char *the_key, size_t msg_length);
 
 /**
  * Unscrambles single XOR-encrypted string (in hex).
@@ -34,6 +39,6 @@ long long unscramble_bytes(char* scrambled, char *unscrambled, char *the_key, si
  * @param the_key user pointer to the key (single character)
  * @returns likeness to English text
  */
-long long hex_unscramble(char *scrambled, char *unscrambled, char *the_key);
+freq_t hex_unscramble(char *scrambled, char *unscrambled, char *the_key);
 
 #endif

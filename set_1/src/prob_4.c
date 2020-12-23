@@ -113,7 +113,7 @@ char* unscramble_all(char **hex_strings,
     const int EXPECTED_LEN = 60; 
 
     // keep track of max score
-    long long max_score = 0; 
+    freq_t max_score = 0; 
 
     // keep track of most likely candidate
     char *candidate = 
@@ -134,7 +134,7 @@ char* unscramble_all(char **hex_strings,
         char *curr_key = &null_byte;
 
         char *unscrambled = (char*)calloc(256, sizeof(*unscrambled));
-        long long score = hex_unscramble(hex_str, unscrambled, curr_key);
+        freq_t score = hex_unscramble(hex_str, unscrambled, curr_key);
 
         // printf("i = %d, score = %lli\n", i, score);       
         if (score > max_score) {

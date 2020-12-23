@@ -312,7 +312,7 @@ void keysize_candidates_free(KeySizeCandidate **candidates, size_t start, size_t
  */
 size_t* get_best_keysizes2(char *encrypted, size_t num_keys) {
     const size_t MIN_KEYSIZE = 2;
-    const size_t MAX_KEYSIZE = 15;
+    const size_t MAX_KEYSIZE = 40;
 
     KeySizeCandidate **scores = malloc((MAX_KEYSIZE + 1) * sizeof(*scores));
     size_t keysize = MIN_KEYSIZE;
@@ -391,7 +391,7 @@ void decrypt_bytes(const char *encrypted, size_t encrypted_len, const char *key,
  */
 typedef struct key_score_t {
     char *key;
-    long long score;
+    freq_t score;
 } KeyScore;
 
 
@@ -580,14 +580,14 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
     char *the_key, *key_ch_ptr;
     the_key = calloc(keysize, sizeof(*the_key));
     key_ch_ptr = the_key;
-    long long score_for_key = 0;
+    freq_t score_for_key = 0;
 
     for (size_t i = 0; i < transposed_blocks->count; i++) {
         char *block = block_array_at(transposed_blocks, i);
         // printf("scrambled: ");
         // print_bytes(block, transposed_blocks->blocksize);
         char *unscrambled = calloc(transposed_blocks->blocksize, sizeof(*unscrambled));
-        long long score = unscramble_bytes(
+        freq_t score = unscramble_bytes(
             block,
             unscrambled,
             key_ch_ptr,
@@ -622,7 +622,7 @@ void break_xor(char *encrypted, size_t encrypted_len) {
     const size_t N_KEYS = 3;
     size_t *best_keysizes = get_best_keysizes2(encrypted, N_KEYS);
 
-    long long best_score = 0;
+    freq_t best_score = 0;
 
     // allocate memory to hold the key
     const int ARB_SIZE = 64;

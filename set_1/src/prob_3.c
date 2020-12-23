@@ -112,13 +112,13 @@ char* decode_with_key(char *message, size_t msg_length, char key) {
 
 
 /*
- * Stores the frequency table as an array of long longs.
+ * Stores the frequency table as an array of freq_ts.
  * Since characters behave like integers, we can use them as
  * the array indices.
  */
-long long* get_frequency_table() {
+freq_t* get_frequency_table() {
     const int NUM_CHARS = 256;
-    long long *freq_table = (long long*)calloc(NUM_CHARS, sizeof(*freq_table));
+    freq_t *freq_table = (freq_t*)calloc(NUM_CHARS, sizeof(*freq_table));
 
     // // initialize everything to 0
     // for (int i = 0; i < NUM_CHARS; i++)
@@ -170,15 +170,15 @@ char lower_ascii(char c) {
 /*
  * Scores a piece of text for the likelihood that it's English
  */
-long long eval_frequency(long long *freq_table, char *input) { 
-    long long freq = 0;
+freq_t eval_frequency(freq_t *freq_table, char *input) { 
+    freq_t freq = 0;
 
     while (*input) {
         char c = *input;
         c = lower_ascii(c);
 
         if (isalpha(c) || c == ' ') {
-            long long freq_val = freq_table[c];
+            freq_t freq_val = freq_table[c];
             freq += freq_val;
         }
 
@@ -190,16 +190,16 @@ long long eval_frequency(long long *freq_table, char *input) {
 }
 
 
-long long unscramble_bytes(char* scrambled, char *unscrambled, char *the_key, size_t msg_length) {
+freq_t unscramble_bytes(char* scrambled, char *unscrambled, char *the_key, size_t msg_length) {
     char *candidate_bytes = calloc(msg_length + 1, sizeof(*candidate_bytes)); 
-    long long max_freq = 0;
-    long long *freq_table = get_frequency_table();
+    freq_t max_freq = 0;
+    freq_t *freq_table = get_frequency_table();
 
     // avoid the null byte
     for (char c = 1; c != 0; c++) {        
         // printf("\tc: %x\n", c);
         char *decoded = decode_with_key(scrambled, msg_length, c);
-        long long freq = eval_frequency(freq_table, decoded);
+        freq_t freq = eval_frequency(freq_table, decoded);
         if (freq > max_freq) {           
             max_freq = freq;
             memcpy(candidate_bytes, decoded, msg_length);
@@ -226,10 +226,10 @@ long long unscramble_bytes(char* scrambled, char *unscrambled, char *the_key, si
  * Unscrambles the hex string by first converting it to a byte
  * array and applying the unscramble function
  */
-long long hex_unscramble(char *hex_scrambled, char *unscrambled, char *the_key) {   
+freq_t hex_unscramble(char *hex_scrambled, char *unscrambled, char *the_key) {   
     char *scrambled_bytes = hex_to_bytes(hex_scrambled);
     size_t msg_length = strlen(hex_scrambled) / 2;
-    long long high_score = unscramble_bytes(scrambled_bytes, unscrambled, the_key, msg_length);
+    freq_t high_score = unscramble_bytes(scrambled_bytes, unscrambled, the_key, msg_length);
     free(scrambled_bytes);
     return high_score;
 }
@@ -241,7 +241,7 @@ void prob3_test() {
     char *the_key = &null_term;
     char *scrambled = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
     char *unscrambled = malloc(256 * sizeof(*unscrambled));
-    long long score = hex_unscramble(scrambled, unscrambled, the_key);
+    freq_t score = hex_unscramble(scrambled, unscrambled, the_key);
     if (*the_key != '\0') {
         printf("Key: %c\n", *the_key);
         printf("Unscrambled: %s\n", unscrambled);
