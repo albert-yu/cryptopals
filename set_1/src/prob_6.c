@@ -929,7 +929,7 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
 }
 
 
-void prob_6(char *encrypted, size_t encrypted_len) {
+void break_xor(char *encrypted, size_t encrypted_len) {
     // get 3 best key sizes
     const size_t N_KEYS = 3;
     size_t *best_keysizes = get_best_keysizes2(encrypted, N_KEYS);
@@ -1036,7 +1036,7 @@ void prob6_test() {
     // print_bytes(all_the_bytes, *bytes_len_ptr);
     
     // do the breaking
-    prob_6(all_the_bytes, *bytes_len_ptr);
+    break_xor(all_the_bytes, *bytes_len_ptr);
  
     // clean up
     free(long_ass_string);
