@@ -241,9 +241,19 @@ def partition(encoded: bytes, partition_size: int) -> List[bytes]:
     
     # append any remaining
     if len(chunk) > 0:
-        result.append(chunk)
+        # pad with null bytes
+        null_byte_count = partition_size - len(chunk)
+        if null_byte_count:
+            chunk.extend(bytes('\0' * null_byte_count, encoding='utf8'))
+        result.append(bytes(chunk))
 
     return result
+
+
+def transpose(input: List[bytes]) -> List[bytes]:
+    output = []
+    chunk = bytearray(b'')
+    return output 
 
 
 def prob_6_test():
