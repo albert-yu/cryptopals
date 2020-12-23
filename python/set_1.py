@@ -210,11 +210,26 @@ def hamming_distance_test():
         print("Expected: {0}".format(expected))
         print("Actual: {0}".format(dist))
 
+
+def best_keysizes(encoded: bytes, num_keysizes=3, min_keysize=2, max_keysize=40):
+    keysize_to_hamming = dict()
+    for keysize in range(min_keysize, max_keysize + 1):
+        first_n = encoded[:keysize]
+        second_n = encoded[keysize:keysize*2]
+        hamming = hamming_distance(first_n, second_n)
+        normalized = hamming / keysize
+        keysize_to_hamming[keysize] = normalized
+    
+    smallest_to_largest_hamming = dict(sorted(keysize_to_hamming.items(), key=lambda item: item[1]))
+    return list(smallest_to_largest_hamming.keys())[:num_keysizes]
+
+
 def prob_6_test():
     hamming_distance_test()
     filename = "../set_1/data/6.txt"
     b64 = file_string(filename)
     as_bytes = base64.b64decode(b64)
+    print(best_keysizes(as_bytes))
     
 
 #----------------------------------------------------------
