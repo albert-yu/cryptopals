@@ -510,6 +510,23 @@ BlockArray* block_array_transpose(BlockArray* orig_blocks) {
 }
 
 
+/**
+ * Prints block array assuming string contents
+ */
+void block_array_print_str(BlockArray *block_arr) {
+    printf("[");
+    for (size_t i = 0; i < block_arr->count; i++) {
+        char *element = block_arr->blocks[i];
+        if (i == block_arr->count - 1) {
+            printf("%s", element);
+        } else {
+            printf("%s, ", element);
+        }
+    }
+    printf("]\n");
+}
+
+
 void block_array_free(BlockArray *block_arr) {
     if (!block_arr){
         return;
@@ -565,6 +582,20 @@ BlockArray* make_blocks(char *encrypted, size_t encrypted_len, size_t block_size
     }
 
     return blocks;
+}
+
+
+void transpose_test() {
+    char *input = "abcdefghijkl";
+    size_t input_len = strlen(input);
+    size_t block_size = 4;
+    BlockArray *blocks, *transposed;
+    blocks = make_blocks(input, input_len, block_size);
+    transposed = block_array_transpose(blocks);
+    block_array_print_str(transposed);
+
+    block_array_free(blocks);
+    block_array_free(transposed);
 }
 
 
@@ -724,6 +755,7 @@ void prob6_test() {
     
     // do the breaking
     break_xor(all_the_bytes, *bytes_len_ptr);
+    transpose_test();
  
     // clean up
     free(long_ass_string);
