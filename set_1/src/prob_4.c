@@ -11,7 +11,7 @@ void copy_over_strings(char **destination, char **source, unsigned int num_strin
         size_t str_size = strlen(line) + 1;  // + 1 for null terminator
 
         // allocate memory for string
-        destination[i] = (char*) calloc((str_size), sizeof(char));
+        destination[i] = (char*) calloc(str_size, sizeof(char));
 
         // copy string
         strcpy(destination[i], source[i]);

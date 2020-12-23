@@ -85,33 +85,33 @@ size_t count_ones(char c) {
 }
 
 
-/*
- * Computes the Hamming distance between
- * two strings of equal length.
- * The Hamming distance is just the number of differing bits.
- */
-size_t hamming(const char *str_1, const char *str_2) {
-    size_t len_1 = strlen(str_1);
-    size_t len_2 = strlen(str_2);
+// /*
+//  * Computes the Hamming distance between
+//  * two strings of equal length.
+//  * The Hamming distance is just the number of differing bits.
+//  */
+// size_t hamming(const char *str_1, const char *str_2) {
+//     size_t len_1 = strlen(str_1);
+//     size_t len_2 = strlen(str_2);
 
-    if (len_1 != len_2) {
-        perror("Hamming distance not defined for strings of differing lengths.\n");
-        exit(EXIT_FAILURE);
-    }
+//     if (len_1 != len_2) {
+//         perror("Hamming distance not defined for strings of differing lengths.\n");
+//         exit(EXIT_FAILURE);
+//     }
 
-    size_t total = 0;
-    char c1, c2;
-    while ((c1 = *str_1) && (c2 = *str_2)) {
-        char xord = c1 ^ c2; 
-        size_t count = count_ones(xord);
-        total += count;
+//     size_t total = 0;
+//     char c1, c2;
+//     while ((c1 = *str_1) && (c2 = *str_2)) {
+//         char xord = c1 ^ c2; 
+//         size_t count = count_ones(xord);
+//         total += count;
 
-        str_1++;
-        str_2++;
-    }
+//         str_1++;
+//         str_2++;
+//     }
 
-    return total;
-}
+//     return total;
+// }
 
 
 /*
@@ -186,16 +186,7 @@ char* read_file_as_string(char *filename, size_t *length_out) {
 
         // check if we've reached the end of the buffer
         if (count == BUF_LEN) {
-            // create a new buffer that is 2x size
             BUF_LEN *= 2;
-            //char *temp_buf = (char*)calloc(BUF_LEN, sizeof(*temp_buf));
-
-            // copy contents
-            //strcpy(temp_buf, ret_val);
-            //char *old = ret_val;
-            //ret_val = temp_buf;
-            //free(old);
-
             ret_val = (char*) realloc(ret_val, BUF_LEN);
         }
 
@@ -285,129 +276,129 @@ char* b64_to_bytes(
 }
 
 
-/*
- * Compare function used for sorting (low to high)
- * https://stackoverflow.com/a/1791064/9555588
- */
-int compare_function(const void *a, const void *b)  {
-    double *x = (double *) a;
-    double *y = (double *) b;
+// /*
+//  * Compare function used for sorting (low to high)
+//  * https://stackoverflow.com/a/1791064/9555588
+//  */
+// int compare_function(const void *a, const void *b)  {
+//     double *x = (double *) a;
+//     double *y = (double *) b;
 
-    if (*x < *y) 
-        return -1;
-    else if (*x > *y) 
-        return 1; 
-    return 0;
-}
-
-
-/*
- * Copies the contents of an array of doubles to another
- */
-void dblcpy(double *destination, const double *source, size_t length) {
-    for (size_t i = 0; i < length; i++) {
-	    destination[i] = source[i];
-    }
-}
-
-/*
- * Given a map from key size to hamming distance and 
- * a hamming distance, find the original key size that
- * is associated with that distance
- * @param keysize_to_hamm - maps the keysizes to the
-    hamming distances
- * @param length - number of keysizes
- * @param target - the target hamming distance
- */
-size_t get_keysize(double *keysize_to_hamm, size_t length, double target) {
-    for (size_t i = 0; i < length; i++) {
-        double hamm_dist = keysize_to_hamm[i];
-        if (dbl_equals(hamm_dist, target)) {
-            return i;
-        }
-    }
-    // cannot have keysize 0, so makes sense
-    // to return this as default
-    return 0;
-}
+//     if (*x < *y) 
+//         return -1;
+//     else if (*x > *y) 
+//         return 1; 
+//     return 0;
+// }
 
 
-/*
- * Try a bunch of different keysizes and find out which yield 
- * the smallest N Hamming distances. Store the results in
- * the an array.
- * Assume encrypted string is greater than or equal to 2x the max 
- * keysize length.
- */
-size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
-    const size_t MIN_KEYSIZE = 2;
-    size_t keysize = MIN_KEYSIZE;
-    const size_t MAX_KEYSIZE = 40;  
+// /*
+//  * Copies the contents of an array of doubles to another
+//  */
+// void dblcpy(double *destination, const double *source, size_t length) {
+//     for (size_t i = 0; i < length; i++) {
+// 	    destination[i] = source[i];
+//     }
+// }
 
-    // hold all the normalized hamming distances
-    // and maps key size -> hamming distance
-    size_t KEYS_ARR_SIZE = MAX_KEYSIZE + 1;  
-    size_t MALLOC_SZ = KEYS_ARR_SIZE * 2;
-    double *hammings_lookup =
-        (double*) calloc(KEYS_ARR_SIZE, sizeof(*hammings_lookup));
-    char *first_n = (char*)calloc(MALLOC_SZ, sizeof(*first_n));
-    if (first_n == NULL || hammings_lookup == NULL) {
-        fprintf(stderr, "Out of memory. Exiting...\n");
-        exit(EXIT_FAILURE);
-    }
-    char *second_n = (char*)calloc(MALLOC_SZ, sizeof(*second_n));
-    if (second_n == NULL) {
-        fprintf(stderr, "Could not allocate mem for second_n.\n");
-        exit(EXIT_FAILURE);
-    }
+// /*
+//  * Given a map from key size to hamming distance and 
+//  * a hamming distance, find the original key size that
+//  * is associated with that distance
+//  * @param keysize_to_hamm - maps the keysizes to the
+//     hamming distances
+//  * @param length - number of keysizes
+//  * @param target - the target hamming distance
+//  */
+// size_t get_keysize(double *keysize_to_hamm, size_t length, double target) {
+//     for (size_t i = 0; i < length; i++) {
+//         double hamm_dist = keysize_to_hamm[i];
+//         if (dbl_equals(hamm_dist, target)) {
+//             return i;
+//         }
+//     }
+//     // cannot have keysize 0, so makes sense
+//     // to return this as default
+//     return 0;
+// }
 
-    for (; keysize <= MAX_KEYSIZE; keysize++) {             
-        substr_cpy(first_n, encrypted, 0 , keysize);
-        substr_cpy(second_n, encrypted, keysize, keysize * 2);
-        size_t distance = hamming_with_len(first_n, second_n, keysize);
-        double normalized = (distance * 1.0) / keysize;
-        hammings_lookup[keysize] = normalized;
-    }
 
-    free(first_n);
-    free(second_n);
+// /*
+//  * Try a bunch of different keysizes and find out which yield 
+//  * the smallest N Hamming distances. Store the results in
+//  * the an array.
+//  * Assume encrypted string is greater than or equal to 2x the max 
+//  * keysize length.
+//  */
+// size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
+//     const size_t MIN_KEYSIZE = 2;
+//     size_t keysize = MIN_KEYSIZE;
+//     const size_t MAX_KEYSIZE = 40;  
+
+//     // hold all the normalized hamming distances
+//     // and maps key size -> hamming distance
+//     size_t KEYS_ARR_SIZE = MAX_KEYSIZE + 1;  
+//     size_t MALLOC_SZ = KEYS_ARR_SIZE * 2;
+//     double *hammings_lookup =
+//         (double*) calloc(KEYS_ARR_SIZE, sizeof(*hammings_lookup));
+//     char *first_n = (char*)calloc(MALLOC_SZ, sizeof(*first_n));
+//     if (first_n == NULL || hammings_lookup == NULL) {
+//         fprintf(stderr, "Out of memory. Exiting...\n");
+//         exit(EXIT_FAILURE);
+//     }
+//     char *second_n = (char*)calloc(MALLOC_SZ, sizeof(*second_n));
+//     if (second_n == NULL) {
+//         fprintf(stderr, "Could not allocate mem for second_n.\n");
+//         exit(EXIT_FAILURE);
+//     }
+
+//     for (; keysize <= MAX_KEYSIZE; keysize++) {             
+//         substr_cpy(first_n, encrypted, 0 , keysize);
+//         substr_cpy(second_n, encrypted, keysize, keysize * 2);
+//         size_t distance = hamming_with_len(first_n, second_n, keysize);
+//         double normalized = (distance * 1.0) / keysize;
+//         hammings_lookup[keysize] = normalized;
+//     }
+
+//     free(first_n);
+//     free(second_n);
     
-    first_n = NULL;
-    second_n = NULL;
+//     first_n = NULL;
+//     second_n = NULL;
 
-    // sort in a new array
-    double *sorted_hammings = (double*) calloc(KEYS_ARR_SIZE, sizeof(*sorted_hammings));
-    // memcpy(sorted_hammings, hammings_lookup, KEYS_ARR_SIZE);
-    dblcpy(sorted_hammings, hammings_lookup, KEYS_ARR_SIZE);    
-    qsort(sorted_hammings, KEYS_ARR_SIZE, sizeof(*sorted_hammings), compare_function);
+//     // sort in a new array
+//     double *sorted_hammings = (double*) calloc(KEYS_ARR_SIZE, sizeof(*sorted_hammings));
+//     // memcpy(sorted_hammings, hammings_lookup, KEYS_ARR_SIZE);
+//     dblcpy(sorted_hammings, hammings_lookup, KEYS_ARR_SIZE);    
+//     qsort(sorted_hammings, KEYS_ARR_SIZE, sizeof(*sorted_hammings), compare_function);
 
-    // store the smallest n key sizes here
-    size_t *smallest_n_keysizes =
-        (size_t*) calloc(num_keys * 4, sizeof(*smallest_n_keysizes));
+//     // store the smallest n key sizes here
+//     size_t *smallest_n_keysizes =
+//         (size_t*) calloc(num_keys * 4, sizeof(*smallest_n_keysizes));
 
-    // find the first n nonzero mins
-    const double ZERO = 0.0;
-    size_t start_i = 0;
-    while (dbl_equals(sorted_hammings[start_i], ZERO)) {
-        start_i++;
-    }
-    for (size_t i = 0; i < num_keys; i++) {
-        // could check if we ever reach a buffer overflow,
-        // but nah
-        double next_min = sorted_hammings[start_i];
+//     // find the first n nonzero mins
+//     const double ZERO = 0.0;
+//     size_t start_i = 0;
+//     while (dbl_equals(sorted_hammings[start_i], ZERO)) {
+//         start_i++;
+//     }
+//     for (size_t i = 0; i < num_keys; i++) {
+//         // could check if we ever reach a buffer overflow,
+//         // but nah
+//         double next_min = sorted_hammings[start_i];
 
-        // iterate through all the possible key
-        // sizes and find the one that produced
-        // this distance
-        size_t keysize = get_keysize(hammings_lookup, KEYS_ARR_SIZE, next_min);
-        smallest_n_keysizes[i] = keysize;
+//         // iterate through all the possible key
+//         // sizes and find the one that produced
+//         // this distance
+//         size_t keysize = get_keysize(hammings_lookup, KEYS_ARR_SIZE, next_min);
+//         smallest_n_keysizes[i] = keysize;
 
-        start_i++;
-    }
-    free(sorted_hammings); 
-    free(hammings_lookup); 
-    return smallest_n_keysizes;
-}
+//         start_i++;
+//     }
+//     free(sorted_hammings); 
+//     free(hammings_lookup); 
+//     return smallest_n_keysizes;
+// }
 
 
 /*
@@ -524,47 +515,17 @@ size_t* get_best_keysizes2(char *encrypted, size_t num_keys) {
 }
 
 
-/*
- * Maps N+{0} to (N+{0})^2
- * breadth first (exhaust x-coordinate first)
- * 
- * 0 -> (0, 0)
- * 1 -> (1, 0)
- * 2 -> (2, 0)
- * ...
- * N-1 -> (N-1, 0)
- * N -> (0, 1)
- * N+1 -> (1, 1)
- * etc.
- * 
- * x coord = n % depth
- * y coord = n / depth (floor div)
-
- * @param n nonnegative integer
- * @param depth the maximum value of the x coordinate
- * @param x the x coordinate of the ordered pair
- * @param y the y coordinate of the ordered pair
- */
-void one_to_2d(size_t n, const size_t depth, size_t *x, size_t *y) {
-    *x = n % depth;
-    *y = n / depth;
-}
-
-
-// typedef struct point_2d_int_t {
-//     size_t x;
-//     size_t y;
-// } Point2DInt;
-
-
 // /*
-//  * 0 -> (0, 0),
-//  * 1 -> (1, 0),
-//  * 2 -> (2, 0),
-//  * ...,
-//  * N-1 -> (N-1, 0),
-//  * N -> (0, 1),
-//  * N+1 -> (1, 1),
+//  * Maps N+{0} to (N+{0})^2
+//  * breadth first (exhaust x-coordinate first)
+//  * 
+//  * 0 -> (0, 0)
+//  * 1 -> (1, 0)
+//  * 2 -> (2, 0)
+//  * ...
+//  * N-1 -> (N-1, 0)
+//  * N -> (0, 1)
+//  * N+1 -> (1, 1)
 //  * etc.
 //  * 
 //  * x coord = n % depth
@@ -572,61 +533,91 @@ void one_to_2d(size_t n, const size_t depth, size_t *x, size_t *y) {
 
 //  * @param n nonnegative integer
 //  * @param depth the maximum value of the x coordinate
-//  * 
-//  * @returns pointer to Point2DInt, which must be freed
+//  * @param x the x coordinate of the ordered pair
+//  * @param y the y coordinate of the ordered pair
 //  */
-// Point2DInt* n_to_2d(size_t n, const size_t depth) {
-//     Point2DInt *point = malloc(sizeof(*point));
-//     point->x = n % depth;
-//     point->y = n / depth;
-//     return point;
+// void one_to_2d(size_t n, const size_t depth, size_t *x, size_t *y) {
+//     *x = n % depth;
+//     *y = n / depth;
 // }
 
 
-/*
- * Given a partition size K, partitions a byte array 
- * A into partitions P such that:
- *
- * P[0] = A[0], A[0 + K], A[0 + 2K],...
- * P[1] = A[1], A[1 + K], A[1 + 2K],...
- * ...
- * P[K-1] = A[K-1], A[K-1 + K], etc...
- *
- * @param str the byte array from which we are reading
- * @param str_len the length of the array
- * @param num_partitions K
- */
-char** partition(const char *str, size_t str_len, size_t num_partitions) {
-    size_t remainder = str_len % num_partitions;
+// // typedef struct point_2d_int_t {
+// //     size_t x;
+// //     size_t y;
+// // } Point2DInt;
 
-    // figure out how large each partition needs to be
-    size_t partition_sz = remainder == 0 ? 
-                        str_len / num_partitions : 
-                        str_len / num_partitions + 1;
 
-    // allocate array of pointers
-    char **all_blocks = (char**) calloc(num_partitions, sizeof(char*));
+// // /*
+// //  * 0 -> (0, 0),
+// //  * 1 -> (1, 0),
+// //  * 2 -> (2, 0),
+// //  * ...,
+// //  * N-1 -> (N-1, 0),
+// //  * N -> (0, 1),
+// //  * N+1 -> (1, 1),
+// //  * etc.
+// //  * 
+// //  * x coord = n % depth
+// //  * y coord = n / depth (floor div)
 
-    // allocate mem for each partition
-    for (size_t i = 0; i < num_partitions; i++) {
-        all_blocks[i] = (char*) calloc(partition_sz * 2, sizeof(char));
-    }
+// //  * @param n nonnegative integer
+// //  * @param depth the maximum value of the x coordinate
+// //  * 
+// //  * @returns pointer to Point2DInt, which must be freed
+// //  */
+// // Point2DInt* n_to_2d(size_t n, const size_t depth) {
+// //     Point2DInt *point = malloc(sizeof(*point));
+// //     point->x = n % depth;
+// //     point->y = n / depth;
+// //     return point;
+// // }
 
-    // now copy string contents into each partition
-    // we do this by defining a bijection from the nonnegative
-    // integers to ordered pairs of nonnegative integers
-    size_t x = 0;
-    size_t y = 0;
-    size_t *ptr_x = &x;
-    size_t *ptr_y = &y;
-    for (size_t i = 0; i < str_len; i++) {
-        char c = str[i];
-        one_to_2d(i, num_partitions, ptr_x, ptr_y);
-        all_blocks[x][y] = c;
-    }
 
-    return all_blocks;
-}
+// /*
+//  * Given a partition size K, partitions a byte array 
+//  * A into partitions P such that:
+//  *
+//  * P[0] = A[0], A[0 + K], A[0 + 2K],...
+//  * P[1] = A[1], A[1 + K], A[1 + 2K],...
+//  * ...
+//  * P[K-1] = A[K-1], A[K-1 + K], etc...
+//  *
+//  * @param str the byte array from which we are reading
+//  * @param str_len the length of the array
+//  * @param num_partitions K
+//  */
+// char** partition(const char *str, size_t str_len, size_t num_partitions) {
+//     size_t remainder = str_len % num_partitions;
+
+//     // figure out how large each partition needs to be
+//     size_t partition_sz = remainder == 0 ? 
+//                         str_len / num_partitions : 
+//                         str_len / num_partitions + 1;
+
+//     // allocate array of pointers
+//     char **all_blocks = (char**) calloc(num_partitions, sizeof(char*));
+
+//     // allocate mem for each partition
+//     for (size_t i = 0; i < num_partitions; i++) {
+//         all_blocks[i] = (char*) calloc(partition_sz * 2, sizeof(char));
+//     }
+
+//     // now copy string contents into each partition
+//     // we do this by defining a bijection from the nonnegative
+//     // integers to ordered pairs of nonnegative integers
+//     size_t x = 0;
+//     size_t y = 0;
+//     size_t *ptr_x = &x;
+//     size_t *ptr_y = &y;
+//     for (size_t i = 0; i < str_len; i++) {
+//         char c = str[i];
+//         one_to_2d(i, num_partitions, ptr_x, ptr_y);
+//         all_blocks[x][y] = c;
+//     }
+
+//     return all_blocks;
+// }
 
 
 /*
@@ -909,7 +900,6 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
 
         // add to score for this key
         score_for_key += score;
-        printf("Score: %lli\n", score_for_key);
         key_ch_ptr++;
 
         free(block);
@@ -924,6 +914,7 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
     KeyScore *key_score = malloc(sizeof(*key_score));
     key_score->key = the_key;
     key_score->score = score_for_key;
+    printf("Score: %lli\n", score_for_key);
 
     block_array_free(transposed_blocks);
     return key_score;
