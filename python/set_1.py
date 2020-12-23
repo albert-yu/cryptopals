@@ -290,6 +290,7 @@ def transpose(input: List[bytes]) -> List[bytes]:
             chunk.append(block[j])
         
         output.append(bytes(chunk))
+        chunk = bytearray(b'')
 
     return output 
 
@@ -313,7 +314,6 @@ def solve_block(block: bytes, encoding='utf-8') -> Tuple[int, str, int]:
             max_score = curr_score
             best_plaintext = plaintext_str
             key = i
-    
     return (key, best_plaintext, max_score)
 
 
@@ -326,7 +326,7 @@ def solve_for_keysize(scrambled: bytes, keysize: int):
         keychar,_ , score = solve_block(block)
         keysize_score += score
         key.append(keychar)
-    print(key.decode('utf-8'))    
+    print(key.decode('utf-8'))
 
 
 def break_repeating_xor(scrambled: bytes):
@@ -342,6 +342,9 @@ def prob_6_test():
     b64 = file_string(filename)
     as_bytes = base64.b64decode(b64)
     break_repeating_xor(as_bytes)
+    # test transpose
+    matrix = [b'asdf', b'jkl;']
+    print(transpose(matrix))
     
 
 #----------------------------------------------------------
