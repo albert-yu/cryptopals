@@ -9,6 +9,4 @@ void print_bytes(char *byte_array, size_t arr_len) {
         ch = byte_array[i];
         printf("%2.2x", ch & 0xff);
     }
-    
-    printf("\n");
 }
