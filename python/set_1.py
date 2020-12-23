@@ -67,35 +67,62 @@ def xor(byte_arr_1, byte_arr_2):
     return retval
 
 
-def score(text):
+def score(text: str) -> int:
     freq = {}
-    freq[' '] = 700000000
-    freq['e'] = 390395169
-    freq['t'] = 282039486
-    freq['a'] = 248362256
-    freq['o'] = 235661502
-    freq['i'] = 214822972
-    freq['n'] = 214319386
-    freq['s'] = 196844692
-    freq['h'] = 193607737
-    freq['r'] = 184990759
-    freq['d'] = 134044565
-    freq['l'] = 125951672
-    freq['u'] = 88219598
-    freq['c'] = 79962026
-    freq['m'] = 79502870
-    freq['f'] = 72967175
-    freq['w'] = 69069021
-    freq['g'] = 61549736
-    freq['y'] = 59010696
-    freq['p'] = 55746578
-    freq['b'] = 47673928
-    freq['v'] = 30476191
-    freq['k'] = 22969448
-    freq['x'] = 5574077
-    freq['j'] = 4507165
-    freq['q'] = 3649838
-    freq['z'] = 2456495
+    freq[' '] = 0.1918182
+    freq['e'] = 0.1041442
+    freq['t'] = 0.0729357
+    freq['a'] = 0.0651738
+    freq['o'] = 0.0596302
+    freq['i'] = 0.0558094
+    freq['n'] = 0.0564513
+    freq['s'] = 0.0515760
+    freq['h'] = 0.0492888
+    freq['r'] = 0.0497563
+    freq['d'] = 0.0349835
+    freq['l'] = 0.0331490
+    freq['u'] = 0.0225134
+    freq['c'] = 0.0217339
+    freq['m'] = 0.0202124
+    freq['f'] = 0.0197881
+    freq['w'] = 0.0171272
+    freq['g'] = 0.0158610
+    freq['y'] = 0.0145984
+    freq['p'] = 0.0137645
+    freq['b'] = 0.0124248
+    freq['v'] = 0.0082903
+    freq['k'] = 0.0050529
+    freq['x'] = 0.0013692
+    freq['j'] = 0.0009033
+    freq['q'] = 0.0008606
+    freq['z'] = 0.0007836
+    # freq[' '] = 700000000
+    # freq['e'] = 390395169
+    # freq['t'] = 282039486
+    # freq['a'] = 248362256
+    # freq['o'] = 235661502
+    # freq['i'] = 214822972
+    # freq['n'] = 214319386
+    # freq['s'] = 196844692
+    # freq['h'] = 193607737
+    # freq['r'] = 184990759
+    # freq['d'] = 134044565
+    # freq['l'] = 125951672
+    # freq['u'] = 88219598
+    # freq['c'] = 79962026
+    # freq['m'] = 79502870
+    # freq['f'] = 72967175
+    # freq['w'] = 69069021
+    # freq['g'] = 61549736
+    # freq['y'] = 59010696
+    # freq['p'] = 55746578
+    # freq['b'] = 47673928
+    # freq['v'] = 30476191
+    # freq['k'] = 22969448
+    # freq['x'] = 5574077
+    # freq['j'] = 4507165
+    # freq['q'] = 3649838
+    # freq['z'] = 2456495
     score = 0
     for c in text.lower():
         if c in freq:
@@ -130,7 +157,7 @@ def prob_3_test():
     scrambled = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
     scrambled_bytes = bytearray.fromhex(scrambled)
     encoding = "utf-8"
-    (key, unscrambled) = unscramble(scrambled_bytes, encoding)
+    key, unscrambled = unscramble(scrambled_bytes, encoding)
     print("Key: " + key)
     print("Unscrambled: " + unscrambled)
     expected = "Cooking MC's like a pound of bacon"
@@ -267,17 +294,54 @@ def transpose(input: List[bytes]) -> List[bytes]:
     return output 
 
 
+def solve_block(block: bytes, encoding='utf-8') -> Tuple[int, str, int]:
+    """
+    Solves the block as a single-char XOR. Returns tuple
+    with the key (character), the decoded string, and the score 
+    """
+    max_score = -1
+    best_plaintext = None
+    key = None
+    for i in range(0, 256):
+        key_repeated = (chr(i) * len(block)).encode(encoding)
+        key_byte_array = bytearray(key_repeated)
+        xor_d = xor(key_byte_array, block)
+        plaintext = bytes(xor_d)
+        plaintext_str = plaintext.decode(encoding)
+        curr_score = score(plaintext_str)
+        if curr_score > max_score:
+            max_score = curr_score
+            best_plaintext = plaintext_str
+            key = i
+    
+    return (key, best_plaintext, max_score)
+
+
+def solve_for_keysize(scrambled: bytes, keysize: int):
+    partitioned = partition(scrambled, keysize)
+    transposed = transpose(partitioned)
+    keysize_score = 0
+    key = bytearray(b'')
+    for block in transposed:
+        keychar,_ , score = solve_block(block)
+        keysize_score += score
+        key.append(keychar)
+    print(key.decode('utf-8'))    
+
+
+def break_repeating_xor(scrambled: bytes):
+    keysizes = best_keysizes(scrambled)
+
+    for keysize in keysizes:
+        solve_for_keysize(scrambled, keysize)
+
+
 def prob_6_test():
     hamming_distance_test()
     filename = "../set_1/data/6.txt"
     b64 = file_string(filename)
     as_bytes = base64.b64decode(b64)
-    print(as_bytes[:20])
-    print(best_keysizes(as_bytes))
-    partitioned = partition(as_bytes, 5)
-    print(partitioned[:4])
-    transposed = transpose(partitioned)
-    print(transposed[:2][:4])
+    break_repeating_xor(as_bytes)
     
 
 #----------------------------------------------------------

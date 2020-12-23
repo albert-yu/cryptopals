@@ -605,7 +605,7 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
     printf("key: %s\n", the_key);
     char *decrypted_ptr = calloc(encrypted_len + 1, sizeof(*decrypted_ptr));
     decrypt_bytes(encrypted, encrypted_len, the_key, decrypted_ptr);
-    printf("decrypted: %s\n", decrypted_ptr);
+    // printf("decrypted: %s\n", decrypted_ptr);
 
     KeyScore *key_score = malloc(sizeof(*key_score));
     key_score->key = the_key;
