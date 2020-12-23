@@ -6,7 +6,7 @@
 /**
  * Type for frequency score
  */
-typedef long long freq_t;
+typedef double freq_t;
 
 /*
  * Runs the test for Challenge 3, Set 1
