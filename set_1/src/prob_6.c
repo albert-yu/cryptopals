@@ -897,8 +897,8 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
 
     for (size_t i = 0; i < transposed_blocks->count; i++) {
         char *block = block_array_at(transposed_blocks, i);
-        printf("scrambled: ");
-        print_bytes(block, transposed_blocks->blocksize);
+        // printf("scrambled: ");
+        // print_bytes(block, transposed_blocks->blocksize);
         char *unscrambled = calloc(transposed_blocks->blocksize, sizeof(*unscrambled));
         long long score = unscramble_bytes(
             block,
@@ -909,6 +909,7 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
 
         // add to score for this key
         score_for_key += score;
+        printf("Score: %lli\n", score_for_key);
         key_ch_ptr++;
 
         free(block);

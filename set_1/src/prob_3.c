@@ -191,7 +191,7 @@ long long eval_frequency(long long *freq_table, char *input) {
 
 
 long long unscramble_bytes(char* scrambled, char *unscrambled, char *the_key, size_t msg_length) {
-    char *candidate_str = calloc(msg_length + 1, sizeof(*candidate_str)); 
+    char *candidate_bytes = calloc(msg_length + 1, sizeof(*candidate_bytes)); 
     long long max_freq = 0;
     long long *freq_table = get_frequency_table();
 
@@ -202,7 +202,7 @@ long long unscramble_bytes(char* scrambled, char *unscrambled, char *the_key, si
         long long freq = eval_frequency(freq_table, decoded);
         if (freq > max_freq) {           
             max_freq = freq;
-            strcpy(candidate_str, decoded);
+            memcpy(candidate_bytes, decoded, msg_length);
             // set key to the_key
             *the_key = c;
         }
@@ -216,8 +216,8 @@ long long unscramble_bytes(char* scrambled, char *unscrambled, char *the_key, si
         free(freq_table);
 
     // choose the one with the highest frequency score
-    strcpy(unscrambled, candidate_str);
-    free(candidate_str);
+    memcpy(unscrambled, candidate_bytes, msg_length);
+    free(candidate_bytes);
     return max_freq;
 }
 
