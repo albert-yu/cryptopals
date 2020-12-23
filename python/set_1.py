@@ -1,4 +1,3 @@
-# python 3.6
 import base64
 import binascii
 
@@ -138,6 +137,16 @@ def prob_3_test():
 
 #----------------------------------------------------------
 
+def file_string(filename: str):
+    """
+    Reads the file as a string, stripping newlines
+    """
+    f = open(filename, "r")
+    data = f.read().replace("\n", "") 
+    f.close()
+    return data
+
+
 def unscramble_all(filename):
     # store best candidates
     best_plaintext = None
@@ -167,7 +176,7 @@ def unscramble_all(filename):
 
 
 def prob_4_test():
-    filename = "../data/4.txt"
+    filename = "../set_1/data/4.txt"
     (key, unscrambled) = unscramble_all(filename)
     print("Key: " + key)
     print("Unscrambled: " + unscrambled)  # newline at end!
@@ -181,6 +190,35 @@ def prob_4_test():
 
 #----------------------------------------------------------
 
+def hamming_distance(b1: bytes, b2: bytes):
+    xord = [a ^ b for (a,b) in zip(b1, b2)] 
+    count = 0
+    for ch in xord:
+        count += bin(ch).count("1")
+    return count
+
+
+def hamming_distance_test():
+    s1 = b"this is a test"
+    s2 = b"wokka wokka!!!"
+    dist = hamming_distance(s1, s2)
+    expected = 37
+    if dist == expected:
+        print("Hamming test passed.")
+    else:
+        print("Hamming test failed!")
+        print("Expected: {0}".format(expected))
+        print("Actual: {0}".format(dist))
+
+def prob_6_test():
+    hamming_distance_test()
+    filename = "../set_1/data/6.txt"
+    b64 = file_string(filename)
+    as_bytes = base64.b64decode(b64)
+    
+
+#----------------------------------------------------------
+
 def main():
     prob_1_test()
     print("-------------")
@@ -189,7 +227,8 @@ def main():
     prob_3_test()
     print("-------------")
     prob_4_test()
-
+    print("-------------")
+    prob_6_test()
 
 if __name__ == "__main__":
     main()
