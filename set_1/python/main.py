@@ -182,7 +182,7 @@ def unscramble_all(filename):
 
 
 def prob_4_test():
-    filename = "../set_1/data/4.txt"
+    filename = "../data/4.txt"
     (key, unscrambled) = unscramble_all(filename)
     print("Key: " + key)
     print("Unscrambled: " + unscrambled)  # newline at end!
@@ -311,7 +311,7 @@ def break_repeating_xor(scrambled: bytes):
 
 def prob_6_test():
     hamming_distance_test()
-    filename = "../set_1/data/6.txt"
+    filename = "../data/6.txt"
     b64 = file_string(filename)
     as_bytes = base64.b64decode(b64)
     # break_repeating_xor(as_bytes)
