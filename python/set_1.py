@@ -1,5 +1,6 @@
 import base64
 import binascii
+from typing import List, Set, Dict, Tuple, Optional
 
 
 def hex_to_b64(hex_str):
@@ -102,7 +103,12 @@ def score(text):
     return score
 
 
-def unscramble(cipher, encoding):
+def unscramble(cipher: str, encoding: str) -> Tuple[str, str]:
+    """
+    Unscrambles the cipher with the given encoding
+    and returns the key (a char) and the plain text
+    as a tuple
+    """
     max_score = -1
     best_plaintext = None
     key = None
@@ -211,7 +217,7 @@ def hamming_distance_test():
         print("Actual: {0}".format(dist))
 
 
-def best_keysizes(encoded: bytes, num_keysizes=3, min_keysize=2, max_keysize=40):
+def best_keysizes(encoded: bytes, num_keysizes=3, min_keysize=2, max_keysize=40) -> List[int]:
     keysize_to_hamming = dict()
     for keysize in range(min_keysize, max_keysize + 1):
         first_n = encoded[:keysize]
@@ -224,12 +230,30 @@ def best_keysizes(encoded: bytes, num_keysizes=3, min_keysize=2, max_keysize=40)
     return list(smallest_to_largest_hamming.keys())[:num_keysizes]
 
 
+def partition(encoded: bytes, partition_size: int) -> List[bytes]:
+    result = []
+    chunk = bytearray(b'')
+    for i in range(len(encoded)):
+        if len(chunk) > 0 and i % partition_size == 0:
+            result.append(bytes(chunk))
+            chunk = bytearray(b'')
+        chunk.append(encoded[i])
+    
+    # append any remaining
+    if len(chunk) > 0:
+        result.append(chunk)
+
+    return result
+
+
 def prob_6_test():
     hamming_distance_test()
     filename = "../set_1/data/6.txt"
     b64 = file_string(filename)
     as_bytes = base64.b64decode(b64)
+    print(as_bytes[:20])
     print(best_keysizes(as_bytes))
+    print(partition(as_bytes, 5)[:4])
     
 
 #----------------------------------------------------------
