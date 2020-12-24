@@ -146,16 +146,18 @@ char* get_b64_lookup() {
 }
 
 
-/*
+/**
  * Converts a b64 string to byte array
  * @param b64str the input string encoded in b64
  * @param b64length the size of the b64 string
  * @param b64lookup the table/array that maps 
  *    a b64 char to int (e.g. A -> 0, B -> 1, etc.)
  * @param len_ptr pointer to store the length of resulting array  
+ * 
+ * @returns heap-allocated byte array
  */
 char* b64_to_bytes(
-    char *b64str, size_t b64length, char *b64lookup, size_t *len_ptr) {
+    char *b64str, size_t b64length, const char *b64lookup, size_t *len_ptr) {
     if (b64length % 4 != 0) {
         perror("Invalid base-64 string. Must be evenly divisible by 4.\n");
         exit(EXIT_FAILURE);
@@ -333,8 +335,6 @@ void decrypt_bytes(const char *encrypted, size_t encrypted_len, const char *key,
     }
 
     decrypted_ptr[iter] = '\0';
-    // printf("iter: %zu\n", iter);
-    // printf("Str Length: %lu\n", strlen(decrypted_ptr));
 }
 
 
@@ -400,7 +400,12 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
 }
 
 
-void break_xor(char *encrypted, size_t encrypted_len) {
+/**
+ * Finds the key to the encrypted string
+ * 
+ * @returns heap-allocated null-terminated string with key
+ */
+char* break_xor(char *encrypted, size_t encrypted_len) {
     // get 3 best key sizes
     const size_t N_KEYS = 3;
     size_t *best_keysizes = get_best_keysizes(encrypted, N_KEYS);
@@ -422,49 +427,29 @@ void break_xor(char *encrypted, size_t encrypted_len) {
         key_score_free(key_score);
     }       
 
-    if (strlen(best_key)) {
-        printf("best key: %s\n", best_key);
-    }
 
-    // TODO: finally, use the best key to unscramble
-    // the original message
-
-    free(best_key);
     free(best_keysizes); 
+
+    return best_key;
 }
 
 
-void prob6_test() {
-    printf("Running test for problem 6...\n");
-
+void hamming_test() {
     // test Hamming distance
     char *string1 = "this is a test";
     char *string2 = "wokka wokka!!!";
     size_t dist = hamming_with_len(string1, string2, strlen(string1));
     size_t expected = 37;
-    if (dist == expected) {
-        printf("Hamming distance test passed.\n");
-    }
-    else {
+    if (dist != expected) {
         printf("Hamming distance test failed.\n");
         printf("Expected: \t[%zu]\n", expected);
         printf("Actual: \t[%zu]\n", dist);
+        exit(EXIT_FAILURE);
     }
+}
 
-    // test reading file
-    char *filename = "./data/6.txt";
-    size_t *b64_len_ptr = (size_t*)malloc(sizeof(*b64_len_ptr));
-    char *long_ass_string = 
-        read_file_as_string(filename, b64_len_ptr);
-    
-    if (b64_len_ptr) {
-        printf("Successfully read file.\n");
-        printf("\tNumber of characters: %zu\n", *b64_len_ptr);
-    }
-    else {
-        printf("Failed to read.\n");
-    }
 
+void b64_test(const char *b64lookup) {
     // test b64 decoding
     char *b64_encoded = "TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhp"
                         "cyByZWFzb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Np"
@@ -481,39 +466,56 @@ void prob6_test() {
                             "of delight in the continued and indefatigable "
                             "generation of knowledge, exceeds the short vehemence "
                             "of any carnal pleasure.";
-
-    char *b64lookup = get_b64_lookup();
-
-    // specify length of byte array
     size_t bytes_len = 0;
     size_t *bytes_len_ptr = &bytes_len;
     char *b64decoded = b64_to_bytes(
         b64_encoded, strlen(b64_encoded), b64lookup, bytes_len_ptr);
 
-    if (strcmp(b64decoded, expected_decode) == 0) {
-        printf("b64 decode test passed.\n");
-    }
-    else {
+    if (strcmp(b64decoded, expected_decode) != 0) {
         printf("b64 test failed.\n");
         printf("Expected: \t%s\n", expected_decode);
         printf("Actual: \t%s\n", b64decoded);
     }
 
+    free(b64decoded); 
+}
+
+
+void prob6_test() {
+    printf("Running test for problem 6...\n");
+    hamming_test();
+
+    char *filename = "./data/6.txt";
+    size_t *b64_len_ptr = (size_t*)malloc(sizeof(*b64_len_ptr));
+    char *file_contents_str = 
+        read_file_as_string(filename, b64_len_ptr);
+    
+    if (!b64_len_ptr) {
+        printf("Failed to read file at %s.\n", filename);
+        exit(EXIT_FAILURE);
+    }
+
+    char *b64lookup = get_b64_lookup();
+    b64_test(b64lookup);
+
+    // specify length of byte array
+    size_t bytes_len = 0;
+    size_t *bytes_len_ptr = &bytes_len;
+
     // decode input string
     char *all_the_bytes = b64_to_bytes(
-        long_ass_string, *b64_len_ptr, b64lookup, bytes_len_ptr);
-    
-    // print_bytes(all_the_bytes, *bytes_len_ptr);
+        file_contents_str, *b64_len_ptr, b64lookup, bytes_len_ptr);
+    free(file_contents_str);
+    free(b64_len_ptr);
+    free(b64lookup);
     
     // do the breaking
-    break_xor(all_the_bytes, *bytes_len_ptr);
- 
-    // clean up
-    free(long_ass_string);
-    free(b64_len_ptr);
-    free(b64decoded); 
-    free(b64lookup);
+    char *the_key = break_xor(all_the_bytes, *bytes_len_ptr);
     free(all_the_bytes);
 
+    // finally, use the key to unscramble
+    // the original message
+    printf("Key: %s\n", the_key);
+    free(the_key);
     printf("\n");
 }
