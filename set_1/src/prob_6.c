@@ -152,7 +152,7 @@ char* get_b64_lookup() {
  * @param b64length the size of the b64 string
  * @param b64lookup the table/array that maps 
  *    a b64 char to int (e.g. A -> 0, B -> 1, etc.)
- * @param len_ptr pointer to store the length of resulting array  
+ * @param len_ptr pointer to store the length of resulting byte array  
  * 
  * @returns heap-allocated byte array
  */
@@ -163,10 +163,22 @@ char* b64_to_bytes(
         exit(EXIT_FAILURE);
     }
 
-    size_t outputlen = (b64length / 4) * 3;
-    *len_ptr = outputlen;
+    size_t buf_size = b64length * 3 / 4;
+    
+    // figure out unpadded length of bytes
+    size_t padding_count = 0;
+    char *b64end = b64str + b64length - 1;
+    while (*b64end == '=') {
+        b64end--;
+        padding_count++;
+    }
+    size_t unpadded_b64_len = b64length - padding_count;
+    size_t bytes_len = unpadded_b64_len * 3 / 4;
+    *len_ptr = bytes_len;
 
-    char* decoded = (char*) calloc(outputlen + 1, sizeof(*decoded));
+    // *len_ptr = outputlen;
+
+    char* decoded = calloc(buf_size, sizeof(*decoded));
 
     size_t i = 0;
     size_t j = 0;
@@ -518,8 +530,6 @@ void prob6_test() {
     char decrypted [bytes_len + 1];
     repeat_xor_decrypt(all_the_bytes, bytes_len, the_key, decrypted);
     printf("Unscrambled: %s\n", decrypted);
-    printf("length of decrypted: %zu", strlen(decrypted));
-    printf("\n");
     free(all_the_bytes);
     free(the_key);
 }
