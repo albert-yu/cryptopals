@@ -197,15 +197,15 @@ char* b64_to_bytes(
 
 
 /*
- * Get the normalized hamming distance between ith and jth block of size `keysize`
+ * Get the hamming distance between ith and jth block of size `keysize`
  */
-double hamming_i_j_normalized(char *encrypted, size_t i, size_t j, size_t keysize) {
+double hamming_i_j(char *input, size_t i, size_t j, size_t keysize) {
     char *start_i, *start_j;
-    start_i = encrypted + i;
-    start_j = encrypted + j;
+    start_i = input + i * keysize;
+    start_j = input + j * keysize;
     
     size_t hamming_dist = hamming_with_len(start_i, start_j, keysize);
-    return hamming_dist / ((double)keysize);
+    return hamming_dist;
 }
 
 
@@ -252,6 +252,23 @@ void keysize_candidates_free(KeySizeCandidate **candidates, size_t start, size_t
 }
 
 
+double average_hamming(char *input, size_t keysize) {
+    double hamming_0_1, hamming_0_2, hamming_0_3;
+    double hamming_1_2, hamming_1_3;
+    double hamming_2_3;
+
+    hamming_0_1 = hamming_i_j(input, 0, 1, keysize);
+    hamming_0_2 = hamming_i_j(input, 0, 2, keysize);
+    hamming_0_3 = hamming_i_j(input, 0, 3, keysize);
+    hamming_1_2 = hamming_i_j(input, 1, 2, keysize);
+    hamming_1_3 = hamming_i_j(input, 1, 3, keysize);
+    hamming_2_3 = hamming_i_j(input, 2, 3, keysize);
+
+    double average = (hamming_0_1 + hamming_0_2 + hamming_0_3 + hamming_1_2 + hamming_1_3 + hamming_2_3) / 6.0;
+    return average;
+}
+
+
 /*
  * Get the best keysizes with a different implementation 
  * (compare with four blocks' average Hamming distance instead of two)
@@ -266,24 +283,12 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
     KeySizeCandidate **scores = malloc((MAX_KEYSIZE + 1) * sizeof(*scores));
     size_t keysize = MIN_KEYSIZE;
     for (; keysize <= MAX_KEYSIZE; keysize++) {
-        double hamming_0_1, hamming_0_2, hamming_0_3;
-        double hamming_1_2, hamming_1_3;
-        double hamming_2_3;
-
-        hamming_0_1 = hamming_i_j_normalized(encrypted, 0, 1, keysize);
-        hamming_0_2 = hamming_i_j_normalized(encrypted, 0, 2, keysize);
-        hamming_0_3 = hamming_i_j_normalized(encrypted, 0, 3, keysize);
-        hamming_1_2 = hamming_i_j_normalized(encrypted, 1, 2, keysize);
-        hamming_1_3 = hamming_i_j_normalized(encrypted, 1, 3, keysize);
-        hamming_2_3 = hamming_i_j_normalized(encrypted, 2, 3, keysize);
-
-        double average = (hamming_0_1 + hamming_0_2 + hamming_0_3 + hamming_1_2 + hamming_1_3 + hamming_2_3) / 6.0;
-
+        double average = average_hamming(encrypted, keysize);
         KeySizeCandidate* candidate = malloc(sizeof(*candidate));
-        candidate->score = average;
+        candidate->score = average / keysize;
         candidate->size = keysize;
         scores[keysize] = candidate;
-        printf("size: %zu, score: %f\n", candidate->size, candidate->score);
+        // printf("size: %zu, score: %f\n", candidate->size, candidate->score);
     }
 
     KeySizeCandidate **arr_start = scores + MIN_KEYSIZE;
@@ -382,7 +387,6 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
         free(unscrambled);
     }
     // put the key together
-    printf("key: %s\n", the_key);
     char *decrypted_ptr = calloc(encrypted_len + 1, sizeof(*decrypted_ptr));
     decrypt_bytes(encrypted, encrypted_len, the_key, decrypted_ptr);
     // printf("decrypted: %s\n", decrypted_ptr);
@@ -409,7 +413,6 @@ void break_xor(char *encrypted, size_t encrypted_len) {
 
     for (size_t i = 0; i < N_KEYS; i++) {        
         size_t curr_keysize = best_keysizes[i];
-        printf("current keysize: %zu\n", curr_keysize);
         KeyScore *key_score = solve_for_keysize(encrypted, encrypted_len, curr_keysize);
         // check if we bested the best_score 
         if (key_score->score > best_score) {
