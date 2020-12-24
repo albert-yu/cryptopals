@@ -311,7 +311,7 @@ void keysize_candidates_free(KeySizeCandidate **candidates, size_t start, size_t
  * @param encrypted the encrypted bytes
  * @param num_keys the number of key sizes to return
  */
-size_t* get_best_keysizes2(char *encrypted, size_t num_keys) {
+size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
     const size_t MIN_KEYSIZE = 2;
     const size_t MAX_KEYSIZE = 40;
 
@@ -330,7 +330,6 @@ size_t* get_best_keysizes2(char *encrypted, size_t num_keys) {
         hamming_2_3 = hamming_i_j_normalized(encrypted, 2, 3, keysize);
 
         double average = (hamming_0_1 + hamming_0_2 + hamming_0_3 + hamming_1_2 + hamming_1_3 + hamming_2_3) / 6.0;
-        // printf("size: %zu, score: %f\n", keysize, average);
 
         KeySizeCandidate* candidate = malloc(sizeof(*candidate));
         candidate->score = average;
@@ -453,7 +452,7 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
 void break_xor(char *encrypted, size_t encrypted_len) {
     // get 3 best key sizes
     const size_t N_KEYS = 3;
-    size_t *best_keysizes = get_best_keysizes2(encrypted, N_KEYS);
+    size_t *best_keysizes = get_best_keysizes(encrypted, N_KEYS);
 
     long long best_score = 0;
 
