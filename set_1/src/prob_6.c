@@ -387,10 +387,6 @@ KeyScore* solve_for_keysize(char *encrypted, size_t encrypted_len, size_t keysiz
         free(unscrambled);
     }
     // put the key together
-    char *decrypted_ptr = calloc(encrypted_len + 1, sizeof(*decrypted_ptr));
-    decrypt_bytes(encrypted, encrypted_len, the_key, decrypted_ptr);
-    // printf("decrypted: %s\n", decrypted_ptr);
-
     KeyScore *key_score = malloc(sizeof(*key_score));
     key_score->key = the_key;
     key_score->score = score_for_key;
@@ -511,11 +507,16 @@ void prob6_test() {
     
     // do the breaking
     char *the_key = break_xor(all_the_bytes, *bytes_len_ptr);
-    free(all_the_bytes);
 
     // finally, use the key to unscramble
     // the original message
     printf("Key: %s\n", the_key);
+    char *decrypted = calloc(bytes_len + 1, sizeof(*decrypted));
+    decrypt_bytes(all_the_bytes, *bytes_len_ptr, the_key, decrypted);
+    printf("Decrypted: %s\n", decrypted);
+    free(decrypted);
+    free(all_the_bytes);
     free(the_key);
+
     printf("\n");
 }
