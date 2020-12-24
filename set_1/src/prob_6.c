@@ -81,8 +81,8 @@ char* read_file_as_string(char *filename, size_t *length_out) {
     }
 
     // allocate memory for string
-    size_t BUF_LEN = 256;
-    char *ret_val = (char*)calloc(BUF_LEN, sizeof(*ret_val));
+    size_t buf_len = 256;
+    char *ret_val = calloc(buf_len, sizeof(*ret_val));
 
     // keep track of character count
     size_t count = 0;
@@ -105,9 +105,9 @@ char* read_file_as_string(char *filename, size_t *length_out) {
         }
 
         // check if we've reached the end of the buffer
-        if (count == BUF_LEN) {
-            BUF_LEN *= 2;
-            ret_val = (char*) realloc(ret_val, BUF_LEN);
+        if (count == buf_len) {
+            buf_len *= 2;
+            ret_val = realloc(ret_val, buf_len);
         }
 
         ret_val[count] = ch;
@@ -120,8 +120,8 @@ char* read_file_as_string(char *filename, size_t *length_out) {
     // the last space in the buffer
     // (preventing null termination)
     if (is_power_of_2(count)) {
-        BUF_LEN *= 2;
-        ret_val = (char*) realloc(ret_val, BUF_LEN);        
+        buf_len *= 2;
+        ret_val = realloc(ret_val, buf_len);        
     }
     ret_val[count] = '\0';
 
@@ -485,7 +485,8 @@ void prob6_test() {
     hamming_test();
 
     char *filename = "./data/6.txt";
-    size_t *b64_len_ptr = (size_t*)malloc(sizeof(*b64_len_ptr));
+    size_t b64_len = 0;
+    size_t *b64_len_ptr = &b64_len;
     char *file_contents_str = 
         read_file_as_string(filename, b64_len_ptr);
     
@@ -505,7 +506,7 @@ void prob6_test() {
     char *all_the_bytes = b64_to_bytes(
         file_contents_str, *b64_len_ptr, b64lookup, bytes_len_ptr);
     free(file_contents_str);
-    free(b64_len_ptr);
+    // free(b64_len_ptr);
     free(b64lookup);
     
     // do the breaking
@@ -517,8 +518,8 @@ void prob6_test() {
     char decrypted [bytes_len + 1];
     repeat_xor_decrypt(all_the_bytes, bytes_len, the_key, decrypted);
     printf("Unscrambled: %s\n", decrypted);
+    printf("length of decrypted: %zu", strlen(decrypted));
+    printf("\n");
     free(all_the_bytes);
     free(the_key);
-
-    printf("\n");
 }

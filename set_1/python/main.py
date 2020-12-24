@@ -367,8 +367,8 @@ def prob_6_test():
     as_bytes = base64.b64decode(b64)
     key = break_repeating_xor(as_bytes)
     print("Key:", key)
-    print("Unscrambled:", decrypt_bytes(as_bytes, key))
-    
+    decrypted = decrypt_bytes(as_bytes, key)
+    print("Unscrambled:", decrypted)
 
 #----------------------------------------------------------
 
