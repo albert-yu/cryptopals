@@ -336,7 +336,6 @@ void repeat_xor_decrypt(const char *encrypted, size_t encrypted_len, const char 
         key_c = key[key_offset];
         xor_c = c ^ key_c;
         output[i] = xor_c;
-        encrypted++;
     }
     output[encrypted_len] = '\0';
 }
