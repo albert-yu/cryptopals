@@ -7,11 +7,6 @@
 #include "prob_6.h"
 
 
-#ifndef EPSILON
-#define EPSILON 0.00000000000000000001
-#endif
-
-
 /*
  * Determine if given integer is a power of 2
  */
@@ -22,14 +17,6 @@ bool is_power_of_2(size_t v) {
     bool f;         // the result goes here 
     f = (v & (v - 1)) == 0;
     return f;
-}
-
-
-/*
- * Determine if two doubles are equal
- */
-bool dbl_equals(double dbl1, double dbl2) {
-    return (fabs(dbl1 - dbl2) < EPSILON);
 }
 
 
@@ -335,6 +322,7 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
         candidate->score = average;
         candidate->size = keysize;
         scores[keysize] = candidate;
+        printf("size: %zu, score: %f\n", candidate->size, candidate->score);
     }
 
     KeySizeCandidate **arr_start = scores + MIN_KEYSIZE;
@@ -350,8 +338,6 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
     size_t *result = malloc(num_keys * sizeof(*result));
     for (size_t i = 0; i < num_keys; i++) {
         KeySizeCandidate *candidate = arr_start[i];
-        printf("size: %zu, score: %f\n", candidate->size, candidate->score);
-
         result[i] = candidate->size;
     }
 
