@@ -342,6 +342,23 @@ def transpose_test():
         print("Transpose test passed.")
 
 
+def decrypt_bytes(input_bytes: bytes, key: str, encoding='utf-8') -> str:
+    """
+    Decrypts the bytes with the given repeating key
+    """
+    key_len = len(key)
+    input_len = len(input_bytes)
+    result = bytearray(b'')
+
+    for i in range(input_len):
+        c = input_bytes[i]
+        key_offset = i % key_len
+        key_c = ord(key[key_offset])
+        result.append(c ^ key_c)
+
+    return result.decode(encoding)    
+
+
 def prob_6_test():
     hamming_distance_test()
     transpose_test()
@@ -349,7 +366,8 @@ def prob_6_test():
     b64 = file_string(filename)
     as_bytes = base64.b64decode(b64)
     key = break_repeating_xor(as_bytes)
-    print("key:", key)
+    print("Key:", key)
+    print("Unscrambled:", decrypt_bytes(as_bytes, key))
     
 
 #----------------------------------------------------------
@@ -364,6 +382,7 @@ def main():
     prob_4_test()
     print("-------------")
     prob_6_test()
+    print("-------------")
 
 if __name__ == "__main__":
     main()
