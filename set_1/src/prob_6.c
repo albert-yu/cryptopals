@@ -21,45 +21,6 @@ bool is_power_of_2(size_t v) {
 
 
 /*
- * Returns the substring specified by the start and end indices.
- * End is not inclusive (e.g. 2 to 5 will just return 3 characters). 
- */
-char* substring(char *input, size_t start, size_t end) {
-    if (start >= end) {
-        perror("Cannot have a starting index that is greater than the ending one.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    size_t size = end - start + 1;      
-    char *substr = (char*) calloc(size, sizeof(*substr));    
-    size_t substring_index = 0;
-    for (size_t i = start; i < end; i++) {
-        substr[substring_index] = input[i];
-        substring_index++;
-    }
-
-    return substr;
-}
-
-
-/*
- * Copies substring to the buffer
- */
-void substr_cpy(char *destination, const char *source, size_t start, size_t end) {
-    if (start >= end) {
-        perror("Cannot have a starting index that is greater than the ending one.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    size_t substr_i = 0;
-    for (size_t i = start; i < end; i++) {
-        destination[substr_i] = source[i];
-        substr_i++;
-    }
-}
-
-
-/*
  * Counts the number of ones in a byte
  */
 size_t count_ones(char c) {
