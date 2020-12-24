@@ -67,7 +67,7 @@ def xor(byte_arr_1, byte_arr_2):
     return retval
 
 
-def score(text: str) -> int:
+def score(text: str) -> float:
     freq = {}
     freq[' '] = 0.1918182
     freq['e'] = 0.1041442
@@ -96,7 +96,7 @@ def score(text: str) -> int:
     freq['j'] = 0.0009033
     freq['q'] = 0.0008606
     freq['z'] = 0.0007836
-    score = 0
+    score = 0.0
     for c in text.lower():
         if c in freq:
             score += freq[c]
@@ -282,7 +282,7 @@ def transpose(input: List[bytes]) -> List[bytes]:
     return output 
 
 
-def solve_block(block: bytes, encoding='utf-8') -> Tuple[int, str, int]:
+def solve_block(block: bytes, encoding='utf-8') -> Tuple[int, str, float]:
     """
     Solves the block as a single-char XOR. Returns tuple
     with the key (character), the decoded string, and the score 
@@ -304,23 +304,30 @@ def solve_block(block: bytes, encoding='utf-8') -> Tuple[int, str, int]:
     return (key, best_plaintext, max_score)
 
 
-def solve_for_keysize(scrambled: bytes, keysize: int):
+def solve_for_keysize(scrambled: bytes, keysize: int) -> Tuple[str, float]:
     partitioned = partition(scrambled, keysize)
     transposed = transpose(partitioned)
     keysize_score = 0
     key = bytearray(b'')
     for block in transposed:
-        keychar,_ , score = solve_block(block)
+        keychar, _, score = solve_block(block)
         keysize_score += score
         key.append(keychar)
-    print(key.decode('utf-8'))
+    return (key.decode('utf-8'), keysize_score)
 
 
-def break_repeating_xor(scrambled: bytes):
+def break_repeating_xor(scrambled: bytes) -> str:
     keysizes = best_keysizes(scrambled)
 
+    best_score = 0.0
+    best_key = None
+
     for keysize in keysizes:
-        solve_for_keysize(scrambled, keysize)
+        key, score = solve_for_keysize(scrambled, keysize)
+        if score > best_score:
+            best_key, best_score = key, score
+    
+    return best_key
 
 
 def transpose_test():
@@ -341,7 +348,8 @@ def prob_6_test():
     filename = "../data/6.txt"
     b64 = file_string(filename)
     as_bytes = base64.b64decode(b64)
-    break_repeating_xor(as_bytes)
+    key = break_repeating_xor(as_bytes)
+    print("key:", key)
     
 
 #----------------------------------------------------------
