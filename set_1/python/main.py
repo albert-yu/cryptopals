@@ -309,15 +309,25 @@ def break_repeating_xor(scrambled: bytes):
         solve_for_keysize(scrambled, keysize)
 
 
+def transpose_test():
+    matrix = [b'abcd', b'efgh', b'ijkl']
+    transposed = transpose(matrix)
+    matrix2 = transpose(transposed)
+    if matrix != matrix2:
+        print("Transpose test failed!")
+        print("Expected:", matrix)
+        print("Actual:", matrix2)
+    else:
+        print("Transpose test passed.")
+
+
 def prob_6_test():
     hamming_distance_test()
+    transpose_test()
     filename = "../data/6.txt"
     b64 = file_string(filename)
     as_bytes = base64.b64decode(b64)
     # break_repeating_xor(as_bytes)
-    # test transpose
-    matrix = [b'abcd', b'efgh', b'ijkl']
-    print(transpose(matrix))
     solve_for_keysize(as_bytes, 5)
     
 
