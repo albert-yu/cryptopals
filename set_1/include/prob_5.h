@@ -12,7 +12,7 @@ void prob5_test();
  * Encrypt a message with repeating-key XOR
  * and output in hex form
  */
-void encrypt(const char *input, const char *key, char *output);
+void repeat_xor_encrypt_to_hex(const char *input, const char *key, char *output);
 
 
 #endif

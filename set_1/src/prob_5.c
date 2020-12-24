@@ -34,7 +34,7 @@ char get_right_hex_char(char input) {
 }
 
 
-void encrypt(const char *input, const char *key, char *output) {
+void repeat_xor_encrypt_to_hex(const char *input, const char *key, char *output) {
     // check if output has been allocated at all
     if (!output) {
         perror("Need to allocate memory for output.\n");
@@ -84,7 +84,7 @@ void prob5_test() {
     // plus one for null byte
     size_t stanza_len = strlen(stanza) * 2 + 1;
     char *actual = (char*) calloc(stanza_len, sizeof(*actual));
-    encrypt(stanza, key, actual);
+    repeat_xor_encrypt_to_hex(stanza, key, actual);
 
     if (strcmp(expected, actual) == 0) {        
         printf("Repeating XOR key test passed.\n");

@@ -315,26 +315,30 @@ size_t* get_best_keysizes(char *encrypted, size_t num_keys) {
 }
 
 
-/*
+/**
  * Takes the encrypted bytes and decrypts them with
  * the given key
+ * 
+ * @param encrypted input byte array
+ * @param encrypted_len length of input
+ * @param key the key to break it
+ * @param output pointer to buffer for output string
+ * (should be of size at least encrypted_len + 1) 
  */
-void decrypt_bytes(const char *encrypted, size_t encrypted_len, const char *key, char *decrypted_ptr) {
-    size_t iter, key_len;
-    iter = 0;
+void repeat_xor_decrypt(const char *encrypted, size_t encrypted_len, const char *key, char *output) {
+    size_t key_len, key_offset;
     key_len = strlen(key);
 
-    char c;
-    while (iter < encrypted_len) {
-        c = encrypted[iter];
-        size_t key_offset = iter % key_len;
-        char xord_c = c ^ key[key_offset];
-        decrypted_ptr[iter] = xord_c;
-        iter++;
+    char c, key_c, xor_c;
+    for (size_t i = 0; i < encrypted_len; i++) {
+        c = encrypted[i];
+        key_offset = i % key_len;
+        key_c = key[key_offset];
+        xor_c = c ^ key_c;
+        output[i] = xor_c;
         encrypted++;
     }
-
-    decrypted_ptr[iter] = '\0';
+    output[encrypted_len] = '\0';
 }
 
 
@@ -511,10 +515,9 @@ void prob6_test() {
     // finally, use the key to unscramble
     // the original message
     printf("Key: %s\n", the_key);
-    char *decrypted = calloc(bytes_len + 1, sizeof(*decrypted));
-    decrypt_bytes(all_the_bytes, *bytes_len_ptr, the_key, decrypted);
+    char decrypted [(*bytes_len_ptr + 1)];
+    repeat_xor_decrypt(all_the_bytes, *bytes_len_ptr, the_key, decrypted);
     printf("Decrypted: %s\n", decrypted);
-    free(decrypted);
     free(all_the_bytes);
     free(the_key);
 
