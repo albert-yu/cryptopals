@@ -215,14 +215,28 @@ def hamming_distance_test():
         print("Hamming test failed!")
         print("Expected: {0}".format(expected))
         print("Actual: {0}".format(dist))
+    
+
+def avg_hamming(encoded: bytes, keysize: int) -> int:
+    first_n = encoded[:keysize]
+    second_n = encoded[keysize:keysize*2]
+    third_n = encoded[keysize*2:keysize*3]
+    fourth_n = encoded[keysize*3:keysize*4]
+
+    dist1 = hamming_distance(first_n, second_n)
+    dist2 = hamming_distance(first_n, third_n)
+    dist3 = hamming_distance(first_n, fourth_n)
+    dist4 = hamming_distance(second_n, third_n)
+    dist5 = hamming_distance(second_n, fourth_n)
+    dist6 = hamming_distance(third_n, fourth_n)
+
+    return sum([dist1, dist2, dist3, dist4, dist5, dist6]) / 6
 
 
 def best_keysizes(encoded: bytes, num_keysizes=3, min_keysize=2, max_keysize=40) -> List[int]:
     keysize_to_hamming = dict()
     for keysize in range(min_keysize, max_keysize + 1):
-        first_n = encoded[:keysize]
-        second_n = encoded[keysize:keysize*2]
-        hamming = hamming_distance(first_n, second_n)
+        hamming = avg_hamming(encoded, keysize)
         normalized = hamming / keysize
         keysize_to_hamming[keysize] = normalized
     
@@ -327,8 +341,7 @@ def prob_6_test():
     filename = "../data/6.txt"
     b64 = file_string(filename)
     as_bytes = base64.b64decode(b64)
-    # break_repeating_xor(as_bytes)
-    solve_for_keysize(as_bytes, 5)
+    break_repeating_xor(as_bytes)
     
 
 #----------------------------------------------------------
