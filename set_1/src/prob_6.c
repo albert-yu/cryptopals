@@ -510,14 +510,14 @@ void prob6_test() {
     free(b64lookup);
     
     // do the breaking
-    char *the_key = break_xor(all_the_bytes, *bytes_len_ptr);
+    char *the_key = break_xor(all_the_bytes, bytes_len);
 
     // finally, use the key to unscramble
     // the original message
     printf("Key: %s\n", the_key);
-    char decrypted [(*bytes_len_ptr + 1)];
-    repeat_xor_decrypt(all_the_bytes, *bytes_len_ptr, the_key, decrypted);
-    printf("Decrypted: %s\n", decrypted);
+    char decrypted [bytes_len + 1];
+    repeat_xor_decrypt(all_the_bytes, bytes_len, the_key, decrypted);
+    printf("Unscrambled: %s\n", decrypted);
     free(all_the_bytes);
     free(the_key);
 
